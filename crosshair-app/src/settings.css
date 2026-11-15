@@ -62,3 +62,11 @@ input[type=color] { width: 40px; height: 30px; padding: 2px; cursor: pointer; }
 .hk input.rec { border-color: #facc15; color: #facc15; }
 .ok { color: #00ff88; } .err { color: #ff4757; }
 ::-webkit-scrollbar { width: 8px; } ::-webkit-scrollbar-thumb { background: #2a3140; border-radius: 8px; }
+
+.hidden { display: none !important; }
+.banner { display: flex; align-items: center; justify-content: center; gap: 14px; padding: 8px 16px; background: #00ff8818; border-bottom: 1px solid #00ff8855; color: #e6edf3; font-size: 13px; }
+.slot { display: grid; grid-template-columns: 26px 1fr 1fr; gap: 6px; align-items: center; margin-bottom: 6px; }
+.slot .k { display: inline-flex; align-items: center; justify-content: center; height: 26px; border-radius: 6px; background: #0f1115; border: 1px solid #2a2f3a; font: 700 12px ui-monospace, monospace; color: #fff; }
+.slot.hit .k { border-color: #00ff88; color: #00ff88; box-shadow: 0 0 0 2px #00ff8833; }
+.slot input, .slot select, #as-adsmode { width: 100%; min-width: 0; background: #0f1115; border: 1px solid #2a2f3a; border-radius: 8px; padding: 5px 7px; color: #fff; font-size: 12px; }
+.mt-s { margin-top: 6px; }

@@ -1,0 +1,40 @@
+name: Test mise à jour automatique (Windows)
+
+on:
+  workflow_dispatch:
+    inputs:
+      from_tag:
+        description: 'Version installée au départ (tag de release)'
+        required: true
+        default: 'crosshair-v1.1.0'
+
+jobs:
+  update:
+    runs-on: windows-latest
+    steps:
+      - name: Installer l'ancienne version puis laisser l'appli se mettre à jour
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release download "${{ inputs.from_tag }}" --repo "${{ github.repository }}" --pattern 'AR2-Crosshair-Setup.exe' --dir old
+          Start-Process -FilePath "old\AR2-Crosshair-Setup.exe" -ArgumentList '/S' -Wait
+          $exe = Join-Path $env:LOCALAPPDATA 'Programs\AR2 Crosshair\AR2 Crosshair.exe'
+          $before = (Get-Item $exe).VersionInfo.ProductVersion
+          "Version installée au départ : $before"
+          $latest = (gh release view --repo "${{ github.repository }}" --json tagName -q .tagName)
+          "Dernière release : $latest"
+          $out = Join-Path $env:RUNNER_TEMP 'selftest.json'
+          $p = Start-Process -FilePath $exe -ArgumentList "--selftest=$out","--selftest-update" -PassThru
+          $p | Wait-Process -Timeout 400 -ErrorAction SilentlyContinue
+          Get-Content $out
+          # l'installeur silencieux tourne après la fermeture de l'appli
+          $deadline = (Get-Date).AddMinutes(4)
+          do {
+            Start-Sleep -Seconds 5
+            $after = (Get-Item $exe -ErrorAction SilentlyContinue).VersionInfo.ProductVersion
+          } while (($after -eq $before -or -not $after) -and (Get-Date) -lt $deadline)
+          "Version après mise à jour : $after"
+          $want = $latest -replace '^.*v',''
+          if ($after -ne $want) { throw "Mise à jour KO : $before -> $after (attendu $want)" }
+          "MISE À JOUR AUTOMATIQUE OK : $before -> $after"

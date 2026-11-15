@@ -15,25 +15,71 @@ jobs:
     defaults:
       run:
         working-directory: crosshair-app
+        shell: bash
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 20
       - run: npm ci
-      - name: Build installer + portable
-        run: npx electron-builder --win nsis portable --x64 --publish never
+      - name: Build installeur + portable + zip
+        run: npx electron-builder --win --x64 --publish never
         env:
           CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+      - run: ls -la dist
       - uses: actions/upload-artifact@v4
         with:
           name: ar2-crosshair-windows
           path: |
             crosshair-app/dist/*.exe
-      - name: Upload to release
-        if: startsWith(github.ref, 'refs/tags/')
-        shell: bash
+            crosshair-app/dist/*.zip
+            crosshair-app/dist/*.blockmap
+            crosshair-app/dist/latest.yml
+
+  selftest:
+    needs: build
+    runs-on: windows-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: ar2-crosshair-windows
+          path: dist
+      - name: Installation silencieuse + auto-test
+        shell: pwsh
+        run: |
+          Start-Process -FilePath "dist\AR2-Crosshair-Setup.exe" -ArgumentList '/S' -Wait
+          $exe = Join-Path $env:LOCALAPPDATA 'Programs\AR2 Crosshair\AR2 Crosshair.exe'
+          if (!(Test-Path $exe)) { Get-ChildItem "$env:LOCALAPPDATA\Programs" -Recurse -Depth 2 | Select-Object FullName; throw "exe introuvable" }
+          (Get-Item $exe).VersionInfo | Format-List ProductVersion, FileVersion
+          $out = Join-Path $env:RUNNER_TEMP 'selftest.json'
+          $p = Start-Process -FilePath $exe -ArgumentList "--selftest=$out" -PassThru
+          $p | Wait-Process -Timeout 300 -ErrorAction SilentlyContinue
+          if (!$p.HasExited) { $p | Stop-Process -Force }
+          Get-Content $out
+          $j = Get-Content $out | ConvertFrom-Json
+          if (-not $j.overlay.created) { throw "overlay non créé" }
+          if (-not $j.hook.started) { throw "détection clavier non démarrée: $($j.hook.error)" }
+          if (-not $j.switchOk) { throw "changement d'arme automatique KO" }
+          if ($j.update.state -eq "error") { Write-Warning "mise à jour: $($j.update.error)" }
+          "AUTO-TEST OK"
+
+  release:
+    needs: selftest
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: ar2-crosshair-windows
+          path: dist
+      - name: Publier la release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release upload "$GITHUB_REF_NAME" dist/AR2-Crosshair-Setup-*.exe dist/AR2-Crosshair-Portable-*.exe --clobber
+          TAG="$GITHUB_REF_NAME"
+          if ! gh release view "$TAG" >/dev/null 2>&1; then
+            gh release create "$TAG" --title "AR2 Crosshair ${TAG#crosshair-}" --notes-file crosshair-app/RELEASE_NOTES.md --latest
+          fi
+          gh release upload "$TAG" dist/*.exe dist/*.zip dist/*.blockmap dist/latest.yml --clobber
+          gh release edit "$TAG" --latest --draft=false

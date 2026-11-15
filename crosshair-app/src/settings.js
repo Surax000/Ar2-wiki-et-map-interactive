@@ -2,11 +2,11 @@
 const C = window.AR2Crosshair;
 // Mode démo (ouverture dans un navigateur, sans Electron)
 if (!window.xh) {
-    const st = { cfg: { active: 0, profiles: C.PRESETS.map(p => ({ name: p.name, settings: C.withDefaults(p.s) })), display: 0, hotkeys: { toggle: 'Control+Alt+X', settings: 'Control+Alt+S', nextProfile: 'Control+Alt+P', center: 'Control+Alt+C', up: 'Control+Alt+Up', down: 'Control+Alt+Down', left: 'Control+Alt+Left', right: 'Control+Alt+Right' }, startHidden: false, launchAtStartup: false, moveStep: 1 }, visible: true, displays: [{ i: 0, label: 'Écran 1 – 1920×1080 (principal)' }], version: '1.0.0' };
+    const st = { cfg: { active: 0, profiles: C.PRESETS.map((p, i) => ({ id: 'p' + i, name: p.name, settings: C.withDefaults(p.s) })), display: 0, autoUpdate: true, autoSwitch: { enabled: true, onlyRoblox: true, holsterHide: true, adsHide: false, adsMode: 'hold', slots: {}, labels: {} }, hotkeys: { toggle: 'Control+Alt+X', settings: 'Control+Alt+S', nextProfile: 'Control+Alt+P', center: 'Control+Alt+C', up: 'Control+Alt+Up', down: 'Control+Alt+Down', left: 'Control+Alt+Left', right: 'Control+Alt+Right' }, startHidden: false, launchAtStartup: false, moveStep: 1 }, visible: true, displays: [{ i: 0, label: 'Écran 1 – 1920×1080 (principal)' }], version: '1.1.0', update: { state: 'none', mode: 'auto', version: '1.1.0' }, hook: { started: true }, installed: true };
     const cur = () => st.cfg.profiles[st.cfg.active].settings;
     window.xh = {
         getState: async () => st, update: async p => { Object.assign(cur(), p); return st; },
-        setConfig: async p => { Object.assign(st.cfg, p); if (p.hotkeys) st.cfg.hotkeys = Object.assign({}, st.cfg.hotkeys, p.hotkeys); return { ...st, fails: [] }; },
+        setConfig: async p => { if (p.autoSwitch) { const a = p.autoSwitch; st.cfg.autoSwitch = Object.assign({}, st.cfg.autoSwitch, a, { slots: Object.assign({}, st.cfg.autoSwitch.slots, a.slots || {}), labels: Object.assign({}, st.cfg.autoSwitch.labels, a.labels || {}) }); delete p.autoSwitch; } Object.assign(st.cfg, p); if (p.hotkeys) st.cfg.hotkeys = Object.assign({}, st.cfg.hotkeys, p.hotkeys); return { ...st, fails: [] }; },
         profile: async ({ action, name, index, code }) => {
             if (action === 'add') { st.cfg.profiles.push({ name, settings: { ...cur() } }); st.cfg.active = st.cfg.profiles.length - 1; }
             if (action === 'rename') st.cfg.profiles[index].name = name;
@@ -14,7 +14,7 @@ if (!window.xh) {
             if (action === 'import') { st.cfg.profiles.push({ name, settings: C.withDefaults(C.fromCode(code)) }); st.cfg.active = st.cfg.profiles.length - 1; }
             return st;
         },
-        setVisible: async v => { st.visible = v; return st; }, openUrl: async () => {}, onState: () => {}, onSettings: () => {}
+        setVisible: async v => { st.visible = v; return st; }, openUrl: async () => {}, checkUpdate: async () => st, installUpdate: async () => false, onState: () => {}, onSettings: () => {}
     };
 }
 
@@ -81,7 +81,39 @@ function renderControls() {
 function renderHotkeys() {
     $('#hotkeys').innerHTML = Object.keys(HK_LABELS).map(k => `<div class="hk"><span>${HK_LABELS[k]}</span><input readonly data-hk="${k}" value="${(S.cfg.hotkeys[k] || '').replace(/Control/g, 'Ctrl')}"></div>`).join('');
 }
-function renderAll() { renderProfiles(); renderStyles(); renderControls(); renderHotkeys(); renderPreview(); }
+// ---------- Changement d'arme automatique ----------
+const W = window.AR2_WEAPONS || [];
+function suggestPreset(weapon) {
+    const w = W.find(x => x.n.toLowerCase() === String(weapon).trim().toLowerCase()); if (!w) return null;
+    const c = w.c;
+    const name = /Sniper|Précision/.test(c) ? 'Sniper' : /Pompe/.test(c) ? 'Cercle cyan' : /^Pistolets$|Revolvers/.test(c) ? 'Point rouge' : /PM|SMG|Mitrailleurs/.test(c) ? 'X magenta' : /Mitrailleuses/.test(c) ? 'Croix fine blanche' : 'AR2 vert (défaut)';
+    const p = S.cfg.profiles.find(x => x.name === name);
+    return p ? p.id : null;
+}
+function renderAuto() {
+    const a = S.cfg.autoSwitch || { slots: {}, labels: {} };
+    $('#as-enabled').checked = !!a.enabled; $('#as-roblox').checked = !!a.onlyRoblox;
+    $('#as-holster').checked = !!a.holsterHide; $('#as-ads').checked = !!a.adsHide; $('#as-adsmode').value = a.adsMode || 'hold';
+    if (!$('#weapon-list').children.length) $('#weapon-list').innerHTML = W.map(w => `<option value="${w.n}">${w.c}</option>`).join('');
+    const opts = (sel) => `<option value="">Ne rien changer</option>` + S.cfg.profiles.map(p => `<option value="${p.id}" ${p.id === sel ? 'selected' : ''}></option>`).join('') + `<option value="__hide" ${sel === '__hide' ? 'selected' : ''}>Masquer le crosshair</option>`;
+    const box = $('#slots');
+    if (document.activeElement && box.contains(document.activeElement)) { box.querySelectorAll('.slot').forEach(el => el.classList.toggle('hit', +el.dataset.slot === S.lastSlot)); return; }
+    box.innerHTML = '<div class="slot muted small"><span></span><span>Arme (facultatif)</span><span>Crosshair</span></div>' + [1, 2, 3, 4, 5, 6, 7, 8].map(n => `<div class="slot ${S.lastSlot === n ? 'hit' : ''}" data-slot="${n}"><span class="k">${n}</span><input list="weapon-list" data-wl="${n}" placeholder="ex : M4A1"><select data-ws="${n}">${opts(a.slots[n])}</select></div>`).join('');
+    box.querySelectorAll('[data-wl]').forEach(el => el.value = (a.labels || {})[el.dataset.wl] || '');
+    box.querySelectorAll('select[data-ws] option').forEach(o => { const p = S.cfg.profiles.find(x => x.id === o.value); if (p) o.textContent = p.name; });
+    const h = S.hook || {};
+    $('#as-status').innerHTML = h.started ? `Détection active${S.lastSlot ? ` • dernier emplacement : <b>${S.lastSlot}</b>` : ''}${S.shown === false && S.visible ? ' • crosshair masqué automatiquement' : ''}` : `<span class="err">Détection indisponible${h.error ? ' : ' + h.error : ''}</span>`;
+}
+function renderUpdate() {
+    const u = S.update || {}; const b = $('#upd-banner');
+    const txt = { checking: 'Recherche de mise à jour…', downloading: `Téléchargement de la v${u.version} (${u.percent || 0} %)…`, ready: `Mise à jour v${u.version} prête.`, available: `Nouvelle version v${u.version} disponible.`, none: `Tu as la dernière version (v${S.version}).`, error: `Erreur : ${u.error || ''}`, idle: '' }[u.state || 'idle'];
+    $('#upd-status').textContent = txt; $('#upd-status').className = 'small ' + (u.state === 'error' ? 'err' : u.state === 'ready' || u.state === 'none' ? 'ok' : 'muted');
+    $('#autoUpdate').checked = S.cfg.autoUpdate !== false;
+    const show = u.state === 'ready' || u.state === 'available';
+    b.classList.toggle('hidden', !show);
+    if (show) { $('#upd-text').textContent = txt + (u.state === 'ready' ? " Elle s'installera aussi toute seule à la fermeture de l'appli." : u.mode === 'manual' ? ' (version portable : télécharge la nouvelle version)' : ''); $('#upd-btn').textContent = u.state === 'ready' ? 'Redémarrer et installer' : 'Télécharger'; }
+}
+function renderAll() { renderProfiles(); renderStyles(); renderControls(); renderHotkeys(); renderAuto(); renderUpdate(); renderPreview(); }
 
 async function upd(partial) {
     Object.assign(cur(), partial);
@@ -147,3 +179,25 @@ document.addEventListener('keydown', async e => {
 xh.onState(s => { S = s; renderAll(); });
 window.addEventListener('resize', renderPreview);
 xh.getState().then(s => { S = s; renderAll(); });
+
+// Changement d'arme : événements
+const setAuto = async a => { S = await xh.setConfig({ autoSwitch: a }); renderAuto(); };
+$('#as-enabled').onchange = e => setAuto({ enabled: e.target.checked });
+$('#as-roblox').onchange = e => setAuto({ onlyRoblox: e.target.checked });
+$('#as-holster').onchange = e => setAuto({ holsterHide: e.target.checked });
+$('#as-ads').onchange = e => setAuto({ adsHide: e.target.checked });
+$('#as-adsmode').onchange = e => setAuto({ adsMode: e.target.value });
+$('#slots').addEventListener('change', e => {
+    const t = e.target;
+    if (t.dataset.ws) return setAuto({ slots: { [t.dataset.ws]: t.value || null } });
+    if (t.dataset.wl) {
+        const n = t.dataset.wl, a = { labels: { [n]: t.value.trim() } };
+        const sel = document.querySelector(`select[data-ws="${n}"]`);
+        if (sel && !sel.value) { const id = suggestPreset(t.value); if (id) { a.slots = { [n]: id }; sel.value = id; } }
+        t.blur(); setAuto(a);
+    }
+});
+// Mises à jour
+$('#autoUpdate').onchange = async e => { S = await xh.setConfig({ autoUpdate: e.target.checked }); renderUpdate(); };
+$('#upd-check').onclick = async () => { $('#upd-status').textContent = 'Recherche de mise à jour…'; S = await xh.checkUpdate(); renderUpdate(); };
+$('#upd-btn').onclick = () => xh.installUpdate();

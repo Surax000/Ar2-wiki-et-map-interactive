@@ -8,12 +8,13 @@
 </head>
 <body>
 <header class="top">
-    <div class="brand"><img src="assets/icon.png" alt=""><div><b>AR2 Crosshair</b><span id="ver">v1.0.0</span></div></div>
+    <div class="brand"><img src="assets/icon.png" alt=""><div><b>AR2 Crosshair</b><span id="ver">v1.1.0</span></div></div>
     <div class="top-actions">
         <button id="vis-btn" class="btn primary">Crosshair affiché</button>
         <span class="hint">Ctrl+Alt+X afficher / masquer • Ctrl+Alt+S réglages • Ctrl+Alt+flèches déplacer</span>
     </div>
 </header>
+<div id="upd-banner" class="banner hidden"><span id="upd-text"></span><button id="upd-btn" class="btn sm primary">Redémarrer et installer</button></div>
 <main class="layout">
     <!-- Profils -->
     <aside class="panel profiles">
@@ -85,6 +86,17 @@
             <div class="field"><label>Décalage vertical <b data-v="offsetY"></b></label><input type="range" min="-400" max="400" step="1" data-k="offsetY"></div>
             <div class="field row gap"><button id="center" class="btn sm">Recentrer</button><label class="muted">Pas des flèches</label><input id="step" type="number" min="1" max="50" class="num"></div>
         </details>
+        <details open id="auto-box"><summary>Changement d'arme automatique</summary>
+            <p class="muted small">Quand tu appuies sur une touche de la barre rapide d'AR2 (1 à 8), l'appli met le crosshair choisi pour cette arme. L'appli écoute seulement le clavier et la souris, sans rien bloquer ni lire dans le jeu.</p>
+            <div class="field"><label class="tog"><input type="checkbox" id="as-enabled"> Activer le changement automatique</label></div>
+            <div class="field"><label class="tog"><input type="checkbox" id="as-roblox"> Seulement quand Roblox est au premier plan</label></div>
+            <div id="slots"></div>
+            <datalist id="weapon-list"></datalist>
+            <div class="field"><label class="tog"><input type="checkbox" id="as-holster"> Masquer quand je range l'arme (V)</label></div>
+            <div class="field"><label class="tog"><input type="checkbox" id="as-ads"> Masquer pendant la visée (clic droit)</label>
+                <select id="as-adsmode" class="mt-s"><option value="hold">Clic droit maintenu</option><option value="toggle">Clic droit en bascule</option></select></div>
+            <div id="as-status" class="small muted"></div>
+        </details>
         <details><summary>Raccourcis clavier</summary>
             <p class="muted small">Clique dans une case puis appuie sur ta combinaison (ex : Ctrl+Alt+X). Échap pour annuler.</p>
             <div id="hotkeys"></div>
@@ -93,11 +105,14 @@
         <details><summary>Général</summary>
             <div class="field"><label class="tog"><input type="checkbox" id="startHidden"> Démarrer avec le crosshair masqué</label></div>
             <div class="field"><label class="tog"><input type="checkbox" id="launchAtStartup"> Lancer au démarrage de Windows</label></div>
+            <div class="field"><label class="tog"><input type="checkbox" id="autoUpdate"> Mises à jour automatiques</label></div>
+            <div class="field row gap"><button id="upd-check" class="btn sm">Vérifier maintenant</button><span id="upd-status" class="small muted"></span></div>
             <p class="muted small">Roblox : joue en plein écran (F11) ou en fenêtré. Le crosshair est une fenêtre Windows au premier plan, rien n'est injecté dans le jeu. Fermer cette fenêtre laisse l'appli tourner dans la zone de notification (près de l'horloge).</p>
         </details>
     </section>
 </main>
 <script src="crosshair-core.js"></script>
+<script src="weapons.js"></script>
 <script src="settings.js"></script>
 </body>
 </html>

@@ -1,14 +1,14 @@
 {
   "name": "ar2-crosshair",
   "productName": "AR2 Crosshair",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Crosshair personnalisable affiché par-dessus tes jeux (Roblox, Apocalypse Rising 2...). Overlay transparent, aucune injection.",
   "main": "src/main.js",
   "author": "Surax000",
   "license": "MIT",
   "scripts": {
     "start": "electron .",
-    "dist": "electron-builder --win nsis portable --x64"
+    "dist": "electron-builder --win --x64"
   },
   "devDependencies": {
     "electron": "^33.2.0",
@@ -18,12 +18,23 @@
     "appId": "com.ar2.crosshair",
     "productName": "AR2 Crosshair",
     "copyright": "Surax000",
-    "directories": { "output": "dist", "buildResources": "build" },
-    "files": ["src/**/*", "package.json"],
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "src/**/*",
+      "package.json"
+    ],
     "win": {
       "icon": "build/icon.ico",
-      "signAndEditExecutable": true,
-      "artifactName": "AR2-Crosshair-${version}-${arch}-${target}.${ext}"
+      "signAndEditExecutable": false,
+      "artifactName": "AR2-Crosshair-Windows.${ext}",
+      "target": [
+        "nsis",
+        "portable",
+        "zip"
+      ]
     },
     "nsis": {
       "oneClick": false,
@@ -32,12 +43,34 @@
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
       "shortcutName": "AR2 Crosshair",
-      "artifactName": "AR2-Crosshair-Setup-${version}.${ext}",
-      "installerLanguages": ["fr_FR"],
+      "artifactName": "AR2-Crosshair-Setup.${ext}",
+      "installerLanguages": [
+        "fr_FR"
+      ],
       "language": "1036"
     },
     "portable": {
-      "artifactName": "AR2-Crosshair-Portable-${version}.${ext}"
+      "artifactName": "AR2-Crosshair-Portable.${ext}"
+    },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "Surax000",
+        "repo": "Ar2-wiki-et-map-interactive",
+        "releaseType": "release"
+      }
+    ],
+    "linux": {
+      "target": [
+        "AppImage"
+      ],
+      "artifactName": "AR2-Crosshair-Linux.${ext}",
+      "category": "Utility"
     }
+  },
+  "dependencies": {
+    "electron-updater": "^6.8.11",
+    "koffi": "^3.3.8",
+    "uiohook-napi": "^1.5.5"
   }
 }
