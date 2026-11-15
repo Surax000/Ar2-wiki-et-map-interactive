@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:">
+<title>AR2 Crosshair – Réglages</title>
+<link rel="stylesheet" href="settings.css">
+</head>
+<body>
+<header class="top">
+    <div class="brand"><img src="assets/icon.png" alt=""><div><b>AR2 Crosshair</b><span id="ver">v1.0.0</span></div></div>
+    <div class="top-actions">
+        <button id="vis-btn" class="btn primary">Crosshair affiché</button>
+        <span class="hint">Ctrl+Alt+X afficher / masquer • Ctrl+Alt+S réglages • Ctrl+Alt+flèches déplacer</span>
+    </div>
+</header>
+<main class="layout">
+    <!-- Profils -->
+    <aside class="panel profiles">
+        <h3>Profils</h3>
+        <div id="profile-list" class="plist"></div>
+        <div class="row gap wrap">
+            <button id="p-add" class="btn sm">Nouveau</button>
+            <button id="p-rename" class="btn sm">Renommer</button>
+            <button id="p-del" class="btn sm danger">Supprimer</button>
+        </div>
+        <h3 class="mt">Code de partage</h3>
+        <p class="muted">Copie le code de ton crosshair pour le partager, ou colle un code créé sur le site AR2 Armory.</p>
+        <div class="row gap"><input id="code-out" readonly><button id="code-copy" class="btn sm">Copier</button></div>
+        <div class="row gap"><input id="code-in" placeholder="Colle un code AR2X-…"><button id="code-import" class="btn sm">Importer</button></div>
+        <div id="code-msg" class="muted small"></div>
+        <button id="p-reset" class="btn sm ghost mt">Remettre les profils d'origine</button>
+    </aside>
+
+    <!-- Aperçu -->
+    <section class="panel preview-panel">
+        <div class="row between">
+            <h3>Aperçu</h3>
+            <div class="row gap" id="bg-btns">
+                <button class="chip" data-bg="game">Jeu</button>
+                <button class="chip" data-bg="dark">Sombre</button>
+                <button class="chip" data-bg="light">Clair</button>
+                <button class="chip" data-bg="sky">Ciel</button>
+                <span class="sep"></span>
+                <button class="chip" data-zoom="1">x1</button>
+                <button class="chip" data-zoom="3">x3</button>
+            </div>
+        </div>
+        <div class="preview"><canvas id="pv"></canvas></div>
+        <div class="row gap wrap mt" id="styles"></div>
+    </section>
+
+    <!-- Réglages -->
+    <section class="panel controls" id="controls">
+        <details open><summary>Couleur</summary>
+            <div class="field"><label>Couleur</label><div class="row gap"><input type="color" data-k="color"><div id="swatches" class="row gap wrap"></div></div></div>
+            <div class="field"><label>Opacité <b data-v="opacity"></b></label><input type="range" min="0.1" max="1" step="0.05" data-k="opacity"></div>
+        </details>
+        <details open><summary>Dimensions</summary>
+            <div class="field"><label>Longueur des branches <b data-v="length"></b></label><input type="range" min="0" max="60" step="0.5" data-k="length"></div>
+            <div class="field"><label>Épaisseur <b data-v="thickness"></b></label><input type="range" min="0.5" max="12" step="0.5" data-k="thickness"></div>
+            <div class="field"><label>Écart au centre <b data-v="gap"></b></label><input type="range" min="0" max="40" step="0.5" data-k="gap"></div>
+            <div class="field"><label>Taille du point <b data-v="dotSize"></b></label><input type="range" min="0.5" max="12" step="0.5" data-k="dotSize"></div>
+            <div class="field"><label>Rayon du cercle <b data-v="circleRadius"></b></label><input type="range" min="2" max="80" step="0.5" data-k="circleRadius"></div>
+            <div class="field"><label>Échelle globale <b data-v="scale"></b></label><input type="range" min="0.5" max="4" step="0.1" data-k="scale"></div>
+            <div class="field"><label>Rotation <b data-v="rotation"></b></label><input type="range" min="0" max="180" step="1" data-k="rotation"></div>
+            <div class="field"><label>Branches visibles</label>
+                <div class="row gap wrap">
+                    <label class="tog"><input type="checkbox" data-k="armTop"> Haut</label>
+                    <label class="tog"><input type="checkbox" data-k="armBottom"> Bas</label>
+                    <label class="tog"><input type="checkbox" data-k="armLeft"> Gauche</label>
+                    <label class="tog"><input type="checkbox" data-k="armRight"> Droite</label>
+                </div>
+            </div>
+        </details>
+        <details open><summary>Contour et lueur</summary>
+            <div class="field"><label class="tog"><input type="checkbox" data-k="outline"> Contour</label></div>
+            <div class="field row gap"><input type="color" data-k="outlineColor"><div class="grow"><label>Épaisseur du contour <b data-v="outlineWidth"></b></label><input type="range" min="0.5" max="5" step="0.5" data-k="outlineWidth"></div></div>
+            <div class="field"><label class="tog"><input type="checkbox" data-k="glow"> Lueur (glow)</label></div>
+            <div class="field row gap"><input type="color" data-k="glowColor"><div class="grow"><label>Intensité <b data-v="glowSize"></b></label><input type="range" min="1" max="30" step="1" data-k="glowSize"></div></div>
+        </details>
+        <details open><summary>Position</summary>
+            <div class="field"><label>Écran</label><select id="display"></select></div>
+            <div class="field"><label>Décalage horizontal <b data-v="offsetX"></b></label><input type="range" min="-400" max="400" step="1" data-k="offsetX"></div>
+            <div class="field"><label>Décalage vertical <b data-v="offsetY"></b></label><input type="range" min="-400" max="400" step="1" data-k="offsetY"></div>
+            <div class="field row gap"><button id="center" class="btn sm">Recentrer</button><label class="muted">Pas des flèches</label><input id="step" type="number" min="1" max="50" class="num"></div>
+        </details>
+        <details><summary>Raccourcis clavier</summary>
+            <p class="muted small">Clique dans une case puis appuie sur ta combinaison (ex : Ctrl+Alt+X). Échap pour annuler.</p>
+            <div id="hotkeys"></div>
+            <div id="hk-msg" class="small"></div>
+        </details>
+        <details><summary>Général</summary>
+            <div class="field"><label class="tog"><input type="checkbox" id="startHidden"> Démarrer avec le crosshair masqué</label></div>
+            <div class="field"><label class="tog"><input type="checkbox" id="launchAtStartup"> Lancer au démarrage de Windows</label></div>
+            <p class="muted small">Roblox : joue en plein écran (F11) ou en fenêtré. Le crosshair est une fenêtre Windows au premier plan, rien n'est injecté dans le jeu. Fermer cette fenêtre laisse l'appli tourner dans la zone de notification (près de l'horloge).</p>
+        </details>
+    </section>
+</main>
+<script src="crosshair-core.js"></script>
+<script src="settings.js"></script>
+</body>
+</html>

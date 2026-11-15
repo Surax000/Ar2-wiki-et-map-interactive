@@ -1,0 +1,43 @@
+{
+  "name": "ar2-crosshair",
+  "productName": "AR2 Crosshair",
+  "version": "1.0.0",
+  "description": "Crosshair personnalisable affiché par-dessus tes jeux (Roblox, Apocalypse Rising 2...). Overlay transparent, aucune injection.",
+  "main": "src/main.js",
+  "author": "Surax000",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --win nsis portable --x64"
+  },
+  "devDependencies": {
+    "electron": "^33.2.0",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "com.ar2.crosshair",
+    "productName": "AR2 Crosshair",
+    "copyright": "Surax000",
+    "directories": { "output": "dist", "buildResources": "build" },
+    "files": ["src/**/*", "package.json"],
+    "win": {
+      "icon": "build/icon.ico",
+      "signAndEditExecutable": false,
+      "artifactName": "AR2-Crosshair-${version}-${arch}-${target}.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "perMachine": false,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "AR2 Crosshair",
+      "artifactName": "AR2-Crosshair-Setup-${version}.${ext}",
+      "installerLanguages": ["fr_FR"],
+      "language": "1036"
+    },
+    "portable": {
+      "artifactName": "AR2-Crosshair-Portable-${version}.${ext}"
+    }
+  }
+}
