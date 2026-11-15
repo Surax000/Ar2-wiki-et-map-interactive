@@ -20,10 +20,16 @@ jobs:
           gh release download "${{ inputs.from_tag }}" --repo "${{ github.repository }}" --pattern 'AR2-Crosshair-Setup.exe' --dir old
           Start-Process -FilePath "old\AR2-Crosshair-Setup.exe" -ArgumentList '/S' -Wait
           $exe = Join-Path $env:LOCALAPPDATA 'Programs\AR2 Crosshair\AR2 Crosshair.exe'
-          $before = (Get-Item $exe).VersionInfo.ProductVersion
-          "Version installée au départ : $before"
+          function Get-AppVersion {
+            $k = Get-ChildItem 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall' -ErrorAction SilentlyContinue |
+              Get-ItemProperty -ErrorAction SilentlyContinue | Where-Object { $_.DisplayName -like 'AR2 Crosshair*' } | Select-Object -First 1
+            if ($k) { return [string]$k.DisplayVersion } else { return $null }
+          }
+          $before = Get-AppVersion
+          "Version installée au départ (registre) : $before"
           $latest = (gh release view --repo "${{ github.repository }}" --json tagName -q .tagName)
           "Dernière release : $latest"
+          $want = $latest -replace '^.*v',''
           $out = Join-Path $env:RUNNER_TEMP 'selftest.json'
           $p = Start-Process -FilePath $exe -ArgumentList "--selftest=$out","--selftest-update" -PassThru
           $p | Wait-Process -Timeout 400 -ErrorAction SilentlyContinue
@@ -32,9 +38,17 @@ jobs:
           $deadline = (Get-Date).AddMinutes(4)
           do {
             Start-Sleep -Seconds 5
-            $after = (Get-Item $exe -ErrorAction SilentlyContinue).VersionInfo.ProductVersion
-          } while (($after -eq $before -or -not $after) -and (Get-Date) -lt $deadline)
-          "Version après mise à jour : $after"
-          $want = $latest -replace '^.*v',''
-          if ($after -ne $want) { throw "Mise à jour KO : $before -> $after (attendu $want)" }
-          "MISE À JOUR AUTOMATIQUE OK : $before -> $after"
+            $after = Get-AppVersion
+          } while ($after -ne $want -and (Get-Date) -lt $deadline)
+          "Version après mise à jour (registre) : $after"
+          Start-Sleep -Seconds 5
+          Get-Process -Name 'AR2 Crosshair' -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
+          Start-Sleep -Seconds 2
+          # relance de l'appli mise à jour : elle doit annoncer la nouvelle version
+          $out2 = Join-Path $env:RUNNER_TEMP 'selftest2.json'
+          $p2 = Start-Process -FilePath $exe -ArgumentList "--selftest=$out2" -PassThru
+          $p2 | Wait-Process -Timeout 120 -ErrorAction SilentlyContinue
+          $j = Get-Content $out2 -Raw | ConvertFrom-Json
+          "Version annoncée par l'appli relancée : $($j.version) (switchOk=$($j.switchOk))"
+          if ($after -ne $want -or $j.version -ne $want) { throw "Mise à jour KO : $before -> $after / appli $($j.version) (attendu $want)" }
+          "MISE À JOUR AUTOMATIQUE OK : $before -> $($j.version)"
