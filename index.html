@@ -48,6 +48,26 @@
         .route-dash { animation: routeflow 1.2s linear infinite; }
         @keyframes routeflow { to { stroke-dashoffset: -32; } }
         .map-route:hover path.route-dash { filter: brightness(1.3); }
+        .xh-h { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .12em; color: #8b949e; margin-bottom: 8px; }
+        .xh-row { display: flex; flex-direction: column; gap: 6px; font-size: 12px; color: #c9d1d9; margin-bottom: 10px; }
+        .xh-row input[type=range] { width: 100%; accent-color: #00ff88; }
+        .xh-in { background: #0f1115; border: 1px solid #2a2f3a; border-radius: 8px; padding: 6px 8px; color: #fff; outline: none; min-width: 0; }
+        .xh-in:focus { border-color: #00ff88; }
+        .xh-btn { padding: 6px 10px; border-radius: 8px; border: 1px solid #2a2f3a; background: #1a1e25; color: #fff; font-size: 11px; font-weight: 700; white-space: nowrap; }
+        .xh-btn:hover { border-color: #00ff88; }
+        .xh-dl { padding: 9px 14px; border-radius: 10px; border: 1px solid #2a2f3a; background: #1a1e25; color: #fff; font-size: 12px; font-weight: 800; }
+        .xh-dl:hover { border-color: #00ff88; }
+        .xh-dl.primary { background: #00ff88; border-color: #00ff88; color: #0b0f14; }
+        .xh-dl.primary:hover { filter: brightness(1.1); }
+        .xh-preset { display: flex; align-items: center; gap: 8px; width: 100%; padding: 6px 8px; border-radius: 10px; border: 1px solid transparent; font-size: 12px; color: #c9d1d9; text-align: left; }
+        .xh-preset:hover { background: #0f1115; border-color: #2a2f3a; color: #fff; }
+        .xh-preset canvas { width: 26px; height: 26px; background: #0b0f14; border-radius: 6px; flex: none; }
+        .xh-style { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 4px; border-radius: 10px; border: 1px solid #2a2f3a; background: #0f1115; font-size: 10px; color: #c9d1d9; }
+        .xh-style canvas { width: 34px; height: 34px; }
+        .xh-style:hover { border-color: #00ff8899; }
+        .xh-style.active { border-color: #00ff88; background: #00ff8814; color: #fff; }
+        .xh-color { width: 34px; height: 26px; border: 1px solid #2a2f3a; border-radius: 6px; background: none; padding: 0; }
+        .xh-sw { width: 18px; height: 18px; border-radius: 5px; border: 1px solid #2a2f3a; }
         .cr-kind-btn { padding: 10px 12px; border-radius: 12px; border: 1px solid #2a2f3a; background: #0f1115; color: #8b949e; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; transition: all .15s; }
         .cr-kind-btn:hover { color: #fff; border-color: #e5c07b88; }
         .cr-kind-btn.active { background: #e5c07b; color: #0b0f14; border-color: #e5c07b; }
@@ -264,6 +284,68 @@
                     <div class="absolute bottom-3 left-3 text-[10px] font-mono text-tactical-muted bg-tactical-card/80 px-2 py-1 rounded pointer-events-none">Carte nature • quadrillage A–F / 1–6 • estimation, pas une garantie</div>
                 </div>
                 <aside id="fi-info" class="bg-tactical-card border border-tactical-border rounded-2xl p-5 self-start"></aside>
+            </div>
+        </section>
+        <section id="crosshair-section" class="hidden pb-10">
+            <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-4 mb-5">
+                <div>
+                    <h2 class="text-2xl font-extrabold text-white tracking-tight">Crosshair</h2>
+                    <p class="text-xs text-tactical-muted mt-1 max-w-3xl">Installe <b class="text-white">AR2 Crosshair</b>, une petite appli Windows qui affiche un viseur personnalisé par-dessus Roblox. Crée ton crosshair ci-dessous, copie son code et colle-le dans l'appli (bouton « Importer »).</p>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    <a id="xh-dl-setup" href="https://github.com/Surax000/Ar2-wiki-et-map-interactive/releases/download/crosshair-v1.0.0/AR2-Crosshair-Setup-1.0.0.exe" class="xh-dl primary">Télécharger l'installeur (.exe)</a>
+                    <a href="https://github.com/Surax000/Ar2-wiki-et-map-interactive/releases/download/crosshair-v1.0.0/AR2-Crosshair-Portable-1.0.0.exe" class="xh-dl">Version portable</a>
+                    <a href="https://github.com/Surax000/Ar2-wiki-et-map-interactive/releases/download/crosshair-v1.0.0/AR2-Crosshair-Windows-1.0.0.zip" class="xh-dl">Version .zip</a>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 xl:grid-cols-[260px_1fr_340px] gap-5">
+                <aside class="bg-tactical-card border border-tactical-border rounded-2xl p-4 self-start">
+                    <div class="xh-h">Modèles</div>
+                    <div id="xh-presets" class="space-y-1"></div>
+                    <div class="xh-h mt-5">Code de partage</div>
+                    <p class="text-[11px] text-tactical-muted mb-2">Colle ce code dans l'appli (Réglages &gt; Code de partage &gt; Importer).</p>
+                    <div class="flex gap-2 mb-2">
+                        <input id="xh-code" readonly class="xh-in flex-1 font-mono text-[11px]">
+                        <button id="xh-copy" class="xh-btn">Copier</button>
+                    </div>
+                    <div class="flex gap-2">
+                        <input id="xh-code-in" placeholder="Colle un code AR2X-..." class="xh-in flex-1 font-mono text-[11px]">
+                        <button id="xh-import" class="xh-btn">Charger</button>
+                    </div>
+                    <div id="xh-msg" class="text-[11px] mt-2 h-4"></div>
+                </aside>
+                <div class="space-y-4">
+                    <div class="bg-tactical-card border border-tactical-border rounded-2xl p-4">
+                        <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+                            <div class="xh-h !mb-0">Aperçu</div>
+                            <div id="xh-bgs" class="flex flex-wrap gap-1.5"></div>
+                        </div>
+                        <canvas id="xh-canvas" class="w-full rounded-xl border border-tactical-border block" style="aspect-ratio:16/9"></canvas>
+                    </div>
+                    <div class="bg-tactical-card border border-tactical-border rounded-2xl p-4">
+                        <div class="xh-h">Style</div>
+                        <div id="xh-styles" class="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-2"></div>
+                    </div>
+                    <div class="bg-tactical-card border border-tactical-border rounded-2xl p-5">
+                        <div class="xh-h">Installer et utiliser l'appli</div>
+                        <ol class="text-xs text-tactical-text space-y-1.5 list-decimal pl-4">
+                            <li>Télécharge l'installeur et lance-le. Windows SmartScreen peut afficher un avertissement car l'appli n'est pas signée : clique sur <b>Informations complémentaires</b> puis <b>Exécuter quand même</b>.</li>
+                            <li>L'appli démarre avec le crosshair au centre de l'écran et une icône près de l'horloge (clic droit : profils, recentrer, quitter).</li>
+                            <li>Lance Roblox en <b>plein écran (F11)</b> ou en fenêtré : le crosshair reste par-dessus. Les clics passent au travers.</li>
+                            <li>Pour utiliser un crosshair créé ici : copie le code, ouvre les réglages (<span class="font-mono">Ctrl+Alt+S</span>) et colle-le dans « Code de partage ».</li>
+                        </ol>
+                        <div class="grid sm:grid-cols-2 gap-x-6 gap-y-1 mt-4 text-[11px] font-mono text-tactical-muted">
+                            <div><span class="text-white">Ctrl+Alt+X</span> afficher / masquer</div>
+                            <div><span class="text-white">Ctrl+Alt+S</span> ouvrir les réglages</div>
+                            <div><span class="text-white">Ctrl+Alt+P</span> profil suivant</div>
+                            <div><span class="text-white">Ctrl+Alt+C</span> recentrer</div>
+                            <div><span class="text-white">Ctrl+Alt+flèches</span> déplacer au pixel près</div>
+                            <div>Raccourcis modifiables dans l'appli</div>
+                        </div>
+                        <p class="text-[11px] text-tactical-muted mt-4 border-t border-tactical-border pt-3">L'appli est une simple fenêtre transparente posée au-dessus du jeu : elle ne touche pas à Roblox (pas d'injection, pas de lecture de la mémoire), comme <a class="underline hover:text-white" href="https://crossover.lacy.sh/" target="_blank" rel="noopener">CrossOver</a>. Aucun outil de ce type ne peut garantir à 100 % qu'un anti-triche ne réagira jamais, mais ce principe est celui des overlays de crosshair utilisés couramment. Code source : <a class="underline hover:text-white" href="https://github.com/Surax000/Ar2-wiki-et-map-interactive/tree/main/crosshair-app" target="_blank" rel="noopener">crosshair-app</a>.</p>
+                    </div>
+                </div>
+                <aside id="xh-controls" class="bg-tactical-card border border-tactical-border rounded-2xl p-5 self-start space-y-4"></aside>
             </div>
         </section>
         <!-- ===================== CRÉATEUR D'ARMES ===================== -->
@@ -841,7 +923,8 @@
               subs: ['Nourriture', 'Boissons', 'Items de Soin', 'Survie'] },
             { id: 'carte',       label: 'Carte',                  icon: 'map',  color: '#a78bfa', subs: [] },
             { id: 'finditem',    label: 'Find Item',              icon: 'search', color: '#38bdf8', subs: [] },
-            { id: 'createur',    label: 'Créer une arme / explosif', icon: 'plus', color: '#e5c07b', subs: [] }
+            { id: 'createur',    label: 'Créer une arme / explosif', icon: 'plus', color: '#e5c07b', subs: [] },
+            { id: 'crosshair',   label: 'Crosshair',              icon: 'crosshair', color: '#00ff88', subs: [] }
         ];
 
         // Couleurs des sous-catégories non-armes
@@ -1221,6 +1304,7 @@
                 case 'eye':  return `<svg ${st}><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>`;
                 case 'map':  return `<svg ${st}><path d="M9 4L3 6v14l6-2 6 2 6-2V4l-6 2-6-2z"/><path d="M9 4v14M15 6v14"/></svg>`;
                 case 'search': return `<svg ${st}><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>`;
+                case 'crosshair': return `<svg ${st}><circle cx="12" cy="12" r="7"/><path d="M12 2v5M12 17v5M2 12h5M17 12h5"/></svg>`;
                 case 'plus': return `<svg ${st}><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M12 8v8M8 12h8"/></svg>`;
                 case 'box':  return `<svg ${st}><path d="M21 8l-9-5-9 5v8l9 5 9-5V8z"/><path d="M3 8l9 5 9-5M12 13v8"/></svg>`;
                 default:     return `<svg ${st}><path d="M10.3 3.9L1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg>`;
@@ -1231,7 +1315,7 @@
         function renderMainTabs() {
             document.getElementById('main-tabs').innerHTML = GROUPS.map(g => {
                 const active = g.id === currentGroup;
-                const count = g.id === 'carte' ? (typeof MAP_COUNT !== 'undefined' ? MAP_COUNT : 0) : g.id === 'createur' ? ALL_ITEMS.filter(i => i.custom).length : g.id === 'finditem' ? ALL_ITEMS.length : ALL_ITEMS.filter(i => i.group === g.id).length;
+                const count = g.id === 'carte' ? (typeof MAP_COUNT !== 'undefined' ? MAP_COUNT : 0) : g.id === 'createur' ? ALL_ITEMS.filter(i => i.custom).length : g.id === 'finditem' ? ALL_ITEMS.length : g.id === 'crosshair' ? (window.AR2Crosshair ? Object.keys(window.AR2Crosshair.STYLES).length : 11) : ALL_ITEMS.filter(i => i.group === g.id).length;
                 return `
                     <button data-group="${g.id}" class="flex items-center gap-2.5 px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider border transition-all ${
                         active ? 'bg-tactical-accent text-tactical-bg border-tactical-accent shadow-lg shadow-tactical-accent/10'
@@ -2226,17 +2310,19 @@
 
         // Bascule catalogue <-> carte
         function onGroupChange() {
-            const isMap = currentGroup === 'carte', isCreator = currentGroup === 'createur', isFind = currentGroup === 'finditem';
-            const special = isMap || isCreator || isFind;
+            const isMap = currentGroup === 'carte', isCreator = currentGroup === 'createur', isFind = currentGroup === 'finditem', isXh = currentGroup === 'crosshair';
+            const special = isMap || isCreator || isFind || isXh;
             document.body.classList.toggle('map-mode', special);
             document.getElementById('map-section').classList.toggle('hidden', !isMap);
             document.getElementById('creator-section').classList.toggle('hidden', !isCreator);
             document.getElementById('find-section').classList.toggle('hidden', !isFind);
+            document.getElementById('crosshair-section').classList.toggle('hidden', !isXh);
             document.querySelectorAll('.catalog-only').forEach(el => el.classList.toggle('hidden', special));
             if (special) document.getElementById('empty-state').classList.add('hidden');
             if (isMap) { setupMap(); renderMapLegend(); drawMap(); }
             if (isCreator && typeof crRenderMinimap === 'function') { crRenderMinimap(); crRenderList(); }
             if (isFind && typeof fiRender === 'function') fiRender();
+            if (isXh && typeof xhRender === 'function') xhRender();
         }
     </script>
     <script>
@@ -3011,6 +3097,233 @@
                 const z = e.target.closest('[data-fi-zone]'); if (z) { fiFocus = fiFocus === z.dataset.fiZone ? null : z.dataset.fiZone; fiRenderMap(); fiRenderInfo(); }
             });
         });
+    </script>
+
+    <script>
+/* AR2 Crosshair – moteur de dessin partagé (appli + site web) */
+(function (root) {
+    const DEFAULTS = {
+        style: 'crossdot',      // cross | crossdot | dot | circle | circlecross | circledot | tshape | x | chevron | square | triangle
+        color: '#00ff88',
+        opacity: 1,
+        length: 8,              // longueur des branches (px)
+        thickness: 2,           // épaisseur (px)
+        gap: 4,                 // écart au centre (px)
+        dotSize: 2,             // rayon du point central (px)
+        circleRadius: 10,       // rayon du cercle (px)
+        outline: true,
+        outlineColor: '#000000',
+        outlineWidth: 1,
+        glow: false,
+        glowColor: '#00ff88',
+        glowSize: 6,
+        rotation: 0,            // degrés
+        scale: 1,
+        armTop: true, armBottom: true, armLeft: true, armRight: true,
+        offsetX: 0, offsetY: 0  // décalage depuis le centre de l'écran (px)
+    };
+    const STYLES = {
+        cross: 'Croix', crossdot: 'Croix + point', dot: 'Point', circle: 'Cercle', circlecross: 'Cercle + croix',
+        circledot: 'Cercle + point', tshape: 'T (sans haut)', x: 'Croix en X', chevron: 'Chevron', square: 'Carré', triangle: 'Triangle'
+    };
+    const PRESETS = [
+        { name: 'AR2 vert (défaut)', s: {} },
+        { name: 'Point rouge', s: { style: 'dot', color: '#ff2d55', dotSize: 3, glow: true, glowColor: '#ff2d55' } },
+        { name: 'Croix fine blanche', s: { style: 'cross', color: '#ffffff', length: 6, thickness: 1, gap: 3 } },
+        { name: 'Cercle cyan', s: { style: 'circledot', color: '#22d3ee', circleRadius: 12, thickness: 2, dotSize: 1.5 } },
+        { name: 'Sniper', s: { style: 'circlecross', color: '#facc15', circleRadius: 22, length: 14, gap: 6, thickness: 1.5 } },
+        { name: 'T compétitif', s: { style: 'tshape', color: '#a3e635', length: 7, thickness: 2, gap: 3 } },
+        { name: 'Chevron orange', s: { style: 'chevron', color: '#fb923c', length: 10, thickness: 2.5 } },
+        { name: 'X magenta', s: { style: 'x', color: '#e879f9', length: 7, gap: 2, thickness: 2 } }
+    ];
+
+    function withDefaults(s) { return Object.assign({}, DEFAULTS, s || {}); }
+
+    function hexA(hex, a) {
+        const h = String(hex || '#000').replace('#', '');
+        const f = h.length === 3 ? h.split('').map(c => c + c).join('') : h.padEnd(6, '0');
+        const n = parseInt(f.slice(0, 6), 16);
+        return `rgba(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255},${a})`;
+    }
+
+    // Dessine le crosshair centré en (cx, cy)
+    function draw(ctx, cx, cy, settings) {
+        const s = withDefaults(settings);
+        const k = Math.max(0.1, Number(s.scale) || 1);
+        const L = s.length * k, T = s.thickness * k, G = s.gap * k, D = s.dotSize * k, R = s.circleRadius * k, O = s.outline ? s.outlineWidth * k : 0;
+        const shapes = []; // {type:'rect'|'circle'|'ring'|'poly', ...}
+        const rect = (x, y, w, h) => shapes.push({ type: 'rect', x, y, w, h });
+        const arms = (diag) => {
+            const h = T / 2;
+            if (s.armRight) rect(G, -h, L, T);
+            if (s.armLeft) rect(-G - L, -h, L, T);
+            if (s.armBottom) rect(-h, G, T, L);
+            if (s.armTop && !diag) rect(-h, -G - L, T, L);
+        };
+        const dot = () => shapes.push({ type: 'circle', r: D });
+        const ring = () => shapes.push({ type: 'ring', r: R, w: T });
+        let rot = s.rotation || 0;
+        switch (s.style) {
+            case 'cross': arms(); break;
+            case 'crossdot': arms(); dot(); break;
+            case 'dot': dot(); break;
+            case 'circle': ring(); break;
+            case 'circlecross': ring(); arms(); break;
+            case 'circledot': ring(); dot(); break;
+            case 'tshape': { const h = T / 2; rect(G, -h, L, T); rect(-G - L, -h, L, T); rect(-h, G, T, L); dot(); break; }
+            case 'x': arms(); rot += 45; break;
+            case 'chevron': shapes.push({ type: 'poly', pts: [[-L, L * 0.8], [0, 0], [L, L * 0.8]], w: T }); break;
+            case 'square': shapes.push({ type: 'sq', r: R * 0.7, w: T }); dot(); break;
+            case 'triangle': shapes.push({ type: 'poly', pts: [[0, -R], [R * 0.87, R * 0.5], [-R * 0.87, R * 0.5], [0, -R]], w: T }); break;
+            default: arms(); dot();
+        }
+        ctx.save();
+        const snap = (Math.round(T) % 2 === 1 && Math.abs(T - Math.round(T)) < .01) ? .5 : 0;
+        ctx.translate(Math.round(cx) + snap, Math.round(cy) + snap);
+        ctx.rotate(rot * Math.PI / 180);
+        ctx.globalAlpha = Math.max(0, Math.min(1, Number(s.opacity)));
+        const paint = (pass) => {
+            // pass 0 = contour, 1 = couleur
+            const grow = pass === 0 ? O : 0;
+            const col = pass === 0 ? s.outlineColor : s.color;
+            ctx.fillStyle = col; ctx.strokeStyle = col;
+            ctx.lineCap = 'butt'; ctx.lineJoin = 'miter';
+            for (const sh of shapes) {
+                if (sh.type === 'rect') ctx.fillRect(sh.x - grow, sh.y - grow, sh.w + grow * 2, sh.h + grow * 2);
+                else if (sh.type === 'circle') { ctx.beginPath(); ctx.arc(0, 0, sh.r + grow, 0, Math.PI * 2); ctx.fill(); }
+                else if (sh.type === 'ring') { ctx.beginPath(); ctx.lineWidth = sh.w + grow * 2; ctx.arc(0, 0, sh.r, 0, Math.PI * 2); ctx.stroke(); }
+                else if (sh.type === 'sq') { ctx.lineWidth = sh.w + grow * 2; ctx.strokeRect(-sh.r, -sh.r, sh.r * 2, sh.r * 2); }
+                else if (sh.type === 'poly') {
+                    ctx.beginPath(); ctx.lineWidth = sh.w + grow * 2; ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+                    sh.pts.forEach(([x, y], i) => i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)); ctx.stroke();
+                }
+            }
+        };
+        if (s.glow) { ctx.shadowColor = hexA(s.glowColor, 0.95); ctx.shadowBlur = s.glowSize * k; }
+        if (O > 0) paint(0);
+        ctx.shadowBlur = 0;
+        paint(1);
+        ctx.restore();
+    }
+
+    // Taille utile du dessin (pour dimensionner la fenêtre)
+    function extent(settings) {
+        const s = withDefaults(settings);
+        const k = Math.max(0.1, Number(s.scale) || 1);
+        return Math.ceil((Math.max(s.gap + s.length, s.circleRadius + s.thickness, s.dotSize) + s.outlineWidth + (s.glow ? s.glowSize : 0)) * k * 1.5 + 8);
+    }
+
+    // Codes de partage : AR2X-<base64 json>
+    const SHARE_KEYS = Object.keys(DEFAULTS).filter(k => k !== 'offsetX' && k !== 'offsetY');
+    function toCode(settings) {
+        const s = withDefaults(settings), o = {};
+        SHARE_KEYS.forEach(k => { if (s[k] !== DEFAULTS[k]) o[k] = s[k]; });
+        const json = JSON.stringify(o);
+        const b64 = typeof btoa === 'function' ? btoa(unescape(encodeURIComponent(json))) : Buffer.from(json, 'utf8').toString('base64');
+        return 'AR2X-' + b64;
+    }
+    function fromCode(code) {
+        const c = String(code || '').trim().replace(/^AR2X-/, '');
+        const json = typeof atob === 'function' ? decodeURIComponent(escape(atob(c))) : Buffer.from(c, 'base64').toString('utf8');
+        const o = JSON.parse(json);
+        if (!o || typeof o !== 'object') throw new Error('code invalide');
+        const out = {};
+        SHARE_KEYS.forEach(k => { if (k in o) out[k] = o[k]; });
+        return out;
+    }
+
+    const api = { DEFAULTS, STYLES, PRESETS, withDefaults, draw, extent, toCode, fromCode };
+    if (typeof module !== 'undefined' && module.exports) module.exports = api;
+    root.AR2Crosshair = api;
+})(typeof window !== 'undefined' ? window : globalThis);
+
+    </script>
+    <script>
+    /* ===== Onglet Crosshair : éditeur en ligne + téléchargement de l'appli ===== */
+    (function () {
+        const C = window.AR2Crosshair;
+        if (!C) return;
+        const LS = 'ar2_crosshair_web';
+        let S = C.withDefaults(); try { S = C.withDefaults(JSON.parse(localStorage.getItem(LS) || '{}')); } catch (e) {}
+        let bg = 'game', zoom = 1, built = false;
+        const SW = ['#00ff88', '#ff2d55', '#ffffff', '#22d3ee', '#facc15', '#fb923c', '#e879f9', '#a3e635', '#3b82f6', '#000000'];
+        const $ = id => document.getElementById(id);
+        const save = () => { try { localStorage.setItem(LS, JSON.stringify(S)); } catch (e) {} };
+
+        function drawBg(ctx, w, h) {
+            if (bg === 'dark') { ctx.fillStyle = '#14171c'; ctx.fillRect(0, 0, w, h); return; }
+            if (bg === 'light') { ctx.fillStyle = '#e8ecef'; ctx.fillRect(0, 0, w, h); return; }
+            if (bg === 'sky') { const g = ctx.createLinearGradient(0, 0, 0, h); g.addColorStop(0, '#7cc4f5'); g.addColorStop(1, '#d6eefc'); ctx.fillStyle = g; ctx.fillRect(0, 0, w, h); return; }
+            const g = ctx.createLinearGradient(0, 0, 0, h); g.addColorStop(0, '#8fb7cf'); g.addColorStop(.55, '#c9d6d0'); g.addColorStop(.56, '#4f6b3a'); g.addColorStop(1, '#2f4423');
+            ctx.fillStyle = g; ctx.fillRect(0, 0, w, h);
+            ctx.fillStyle = '#5d7550'; ctx.beginPath(); ctx.moveTo(0, h * .58); for (let x = 0; x <= w; x += 40) ctx.lineTo(x, h * .5 + Math.sin(x / 90) * 18 + Math.cos(x / 37) * 6); ctx.lineTo(w, h); ctx.lineTo(0, h); ctx.fill();
+            ctx.fillStyle = '#26381e'; for (let x = 10; x < w; x += 26) { const y = h * .55 + Math.sin(x / 60) * 10; ctx.beginPath(); ctx.moveTo(x, y - 30 - (x % 3) * 6); ctx.lineTo(x - 11, y + 4); ctx.lineTo(x + 11, y + 4); ctx.fill(); }
+            ctx.fillStyle = '#6b6b66'; ctx.beginPath(); ctx.moveTo(w * .46, h * .6); ctx.lineTo(w * .54, h * .6); ctx.lineTo(w * .8, h); ctx.lineTo(w * .2, h); ctx.fill();
+            ctx.fillStyle = '#7d5a3c'; ctx.fillRect(w * .62, h * .44, 70, 46); ctx.fillStyle = '#5b3f29'; ctx.beginPath(); ctx.moveTo(w * .62 - 6, h * .44); ctx.lineTo(w * .62 + 35, h * .44 - 24); ctx.lineTo(w * .62 + 76, h * .44); ctx.fill();
+        }
+        function preview() {
+            const cv = $('xh-canvas'); if (!cv) return;
+            const dpr = window.devicePixelRatio || 1, w = cv.clientWidth, h = cv.clientHeight;
+            if (!w) return;
+            cv.width = w * dpr; cv.height = h * dpr;
+            const ctx = cv.getContext('2d'); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            drawBg(ctx, w, h);
+            ctx.save(); ctx.translate(w / 2, h / 2); ctx.scale(zoom, zoom); C.draw(ctx, 0, 0, S); ctx.restore();
+            $('xh-code').value = C.toCode(S);
+        }
+        function mini(cv, s, size) {
+            const dpr = window.devicePixelRatio || 1; cv.width = size * dpr; cv.height = size * dpr;
+            const ctx = cv.getContext('2d'); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            const ext = C.extent(s), k = Math.min(1.4, (size / 2 - 2) / Math.max(ext / 1.5, 1));
+            ctx.translate(size / 2, size / 2); ctx.scale(k, k); C.draw(ctx, 0, 0, s);
+        }
+        const slider = (key, label, min, max, step, unit) => `<label class="xh-row"><span class="flex justify-between"><span>${label}</span><b data-v="${key}" class="font-mono text-[#00ff88]"></b></span><input type="range" data-k="${key}" min="${min}" max="${max}" step="${step}" data-u="${unit || ''}"></label>`;
+        const color = (key, label) => `<div class="xh-row"><span>${label}</span><div class="flex flex-wrap items-center gap-1.5"><input type="color" data-k="${key}" class="xh-color">${SW.map(c => `<button class="xh-sw" data-sw="${key}" data-c="${c}" style="background:${c}"></button>`).join('')}</div></div>`;
+        const check = (key, label) => `<label class="inline-flex items-center gap-1.5 text-xs text-tactical-text mr-3"><input type="checkbox" data-k="${key}" class="accent-[#00ff88]">${label}</label>`;
+        function build() {
+            $('xh-presets').innerHTML = C.PRESETS.map((p, i) => `<button class="xh-preset" data-p="${i}"><canvas></canvas><span>${p.name}</span></button>`).join('');
+            document.querySelectorAll('#xh-presets canvas').forEach((cv, i) => mini(cv, C.withDefaults(C.PRESETS[i].s), 26));
+            $('xh-bgs').innerHTML = [['game', 'Jeu'], ['dark', 'Sombre'], ['light', 'Clair'], ['sky', 'Ciel']].map(([k, l]) => `<button class="fi-chip" data-bg="${k}">${l}</button>`).join('') + '<span class="w-px bg-tactical-border mx-1"></span>' + [1, 3].map(z => `<button class="fi-chip" data-zoom="${z}">x${z}</button>`).join('');
+            $('xh-styles').innerHTML = Object.entries(C.STYLES).map(([k, l]) => `<button class="xh-style" data-style="${k}"><canvas></canvas><span>${l}</span></button>`).join('');
+            $('xh-controls').innerHTML = `
+                <div class="xh-h">Couleur</div>${color('color', 'Couleur')}${slider('opacity', 'Opacité', 0.1, 1, 0.05, '%')}
+                <div class="xh-h">Dimensions</div>
+                ${slider('length', 'Longueur des branches', 0, 40, 1, 'px')}${slider('thickness', 'Épaisseur', 0.5, 10, 0.5, 'px')}${slider('gap', 'Écart au centre', 0, 30, 1, 'px')}
+                ${slider('dotSize', 'Taille du point', 0, 10, 0.5, 'px')}${slider('circleRadius', 'Rayon du cercle', 2, 60, 1, 'px')}${slider('scale', 'Échelle globale', 0.5, 4, 0.1, 'x')}${slider('rotation', 'Rotation', 0, 360, 5, '°')}
+                <div class="xh-row"><span>Branches visibles</span><div>${check('armTop', 'Haut')}${check('armBottom', 'Bas')}${check('armLeft', 'Gauche')}${check('armRight', 'Droite')}</div></div>
+                <div class="xh-h">Contour</div>${check('outline', 'Activer le contour')}${color('outlineColor', 'Couleur du contour')}${slider('outlineWidth', 'Épaisseur du contour', 0.5, 5, 0.5, 'px')}
+                <div class="xh-h">Lueur</div>${check('glow', 'Activer la lueur')}${color('glowColor', 'Couleur de la lueur')}${slider('glowSize', 'Intensité', 1, 30, 1, 'px')}
+                <button id="xh-reset" class="xh-btn w-full">Réinitialiser</button>`;
+            built = true;
+        }
+        function sync() {
+            document.querySelectorAll('#xh-controls [data-k]').forEach(el => { const k = el.dataset.k; if (el.type === 'checkbox') el.checked = !!S[k]; else el.value = S[k]; });
+            document.querySelectorAll('#xh-controls [data-v]').forEach(el => { const k = el.dataset.v, u = document.querySelector(`[data-k="${k}"]`).dataset.u; el.textContent = u === '%' ? Math.round(S[k] * 100) + ' %' : u === 'x' ? 'x' + (+S[k]).toFixed(1) : S[k] + (u === '°' ? '°' : ' px'); });
+            document.querySelectorAll('#xh-styles .xh-style').forEach(b => { b.classList.toggle('active', b.dataset.style === S.style); mini(b.querySelector('canvas'), Object.assign({}, S, { style: b.dataset.style, rotation: 0, scale: 1 }), 34); });
+            document.querySelectorAll('#xh-bgs [data-bg]').forEach(b => b.classList.toggle('active', b.dataset.bg === bg));
+            document.querySelectorAll('#xh-bgs [data-zoom]').forEach(b => b.classList.toggle('active', +b.dataset.zoom === zoom));
+            preview();
+        }
+        const msg = (t, ok) => { const m = $('xh-msg'); m.textContent = t; m.style.color = ok ? '#00ff88' : '#f87171'; setTimeout(() => { if (m.textContent === t) m.textContent = ''; }, 3000); };
+        function wire() {
+            const sec = $('crosshair-section');
+            sec.addEventListener('input', e => { const k = e.target.dataset && e.target.dataset.k; if (!k) return; S[k] = e.target.type === 'checkbox' ? e.target.checked : e.target.type === 'color' ? e.target.value : parseFloat(e.target.value); save(); sync(); });
+            sec.addEventListener('click', e => {
+                const t = e.target.closest('[data-style],[data-sw],[data-p],[data-bg],[data-zoom],#xh-reset,#xh-copy,#xh-import'); if (!t) return;
+                if (t.dataset.style) S.style = t.dataset.style;
+                else if (t.dataset.sw) S[t.dataset.sw] = t.dataset.c;
+                else if (t.dataset.p) S = C.withDefaults(C.PRESETS[+t.dataset.p].s);
+                else if (t.dataset.bg) bg = t.dataset.bg;
+                else if (t.dataset.zoom) zoom = +t.dataset.zoom;
+                else if (t.id === 'xh-reset') S = C.withDefaults();
+                else if (t.id === 'xh-copy') { const v = $('xh-code').value; (navigator.clipboard ? navigator.clipboard.writeText(v) : Promise.reject()).then(() => msg('Code copié', true)).catch(() => { $('xh-code').select(); document.execCommand('copy'); msg('Code copié', true); }); return; }
+                else if (t.id === 'xh-import') { try { S = C.withDefaults(C.fromCode($('xh-code-in').value)); $('xh-code-in').value = ''; msg('Crosshair chargé', true); } catch (err) { msg('Code invalide', false); return; } }
+                save(); sync();
+            });
+            window.addEventListener('resize', () => { if (!$('crosshair-section').classList.contains('hidden')) preview(); });
+        }
+        window.xhRender = function () { if (!built) { build(); wire(); } sync(); };
+    })();
     </script>
 
 </body>

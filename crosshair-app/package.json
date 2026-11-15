@@ -22,7 +22,7 @@
     "files": ["src/**/*", "package.json"],
     "win": {
       "icon": "build/icon.ico",
-      "signAndEditExecutable": false,
+      "signAndEditExecutable": true,
       "artifactName": "AR2-Crosshair-${version}-${arch}-${target}.${ext}"
     },
     "nsis": {
