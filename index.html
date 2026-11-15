@@ -291,11 +291,12 @@
                 <div>
                     <h2 class="text-2xl font-extrabold text-white tracking-tight">Crosshair</h2>
                     <p class="text-xs text-tactical-muted mt-1 max-w-3xl">Installe <b class="text-white">AR2 Crosshair</b>, une petite appli Windows qui affiche un viseur personnalisé par-dessus Roblox. Crée ton crosshair ci-dessous, copie son code et colle-le dans l'appli (bouton « Importer »).</p>
+                    <p class="text-[11px] text-tactical-muted mt-2 max-w-3xl"><b class="text-[#00ff88]">Nouveau en 1.1 :</b> mises à jour automatiques (la version installée se met à jour toute seule) et changement d'arme automatique : associe chaque emplacement 1 à 8 de ta barre à un profil de crosshair, l'appli change de viseur quand tu changes d'arme (touches 1 à 8), le cache quand tu ranges ton arme (V) et peut le cacher pendant la visée (clic droit). Elle lit uniquement tes touches, jamais le jeu. Si tu as la 1.0.0, réinstalle une fois avec l'installeur.</p>
                 </div>
                 <div class="flex flex-wrap gap-2">
-                    <a id="xh-dl-setup" href="https://github.com/Surax000/Ar2-wiki-et-map-interactive/releases/download/crosshair-v1.0.0/AR2-Crosshair-Setup-1.0.0.exe" class="xh-dl primary">Télécharger l'installeur (.exe)</a>
-                    <a href="https://github.com/Surax000/Ar2-wiki-et-map-interactive/releases/download/crosshair-v1.0.0/AR2-Crosshair-Portable-1.0.0.exe" class="xh-dl">Version portable</a>
-                    <a href="https://github.com/Surax000/Ar2-wiki-et-map-interactive/releases/download/crosshair-v1.0.0/AR2-Crosshair-Windows-1.0.0.zip" class="xh-dl">Version .zip</a>
+                    <a id="xh-dl-setup" href="https://github.com/Surax000/Ar2-wiki-et-map-interactive/releases/latest/download/AR2-Crosshair-Setup.exe" class="xh-dl primary">Télécharger l'installeur (.exe)</a>
+                    <a href="https://github.com/Surax000/Ar2-wiki-et-map-interactive/releases/latest/download/AR2-Crosshair-Portable.exe" class="xh-dl">Version portable</a>
+                    <a href="https://github.com/Surax000/Ar2-wiki-et-map-interactive/releases/latest/download/AR2-Crosshair-Windows.zip" class="xh-dl">Version .zip</a>
                 </div>
             </div>
             <div class="grid grid-cols-1 xl:grid-cols-[260px_1fr_340px] gap-5">
@@ -346,6 +347,52 @@
                     </div>
                 </div>
                 <aside id="xh-controls" class="bg-tactical-card border border-tactical-border rounded-2xl p-5 self-start space-y-4"></aside>
+            </div>
+        </section>
+        <section id="lieux-section" class="hidden pb-10">
+            <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-4 mb-4">
+                <div>
+                    <h2 class="text-2xl font-extrabold text-white tracking-tight">Ajouter un lieu</h2>
+                    <p class="text-xs text-tactical-muted mt-1 max-w-3xl">Clique sur la carte pour placer ton lieu, puis remplis ses infos. Il apparaît dans l'onglet Carte (avec un contour en pointillés), dans les chemins de loot et dans Find Item selon le loot que tu coches. Tes lieux restent enregistrés dans ton navigateur. Les lieux du jeu ne sont jamais modifiés.</p>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    <button type="button" id="ul-export" class="xh-btn">Exporter mes lieux</button>
+                    <label class="xh-btn cursor-pointer">Importer<input type="file" id="ul-import" accept=".json,application/json" class="hidden"></label>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 xl:grid-cols-[340px_1fr_300px] gap-5">
+                <form id="ul-form" class="bg-tactical-card border border-tactical-border rounded-2xl p-5 space-y-3 self-start" autocomplete="off">
+                    <div class="flex items-center justify-between">
+                        <div id="ul-form-title" class="xh-h !mb-0">Nouveau lieu</div>
+                        <button type="button" id="ul-new" class="text-[10px] font-bold uppercase text-tactical-muted hover:text-white">+ Nouveau</button>
+                    </div>
+                    <label class="cr-field"><span>Nom du lieu *</span><input name="name" placeholder="ex : Ferme abandonnée"></label>
+                    <label class="cr-field"><span>Nom anglais (dans le jeu)</span><input name="nameEn" placeholder="ex : Abandoned Farm"></label>
+                    <div class="grid grid-cols-2 gap-3">
+                        <label class="cr-field"><span>Catégorie</span><select name="cat" id="ul-cat"></select></label>
+                        <label class="cr-field"><span>Île</span><select name="island" id="ul-island"><option value="">Auto</option><option>Halsey</option><option>Faris</option><option>Mackinaw</option><option>Autre</option></select></label>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <label class="cr-field"><span>Qualité du loot</span><select name="quality"><option value="1">Faible</option><option value="2" selected>Moyenne</option><option value="3">Bonne</option><option value="4">Excellente</option></select></label>
+                        <label class="cr-field"><span>Danger</span><select name="danger"><option value="0">Calme</option><option value="1" selected>Quelques infectés</option><option value="2">Beaucoup d'infectés</option><option value="3">Zone PvP chaude</option></select></label>
+                    </div>
+                    <div class="cr-field"><span>Loot qu'on y trouve</span><div id="ul-tags" class="flex flex-wrap gap-1.5 mt-1"></div></div>
+                    <label class="cr-field"><span>Description</span><textarea name="desc" rows="3" placeholder="Ce qu'il y a sur place, comment y aller..."></textarea></label>
+                    <div class="text-[11px] font-mono text-tactical-muted" id="ul-pos">Position : clique sur la carte</div>
+                    <div class="flex gap-2 pt-1">
+                        <button type="submit" id="ul-save" class="xh-dl primary flex-1">Ajouter le lieu</button>
+                        <button type="button" id="ul-reset" class="xh-btn">Effacer</button>
+                    </div>
+                    <div id="ul-msg" class="text-xs h-4"></div>
+                </form>
+                <div>
+                    <div id="ul-map" class="relative w-full rounded-2xl border border-tactical-border overflow-hidden bg-[#0b1620] cursor-crosshair" style="aspect-ratio:1045/947"></div>
+                    <p class="text-[10px] font-mono text-tactical-muted mt-2">Points gris = lieux existants • clique pour placer ou déplacer ton lieu</p>
+                </div>
+                <aside class="bg-tactical-card border border-tactical-border rounded-2xl p-4 self-start">
+                    <div class="xh-h">Mes lieux <span id="ul-count" class="text-tactical-muted"></span></div>
+                    <div id="ul-list" class="space-y-2 max-h-[640px] overflow-y-auto pr-1"></div>
+                </aside>
             </div>
         </section>
         <!-- ===================== CRÉATEUR D'ARMES ===================== -->
@@ -924,6 +971,7 @@
             { id: 'carte',       label: 'Carte',                  icon: 'map',  color: '#a78bfa', subs: [] },
             { id: 'finditem',    label: 'Find Item',              icon: 'search', color: '#38bdf8', subs: [] },
             { id: 'createur',    label: 'Créer une arme / explosif', icon: 'plus', color: '#e5c07b', subs: [] },
+            { id: 'lieux',       label: 'Ajouter un lieu',        icon: 'pin', color: '#f472b6', subs: [] },
             { id: 'crosshair',   label: 'Crosshair',              icon: 'crosshair', color: '#00ff88', subs: [] }
         ];
 
@@ -1305,6 +1353,7 @@
                 case 'map':  return `<svg ${st}><path d="M9 4L3 6v14l6-2 6 2 6-2V4l-6 2-6-2z"/><path d="M9 4v14M15 6v14"/></svg>`;
                 case 'search': return `<svg ${st}><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>`;
                 case 'crosshair': return `<svg ${st}><circle cx="12" cy="12" r="7"/><path d="M12 2v5M12 17v5M2 12h5M17 12h5"/></svg>`;
+                case 'pin': return `<svg ${st}><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>`;
                 case 'plus': return `<svg ${st}><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M12 8v8M8 12h8"/></svg>`;
                 case 'box':  return `<svg ${st}><path d="M21 8l-9-5-9 5v8l9 5 9-5V8z"/><path d="M3 8l9 5 9-5M12 13v8"/></svg>`;
                 default:     return `<svg ${st}><path d="M10.3 3.9L1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg>`;
@@ -1315,7 +1364,7 @@
         function renderMainTabs() {
             document.getElementById('main-tabs').innerHTML = GROUPS.map(g => {
                 const active = g.id === currentGroup;
-                const count = g.id === 'carte' ? (typeof MAP_COUNT !== 'undefined' ? MAP_COUNT : 0) : g.id === 'createur' ? ALL_ITEMS.filter(i => i.custom).length : g.id === 'finditem' ? ALL_ITEMS.length : g.id === 'crosshair' ? (window.AR2Crosshair ? Object.keys(window.AR2Crosshair.STYLES).length : 11) : ALL_ITEMS.filter(i => i.group === g.id).length;
+                const count = g.id === 'carte' ? (typeof MAP_COUNT !== 'undefined' ? MAP_COUNT : 0) + MAP_DATA.locations.filter(l => l.custom).length : g.id === 'lieux' ? MAP_DATA.locations.filter(l => l.custom).length : g.id === 'createur' ? ALL_ITEMS.filter(i => i.custom).length : g.id === 'finditem' ? ALL_ITEMS.length : g.id === 'crosshair' ? (window.AR2Crosshair ? Object.keys(window.AR2Crosshair.STYLES).length : 11) : ALL_ITEMS.filter(i => i.group === g.id).length;
                 return `
                     <button data-group="${g.id}" class="flex items-center gap-2.5 px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider border transition-all ${
                         active ? 'bg-tactical-accent text-tactical-bg border-tactical-accent shadow-lg shadow-tactical-accent/10'
@@ -2038,6 +2087,7 @@
         }
 
         function markerShape(p, c) {
+            if (p.custom && p.kind === 'loc') return `<circle r="13" fill="none" stroke="${c}" stroke-width="1.6" stroke-dasharray="3 2.5"/>` + markerShape({ ...p, custom: false }, c);
             const st = `stroke="#0b0f14" stroke-width="1.6"`;
             switch (p.cat) {
                 case 'ville':     return `<circle r="9" fill="${c}22" stroke="${c}" stroke-width="2"/><circle r="4.2" fill="${c}"/>`;
@@ -2310,19 +2360,21 @@
 
         // Bascule catalogue <-> carte
         function onGroupChange() {
-            const isMap = currentGroup === 'carte', isCreator = currentGroup === 'createur', isFind = currentGroup === 'finditem', isXh = currentGroup === 'crosshair';
-            const special = isMap || isCreator || isFind || isXh;
+            const isMap = currentGroup === 'carte', isCreator = currentGroup === 'createur', isFind = currentGroup === 'finditem', isXh = currentGroup === 'crosshair', isLieux = currentGroup === 'lieux';
+            const special = isMap || isCreator || isFind || isXh || isLieux;
             document.body.classList.toggle('map-mode', special);
             document.getElementById('map-section').classList.toggle('hidden', !isMap);
             document.getElementById('creator-section').classList.toggle('hidden', !isCreator);
             document.getElementById('find-section').classList.toggle('hidden', !isFind);
             document.getElementById('crosshair-section').classList.toggle('hidden', !isXh);
+            document.getElementById('lieux-section').classList.toggle('hidden', !isLieux);
             document.querySelectorAll('.catalog-only').forEach(el => el.classList.toggle('hidden', special));
             if (special) document.getElementById('empty-state').classList.add('hidden');
             if (isMap) { setupMap(); renderMapLegend(); drawMap(); }
             if (isCreator && typeof crRenderMinimap === 'function') { crRenderMinimap(); crRenderList(); }
             if (isFind && typeof fiRender === 'function') fiRender();
             if (isXh && typeof xhRender === 'function') xhRender();
+            if (isLieux && typeof ulRender === 'function') ulRender();
         }
     </script>
     <script>
@@ -3324,6 +3376,177 @@
         }
         window.xhRender = function () { if (!built) { build(); wire(); } sync(); };
     })();
+    </script>
+
+    <script>
+        // ============================================================
+        // AJOUTER UN LIEU : lieux personnalisés sur la carte
+        // ============================================================
+        const UL_KEY = 'ar2_custom_locations_v1';
+        const UL_CATS = ['ville', 'militaire', 'poi', 'sovietique', 'cache'];
+        const UL_TAGS = [['civ', 'Maisons'], ['shop', 'Magasins'], ['food', 'Nourriture'], ['med', 'Médical'], ['police', 'Police'], ['garage', 'Garage / station'], ['mil', 'Militaire'], ['sf', 'Forces spéciales'], ['sov', 'Soviétique'], ['hunt', 'Chasse'], ['surplus', 'Surplus'], ['school', 'École'], ['hotel', 'Hôtel'], ['airport', 'Aéroport'], ['camp', 'Camping'], ['docks', 'Docks']];
+        const UL_QUALITY = ['', 'Faible', 'Moyenne', 'Bonne', 'Excellente'];
+        const UL_DANGER = ['Calme', 'Quelques infectés', "Beaucoup d'infectés", 'Zone PvP chaude'];
+        let ulLocs = [], ulEditing = null, ulPin = null, ulTagsSel = {};
+        try { ulLocs = JSON.parse(localStorage.getItem(UL_KEY) || '[]'); if (!Array.isArray(ulLocs)) ulLocs = []; } catch (e) { ulLocs = []; }
+        const ulSave = () => { try { localStorage.setItem(UL_KEY, JSON.stringify(ulLocs)); } catch (e) {} };
+
+        function ulIslandOf(x, y) {
+            let best = null, bd = Infinity;
+            MAP_DATA.locations.forEach(l => { if (l.custom) return; const d = Math.hypot(l.x - x, l.y - y); if (d < bd) { bd = d; best = l; } });
+            return best && bd < 160 ? best.island : 'Autre';
+        }
+        function ulDesc(u) {
+            const tags = Object.keys(u.tags || {}).map(t => (UL_TAGS.find(x => x[0] === t) || [t, t])[1]);
+            return `${u.nameEn ? `<span class="text-tactical-muted">Nom dans le jeu : ${crEsc(u.nameEn)}</span><br>` : ''}${u.desc ? crEsc(u.desc).replace(/\n/g, '<br>') + '<br>' : ''}`
+                + `<span class="text-xs">Loot : <b>${UL_QUALITY[u.quality || 2]}</b>${tags.length ? ' • ' + tags.join(', ') : ''} • Danger : <b>${UL_DANGER[u.danger || 0]}</b></span>`
+                + `<div class="flex gap-2 mt-3"><button type="button" data-ul-edit="${u.uid}" class="text-[10px] font-bold uppercase px-2 py-1 rounded border border-tactical-border text-white hover:border-tactical-accent hover:text-tactical-accent">Modifier</button>`
+                + `<button type="button" data-ul-del="${u.uid}" class="text-[10px] font-bold uppercase px-2 py-1 rounded border border-tactical-border text-tactical-muted hover:border-tactical-red hover:text-tactical-red">Supprimer</button></div>`
+                + `<span class="block text-tactical-muted text-[11px] mt-2">Lieu ajouté par toi (onglet « Ajouter un lieu »).</span>`;
+        }
+        // Synchronise les lieux perso avec la carte, Find Item et le créateur d'armes (les lieux du jeu ne sont jamais touchés)
+        function ulSync() {
+            for (let i = MAP_DATA.locations.length - 1; i >= 0; i--) if (MAP_DATA.locations[i].custom) MAP_DATA.locations.splice(i, 1);
+            for (let i = MAP_POINTS.length - 1; i >= 0; i--) if (MAP_POINTS[i].custom && MAP_POINTS[i].kind === 'loc') MAP_POINTS.splice(i, 1);
+            Object.keys(FI_LOC_TAGS).forEach(k => { if (k.startsWith('u-')) delete FI_LOC_TAGS[k]; });
+            ulLocs.forEach(u => {
+                const loc = { uid: u.uid, name: crEsc(u.name), x: u.x, y: u.y, island: u.island || ulIslandOf(u.x, u.y), cat: UL_CATS.includes(u.cat) ? u.cat : 'poi', desc: ulDesc(u), custom: true, hidden: u.cat === 'cache' };
+                MAP_DATA.locations.push(loc);
+                MAP_POINTS.push({ ...loc, kind: 'loc' });
+                const q = (+u.quality || 2) / 2, t = {};
+                Object.keys(u.tags || {}).forEach(k => t[k] = Math.max(1, Math.round(2 * q)));
+                if (Object.keys(t).length) FI_LOC_TAGS[u.uid] = t;
+            });
+        }
+        ulSync();
+
+        function ulRenderMap() {
+            const box = document.getElementById('ul-map'); if (!box) return;
+            const P = MAP_MODES.normal.pal;
+            const locs = MAP_DATA.locations.filter(l => !l.custom).map(l => `<circle cx="${l.x}" cy="${l.y}" r="4" fill="#8b949e" opacity=".5"><title>${l.name}</title></circle>`).join('');
+            const mine = ulLocs.filter(u => u.uid !== ulEditing).map(u => `<g transform="translate(${u.x},${u.y})" opacity=".85"><circle r="7" fill="#0b0f14" stroke="${MAP_CATS[u.cat] ? MAP_CATS[u.cat].color : '#e5c07b'}" stroke-width="2.4" stroke-dasharray="3 2"/><title>${crEsc(u.name)}</title></g>`).join('');
+            const c = MAP_CATS[document.getElementById('ul-cat').value] ? MAP_CATS[document.getElementById('ul-cat').value].color : '#e5c07b';
+            const pin = ulPin ? `<g transform="translate(${ulPin.x},${ulPin.y})"><circle r="16" fill="${c}22" stroke="${c}" stroke-width="2.5"/><circle r="4" fill="${c}"/><path d="M0 -26 V-17 M0 17 V26 M-26 0 H-17 M17 0 H26" stroke="${c}" stroke-width="2.5"/></g>` : '';
+            const grid = []; for (let i = 0; i <= 6; i++) { const v = 75 + i * 170; grid.push(`<line x1="${v}" y1="0" x2="${v}" y2="${MAP_H}" stroke="${P.grid}"/><line x1="0" y1="${v}" x2="${MAP_W}" y2="${v}" stroke="${P.grid}"/>`); }
+            box.innerHTML = `<svg id="ul-map-svg" viewBox="0 0 ${MAP_W} ${MAP_H}" class="w-full h-full block select-none">
+                <rect width="${MAP_W}" height="${MAP_H}" fill="${P.ocean}"/>${grid.join('')}
+                <path d="${MAP_DATA.paths.land}" fill="${P.land}" stroke="${P.coast}" stroke-width="2"/>
+                <path d="${MAP_DATA.paths.sand}" fill="${P.sand}"/><path d="${MAP_DATA.paths.forest}" fill="${P.forest}"/>
+                <path d="${MAP_DATA.paths.lakes}" fill="${P.lake}"/><path d="${MAP_DATA.paths.roads}" fill="${P.road}"/>
+                ${locs}${mine}${pin}</svg>`;
+            document.getElementById('ul-pos').textContent = ulPin ? `Position : case ${gridSquare(ulPin.x, ulPin.y)} • île ${document.getElementById('ul-island').value || ulIslandOf(ulPin.x, ulPin.y)} (x ${ulPin.x}, y ${ulPin.y})` : 'Position : clique sur la carte';
+        }
+        function ulRenderTags() {
+            document.getElementById('ul-tags').innerHTML = UL_TAGS.map(([k, l]) => `<button type="button" data-ul-tag="${k}" class="fi-chip ${ulTagsSel[k] ? 'active' : ''}">${l}</button>`).join('');
+        }
+        function ulRenderList() {
+            document.getElementById('ul-count').textContent = `(${ulLocs.length})`;
+            document.getElementById('ul-list').innerHTML = ulLocs.length ? ulLocs.map(u => `
+                <div class="bg-tactical-bg border ${ulEditing === u.uid ? 'border-tactical-accent' : 'border-tactical-border'} rounded-lg px-3 py-2">
+                    <div class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full shrink-0" style="background:${MAP_CATS[u.cat] ? MAP_CATS[u.cat].color : '#e5c07b'}"></span><span class="text-xs font-bold text-white truncate flex-1">${crEsc(u.name)}</span></div>
+                    <div class="text-[10px] font-mono text-tactical-muted mt-0.5">${MAP_CATS[u.cat] ? MAP_CATS[u.cat].label : ''} • ${crEsc(u.island || ulIslandOf(u.x, u.y))} • case ${gridSquare(u.x, u.y)}</div>
+                    <div class="flex gap-1.5 mt-2">
+                        <button type="button" data-ul-show="${u.uid}" class="text-[10px] font-bold uppercase px-2 py-1 rounded border border-tactical-border text-white hover:border-tactical-accent hover:text-tactical-accent">Voir</button>
+                        <button type="button" data-ul-edit="${u.uid}" class="text-[10px] font-bold uppercase px-2 py-1 rounded border border-tactical-border text-white hover:border-tactical-accent hover:text-tactical-accent">Modifier</button>
+                        <button type="button" data-ul-del="${u.uid}" class="text-[10px] font-bold uppercase px-2 py-1 rounded border border-tactical-border text-tactical-muted hover:border-tactical-red hover:text-tactical-red">Supprimer</button>
+                    </div>
+                </div>`).join('') : '<p class="text-[11px] text-tactical-muted">Aucun lieu pour l\'instant. Clique sur la carte pour en placer un.</p>';
+        }
+        function ulMsg(t, ok = true) { const m = document.getElementById('ul-msg'); m.textContent = t; m.className = 'text-xs h-4 ' + (ok ? 'text-tactical-accent' : 'text-tactical-red'); }
+        function ulFill(u) {
+            const f = document.getElementById('ul-form');
+            const v = Object.assign({ name: '', nameEn: '', cat: 'poi', island: '', quality: 2, danger: 1, desc: '' }, u || {});
+            ['name', 'nameEn', 'cat', 'desc'].forEach(k => f.elements[k].value = v[k]);
+            f.elements.island.value = u ? (u.islandSet ? v.island : '') : '';
+            f.elements.quality.value = String(v.quality); f.elements.danger.value = String(v.danger);
+            ulTagsSel = Object.assign({}, v.tags || {});
+            ulPin = u ? { x: u.x, y: u.y } : null;
+            document.getElementById('ul-form-title').textContent = u ? `Modifier : ${u.name}` : 'Nouveau lieu';
+            document.getElementById('ul-save').textContent = u ? 'Mettre à jour' : 'Ajouter le lieu';
+            ulRenderTags(); ulRenderMap(); ulRenderList();
+        }
+        function ulRefresh() {
+            ulSync(); ulSave();
+            renderMainTabs();
+            if (mapBuilt) { renderMapLegend(); drawMap(); }
+            ulRenderList(); ulRenderMap();
+        }
+        function ulOpen(uid) {
+            currentGroup = 'lieux'; renderMainTabs(); onGroupChange();
+            ulEditing = uid || null; ulFill(uid ? ulLocs.find(u => u.uid === uid) : null);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        function ulRender() { ulRenderTags(); ulRenderMap(); ulRenderList(); }
+
+        function ulSetup() {
+            const sec = document.getElementById('lieux-section'); if (!sec) return;
+            document.getElementById('ul-cat').innerHTML = UL_CATS.map(c => `<option value="${c}" ${c === 'poi' ? 'selected' : ''}>${MAP_CATS[c].label}</option>`).join('');
+            document.getElementById('ul-cat').onchange = ulRenderMap;
+            document.getElementById('ul-island').onchange = ulRenderMap;
+            document.getElementById('ul-map').addEventListener('click', e => {
+                const svg = document.getElementById('ul-map-svg'); if (!svg) return;
+                const pt = svg.createSVGPoint(); pt.x = e.clientX; pt.y = e.clientY;
+                const p = pt.matrixTransform(svg.getScreenCTM().inverse());
+                ulPin = { x: Math.round(p.x * 10) / 10, y: Math.round(p.y * 10) / 10 };
+                ulRenderMap();
+                const f = document.getElementById('ul-form'); if (!f.elements.name.value) f.elements.name.focus();
+            });
+            document.getElementById('ul-tags').addEventListener('click', e => { const b = e.target.closest('[data-ul-tag]'); if (!b) return; const k = b.dataset.ulTag; if (ulTagsSel[k]) delete ulTagsSel[k]; else ulTagsSel[k] = 1; ulRenderTags(); });
+            document.getElementById('ul-form').addEventListener('submit', e => {
+                e.preventDefault();
+                const f = e.target;
+                const name = f.elements.name.value.trim();
+                if (!name) return ulMsg('Donne un nom au lieu.', false);
+                if (!ulPin) return ulMsg('Clique sur la carte pour placer le lieu.', false);
+                const islandSel = f.elements.island.value;
+                const u = { uid: ulEditing || ('u-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5)), name, nameEn: f.elements.nameEn.value.trim(), cat: f.elements.cat.value, island: islandSel || ulIslandOf(ulPin.x, ulPin.y), islandSet: !!islandSel, quality: +f.elements.quality.value, danger: +f.elements.danger.value, tags: Object.assign({}, ulTagsSel), desc: f.elements.desc.value.trim(), x: ulPin.x, y: ulPin.y };
+                const i = ulLocs.findIndex(q => q.uid === u.uid);
+                if (i >= 0) { ulLocs[i] = u; ulMsg(`« ${name} » a été mis à jour.`); } else { ulLocs.push(u); ulMsg(`« ${name} » a été ajouté sur la carte.`); }
+                ulEditing = u.uid;
+                document.getElementById('ul-form-title').textContent = `Modifier : ${name}`;
+                document.getElementById('ul-save').textContent = 'Mettre à jour';
+                ulRefresh();
+            });
+            const blank = () => { ulEditing = null; ulFill(null); ulMsg(''); };
+            document.getElementById('ul-reset').onclick = blank;
+            document.getElementById('ul-new').onclick = blank;
+            document.getElementById('ul-export').onclick = () => {
+                const blob = new Blob([JSON.stringify(ulLocs, null, 2)], { type: 'application/json' });
+                const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'ar2-lieux-perso.json'; a.click();
+                setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+            };
+            document.getElementById('ul-import').onchange = e => {
+                const file = e.target.files[0]; if (!file) return;
+                const rd = new FileReader();
+                rd.onload = () => {
+                    try {
+                        const arr = JSON.parse(rd.result); if (!Array.isArray(arr)) throw 0;
+                        let n = 0;
+                        arr.forEach(u => { if (u && u.name && isFinite(u.x) && isFinite(u.y)) { if (!u.uid || !String(u.uid).startsWith('u-')) u.uid = 'u-' + Date.now().toString(36) + n; const i = ulLocs.findIndex(q => q.uid === u.uid); if (i >= 0) ulLocs[i] = u; else ulLocs.push(u); n++; } });
+                        ulRefresh(); ulMsg(`${n} lieu(x) importé(s).`);
+                    } catch (err) { ulMsg('Fichier invalide.', false); }
+                    e.target.value = '';
+                };
+                rd.readAsText(file);
+            };
+            ulFill(null);
+        }
+        document.addEventListener('click', e => {
+            const ed = e.target.closest('[data-ul-edit]');
+            if (ed) { e.preventDefault(); if (currentGroup === 'lieux') { ulEditing = ed.dataset.ulEdit; ulFill(ulLocs.find(u => u.uid === ulEditing)); ulMsg(''); } else ulOpen(ed.dataset.ulEdit); return; }
+            const sh = e.target.closest('[data-ul-show]');
+            if (sh) { e.preventDefault(); currentGroup = 'carte'; renderMainTabs(); onGroupChange(); setTimeout(() => selectPoint(sh.dataset.ulShow), 60); return; }
+            const del = e.target.closest('[data-ul-del]');
+            if (del) {
+                const u = ulLocs.find(q => q.uid === del.dataset.ulDel); if (!u) return;
+                if (!confirm(`Supprimer ton lieu « ${u.name} » ? (les lieux du jeu ne sont jamais supprimés)`)) return;
+                ulLocs = ulLocs.filter(q => q.uid !== u.uid);
+                if (ulEditing === u.uid) { ulEditing = null; ulFill(null); }
+                if (typeof mapSelected !== 'undefined' && mapSelected && mapSelected.uid === u.uid) { mapSelected = null; if (mapBuilt) renderMapInfo(); }
+                ulRefresh(); ulMsg(`« ${u.name} » a été supprimé.`);
+            }
+        });
+        document.addEventListener('DOMContentLoaded', ulSetup);
     </script>
 
 </body>
