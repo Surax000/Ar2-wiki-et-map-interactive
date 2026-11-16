@@ -668,6 +668,24 @@
             <div id="boss-note" class="mb-4 text-[11px] text-tactical-muted bg-tactical-card border border-tactical-border rounded-xl px-3 py-2"></div>
             <div id="boss-grid" class="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-4"></div>
         </section>
+
+        <!-- ===== SURVIE & SOINS ===== -->
+        <section id="survie-section" class="hidden pb-10">
+            <div class="mb-4">
+                <h2 class="text-2xl font-extrabold text-white tracking-tight">Survie &amp; Soins — duel inversé</h2>
+                <p class="text-xs text-tactical-muted mt-1 max-w-3xl">Combien de temps pour remonter tes PV avec ce que tu as dans ton sac, et combien de balles tu peux encaisser avant de tomber. Dans AR2, casques et gilets sont cosmétiques : seule ta vie (100 PV) et les boosters comptent.</p>
+            </div>
+            <div id="sv-root" class="grid grid-cols-1 xl:grid-cols-2 gap-4"></div>
+        </section>
+
+        <!-- ===== DÉFI RANDOM ===== -->
+        <section id="defi-section" class="hidden pb-10">
+            <div class="mb-4">
+                <h2 class="text-2xl font-extrabold text-white tracking-tight">Générateur de défi / loadout aléatoire</h2>
+                <p class="text-xs text-tactical-muted mt-1 max-w-3xl">Tire une arme imposée (même Tier C/D), une zone d'apparition, un objectif et des contraintes. Copie la fiche pour Discord ou partage le lien : le même lien redonne exactement le même défi.</p>
+            </div>
+            <div id="df-root"></div>
+        </section>
     </main>
 
     <!-- ===== LISTE DE LOOT (wishlist) ===== -->
@@ -908,6 +926,7 @@
             {"id": "coach-gun", "name": "Coach Gun", "category": "Fusils à Pompe", "type": "weapon", "wclass": "Civil", "caliber": "12 Gauge Buckshot", "mags": "2", "capacity": 2, "fireMode": "Semi", "attach": "Viseur", "limbDamage": 56, "bodyDamage": 56, "headDamage": 72, "rof": 400, "range": 170, "minRange": 240, "velocity": 1450, "hipfire": 93, "accuracy": 69, "recoil": 32, "reloadTime": 1.8, "tier": "C", "estimated": false, "description": "Fusil à double canon civil. Deux tirs puis rechargement obligatoire.", "iconType": "shotgun", "size": "2x6"},
             {"id": "maverick-88", "name": "Maverick 88", "category": "Fusils à Pompe", "type": "weapon", "wclass": "Civil", "caliber": "12 Gauge Buckshot", "mags": "8", "capacity": 8, "fireMode": "Semi", "attach": "Viseur", "limbDamage": 56, "bodyDamage": 56, "headDamage": 72, "rof": 65, "range": 170, "minRange": 240, "velocity": 1400, "hipfire": 96, "accuracy": 70, "recoil": 32, "reloadTime": 2.7, "tier": "D", "estimated": false, "description": "Pompe civil basique : lent à pomper, mais trouvable partout.", "iconType": "shotgun", "size": "2x6"},
             {"id": "model-590", "name": "Model 590", "category": "Fusils à Pompe", "type": "weapon", "wclass": "Militaire", "caliber": "12 Gauge Buckshot", "mags": "8", "capacity": 8, "fireMode": "Semi", "attach": "Viseur, Poignée", "limbDamage": 56, "bodyDamage": 56, "headDamage": 72, "rof": 72, "range": 180, "minRange": 250, "velocity": 1400, "hipfire": 98, "accuracy": 71, "recoil": 32, "reloadTime": 2.7, "tier": "B", "estimated": false, "description": "Pompe militaire/police robuste avec 8 cartouches et rail pour accessoires.", "iconType": "shotgun", "size": "2x6"},
+            {"id": "aa-12", "name": "AA-12", "category": "Fusils à Pompe", "type": "weapon", "wclass": "Militaire", "caliber": "12 Gauge Buckshot", "mags": "8, 20", "capacity": 20, "fireMode": "Auto", "attach": "Poignée", "limbDamage": 56, "bodyDamage": 56, "headDamage": 72, "rof": 340, "range": 170, "minRange": 250, "velocity": 2380, "hipfire": 90, "accuracy": 65, "recoil": 60, "reloadTime": 2.7, "tier": "S", "estimated": false, "description": "Fusil à pompe automatique (ajouté le 5 nov. 2026) : 340 coups/min, chargeur 8 ou tambour 20. Seulement un accessoire sous le canon. Précision et recul pas encore publiés par le wiki (valeurs estimées).", "iconType": "shotgun", "size": "2x5"},
             {"id": "spas-12", "name": "SPAS-12", "category": "Fusils à Pompe", "type": "weapon", "wclass": "Police", "caliber": "12 Gauge Buckshot", "mags": "8", "capacity": 8, "fireMode": "Semi", "attach": "Viseur", "limbDamage": 56, "bodyDamage": 56, "headDamage": 72, "rof": 320, "range": 150, "minRange": 220, "velocity": 1400, "hipfire": 100, "accuracy": 75, "recoil": 9, "reloadTime": 2.7, "tier": "S", "estimated": false, "description": "Le roi du combat en bâtiment. Cadence semi-auto violente.", "iconType": "shotgun", "size": "2x5"},
             {"id": "boomstick", "name": "Boomstick Coach Gun", "category": "Fusils à Pompe", "type": "weapon", "wclass": "Spécial", "caliber": "12 Gauge Buckshot", "mags": "2", "capacity": 2, "fireMode": "Rafale (x2)", "attach": "Viseur", "limbDamage": 56, "bodyDamage": 112, "headDamage": 144, "rof": 10000, "range": 130, "minRange": 200, "velocity": 1270, "hipfire": 89, "accuracy": 68, "recoil": 32, "reloadTime": 1.8, "tier": "A", "estimated": false, "description": "Double canon capable de lâcher 2 cartouches instantanément (One-Shot garanti).", "iconType": "shotgun", "size": "2x5"},
             {"id": "lupara", "name": "Lupara", "category": "Fusils à Pompe", "type": "weapon", "wclass": "Civil", "caliber": "12 Gauge Buckshot", "mags": "2", "capacity": 2, "fireMode": "Semi", "attach": "Aucun", "limbDamage": 56, "bodyDamage": 56, "headDamage": 72, "rof": 400, "range": 100, "minRange": 160, "velocity": 1100, "hipfire": 88, "accuracy": 65, "recoil": 19, "reloadTime": 2.6, "tier": "C", "estimated": false, "description": "Fusil à canons sciés compact (secondaire) : deux tirs dévastateurs à bout portant.", "iconType": "shotgun", "size": "1x3"},
@@ -1041,6 +1060,7 @@
             A({ id: 'pink-laser', name: 'Pink Laser Sight', slot: 'Sous-canon', aimSpeed: 3, hipfire: 2, rarity: 'Très rare', loot: "Lâché par l'infecté Magenta Technolord (Party Trailer, Obsidian Room)", description: "Laser rose : forte hausse de la vitesse de visée, hausse modérée de la précision à la hanche." }),
             A({ id: 'folding-grip', name: 'Folding Foregrip', slot: 'Sous-canon', aimSpeed: 3, hipfire: 2, rarity: 'Peu commun', description: "Poignée repliable : visée beaucoup plus rapide." }),
             A({ id: 'short-grip', name: 'Short Foregrip', slot: 'Sous-canon', recoilCtrl: 3, hipfire: 2, rarity: 'Rare', description: "Poignée courte des forces spéciales : très forte réduction du recul." }),
+            A({ id: 'angled-grip', name: 'Angled Foregrip', slot: 'Sous-canon', recoilCtrl: 1, aimSpeed: 2, hipfire: 1, rarity: 'Rare', estimated: true, description: "Poignée inclinée ajoutée le 5 nov. 2026. Ses bonus exacts ne sont pas encore publiés : valeurs estimées (recul + vitesse de visée)." }),
             A({ id: 'straight-grip', name: 'Straight Foregrip', slot: 'Sous-canon', recoilCtrl: 2, hipfire: 1, rarity: 'Commun', description: "Poignée droite : réduction modérée du recul." })
         ];
 
@@ -1164,6 +1184,12 @@
             F({ id: 'energy-supp', name: 'Energy Supplement', kind: 'Survie', effect: '-25% perte énergie', rarity: 'Peu commun', description: "Ralentit de 25% la baisse de la barre d'énergie." }),
             F({ id: 'multivitamins', name: 'Multivitamins', kind: 'Survie', effect: 'Boosts +50% de durée', rarity: 'Commun', description: "Les effets des boosters durent 50% plus longtemps." }),
             F({ id: 'water-tabs', name: 'Water Purification Tablets', kind: 'Survie', effect: "Boire l'eau des lacs", rarity: 'Peu commun', description: "Permet de boire directement dans les étangs et lacs d'eau douce." }),
+            F({"id": "m67-grenade", "name": "M67 Frag Grenade", "kind": "Survie", "effect": "90 dégâts • rayon 28 studs • mèche 3,2 s • lancer 115 studs", "size": "1x2", "rarity": "Rare", "description": "Grenade OTAN : la plus forte et la plus rapide à exploser. 60 % de dégâts sur tes coéquipiers.", "loot": "Salles à clé (garage et armurerie de la Naval Air Station), caisses militaires de Magnolia, événements"}),
+            F({"id": "rgd5-grenade", "name": "RGD-5 Frag Grenade", "kind": "Survie", "effect": "80 dégâts • rayon 24 studs • mèche 3,6 s • lancer 146 studs", "size": "1x2", "rarity": "Rare", "description": "Grenade soviétique : celle qu'on lance le plus loin. 60 % de dégâts sur tes coéquipiers.", "loot": "Salles à clé du Manoir et de la Soviet Cave, très rarement caisses de munitions soviétiques"}),
+            F({"id": "mk2-grenade", "name": "Mk 2 Frag Grenade", "kind": "Survie", "effect": "75 dégâts • rayon 26 studs • mèche 4,5 s • lancer 80 studs", "size": "1x2", "rarity": "Rare", "description": "Grenade « ananas » de surplus : la mèche la plus longue. 60 % de dégâts sur tes coéquipiers.", "loot": "Salles à clé de Magnolia Tactical et Bountyfields, rarement caisses de munitions US de surplus"}),
+            F({"id": "f1-grenade", "name": "F1 Frag Grenade", "kind": "Survie", "effect": "80 dégâts • rayon 32 studs • mèche 4,0 s • lancer 72 studs", "size": "1x2", "rarity": "Rare", "description": "Grenade soviétique ancienne : le plus grand rayon d'explosion. 60 % de dégâts sur tes coéquipiers.", "loot": "Salles à clé du Manoir et de la Soviet Cave"}),
+            F({"id": "ems-medkit", "name": "EMS MedKit", "kind": "Survie", "effect": "Nouveau soin (stats pas encore publiées)", "size": "1x2", "rarity": "Très rare", "description": "Trousse des secours ajoutée le 5 nov. 2026. Le wiki ne donne pas encore ses PV soignés ni son temps d'utilisation.", "loot": "Nouvelles salles médicales à clé (ex : bunker de l'hôpital)"}),
+            F({"id": "transfusion-bag", "name": "Transfusion Bag", "kind": "Survie", "effect": "Utilitaire médical (effet pas encore publié)", "size": "1x2", "rarity": "Très rare", "description": "Poche de transfusion ajoutée le 5 nov. 2026 (utilitaire). Effet exact pas encore documenté.", "loot": "Nouvelles salles médicales à clé"}),
             F({"id": "trauma-kit", "name": "Trauma Kit", "kind": "Survie", "effect": "+20 % PV temporaires après un medkit (40 s)", "rarity": "Rare", "description": "Après un medkit, donne en bonus 20 % du soin en PV temporaires pendant 40 s.", "loot": "Crashs d'hélicoptère, zones médicales, bases militaires, accidents de la route"}),
             F({"id": "mechanic-tools", "name": "Mechanic's Tools Set", "kind": "Survie", "effect": "+20 % de réparation véhicule", "rarity": "Peu commun", "description": "Les kits de réparation rendent 20 % de PV en plus aux pièces de véhicule.", "loot": "Stations-service, garages, entrepôts"}),
             F({"id": "fuel-syphon", "name": "Fuel Syphon Pump", "kind": "Survie", "effect": "Siphonner l'essence", "rarity": "Peu commun", "description": "Permet de siphonner l'essence d'un véhicule (jerrican requis).", "loot": "Stations-service, garages, entrepôts"}),
@@ -1238,6 +1264,8 @@
             { id: 'lootrun',     label: 'Loot Run',               icon: 'route', color: '#f97316', subs: [] },
             { id: 'balistique',  label: 'Balistique',             icon: 'scope', color: '#4ade80', subs: [] },
             { id: 'boss',        label: 'Boss & Infectés',        icon: 'skull', color: '#f87171', subs: [] },
+            { id: 'survie',      label: 'Survie & Soins',         icon: 'heart', color: '#fb7185', subs: [] },
+            { id: 'defi',        label: 'Défi Random',            icon: 'dice', color: '#c084fc', subs: [] },
             { id: 'finditem',    label: 'Find Item',              icon: 'search', color: '#38bdf8', subs: [] },
             { id: 'createur',    label: 'Créer une arme / explosif', icon: 'plus', color: '#e5c07b', subs: [] },
             { id: 'lieux',       label: 'Ajouter un lieu',        icon: 'pin', color: '#f472b6', subs: [] },
@@ -1271,6 +1299,8 @@
         // Lieux spécifiques connus (sinon : lieu par défaut de la sous-catégorie)
         const LOOT_OVERRIDES = {
             'green-laser': 'Lâché par un infecté unique aux docks de Magnolia',
+            'aa-12': 'Salle verrouillée de Magnolia Tactical (clé « MagTac » requise, 100 % de chance)',
+            'angled-grip': 'Nouvel accessoire (5 nov. 2026) : lieux de loot pas encore documentés',
             'pro-sup': 'Uniquement avec le M1911 F/A',
             'spetsnaz-sup': 'Camp de bandits Spetsnaz (avec l\'OTs-14 Groza), Manoir',
             'heavy-sup': 'Spawns d\'accessoires forces spéciales uniquement',
@@ -1624,6 +1654,8 @@
                 case 'bag':  return `<svg ${st}><path d="M8 7V5a4 4 0 0 1 8 0v2"/><rect x="4" y="7" width="16" height="14" rx="3"/><path d="M9 14h6"/></svg>`;
                 case 'route': return `<svg ${st}><circle cx="6" cy="19" r="2"/><circle cx="18" cy="5" r="2"/><path d="M8 19h7a3.5 3.5 0 0 0 0-7H9a3.5 3.5 0 0 1 0-7h7"/></svg>`;
                 case 'scope': return `<svg ${st}><circle cx="12" cy="12" r="9"/><path d="M12 3v6M12 15v6M3 12h6M15 12h6"/><circle cx="12" cy="12" r="1"/></svg>`;
+                case 'heart': return `<svg ${st}><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/><path d="M9 11h6M12 8v6"/></svg>`;
+                case 'dice': return `<svg ${st}><rect x="4" y="4" width="16" height="16" rx="3"/><circle cx="9" cy="9" r="1.2"/><circle cx="15" cy="15" r="1.2"/><circle cx="15" cy="9" r="1.2"/><circle cx="9" cy="15" r="1.2"/></svg>`;
                 case 'skull': return `<svg ${st}><path d="M12 3a8 8 0 0 0-5 14.2V20h10v-2.8A8 8 0 0 0 12 3z"/><circle cx="9" cy="11" r="1.6"/><circle cx="15" cy="11" r="1.6"/><path d="M10 20v-2M14 20v-2"/></svg>`;
                 case 'box':  return `<svg ${st}><path d="M21 8l-9-5-9 5v8l9 5 9-5V8z"/><path d="M3 8l9 5 9-5M12 13v8"/></svg>`;
                 default:     return `<svg ${st}><path d="M10.3 3.9L1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg>`;
@@ -1634,7 +1666,7 @@
         function renderMainTabs() {
             document.getElementById('main-tabs').innerHTML = GROUPS.map(g => {
                 const active = g.id === currentGroup;
-                const count = g.id === 'balistique' ? (typeof balWeapons === 'function' ? balWeapons().length : 0) : g.id === 'boss' ? (typeof BOSS_DATA !== 'undefined' ? BOSS_DATA.length : 0) : g.id === 'build' ? BACKPACKS_DATA.length : g.id === 'lootrun' ? (typeof LOOT_ROUTES !== 'undefined' ? LOOT_ROUTES.length : 0) : g.id === 'carte' ? (typeof MAP_COUNT !== 'undefined' ? MAP_COUNT : 0) + MAP_DATA.locations.filter(l => l.custom).length : g.id === 'lieux' ? MAP_DATA.locations.filter(l => l.custom).length : g.id === 'createur' ? ALL_ITEMS.filter(i => i.custom).length : g.id === 'finditem' ? ALL_ITEMS.length : g.id === 'crosshair' ? (window.AR2Crosshair ? Object.keys(window.AR2Crosshair.STYLES).length : 11) : ALL_ITEMS.filter(i => i.group === g.id).length;
+                const count = g.id === 'balistique' ? (typeof balWeapons === 'function' ? balWeapons().length : 0) : g.id === 'boss' ? (typeof BOSS_DATA !== 'undefined' ? BOSS_DATA.length : 0) : g.id === 'survie' ? 8 : g.id === 'defi' ? (typeof DF_RULES !== 'undefined' ? DF_RULES.length : 0) : g.id === 'build' ? BACKPACKS_DATA.length : g.id === 'lootrun' ? (typeof LOOT_ROUTES !== 'undefined' ? LOOT_ROUTES.length : 0) : g.id === 'carte' ? (typeof MAP_COUNT !== 'undefined' ? MAP_COUNT : 0) + MAP_DATA.locations.filter(l => l.custom).length : g.id === 'lieux' ? MAP_DATA.locations.filter(l => l.custom).length : g.id === 'createur' ? ALL_ITEMS.filter(i => i.custom).length : g.id === 'finditem' ? ALL_ITEMS.length : g.id === 'crosshair' ? (window.AR2Crosshair ? Object.keys(window.AR2Crosshair.STYLES).length : 11) : ALL_ITEMS.filter(i => i.group === g.id).length;
                 return `
                     <button data-group="${g.id}" class="flex items-center gap-2.5 px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider border transition-all ${
                         active ? 'bg-tactical-accent text-tactical-bg border-tactical-accent shadow-lg shadow-tactical-accent/10'
@@ -2042,11 +2074,10 @@
         let cmpShowDiff = false;      // afficher les écarts par rapport à la 1re arme
         let cmpMods = {};             // { weaponId: { Optique: id, Canon: id, 'Sous-canon': id } }
         let ttkDist = 50;             // distance de la cible (studs)
-        let ttkHelmet = false, ttkVest = false;
+        let ttkBoost = 0;             // PV temporaires de la cible (boosters) — les casques/gilets sont cosmétiques dans AR2
+        const TTK_BOOSTS = [[0,'Aucun'],[15,'AI-2 MedKit (+15 PV temporaires)'],[25,'Health Booster (+25)'],[35,'Military Health Booster (+35)']];
         const TTK_HP = 100;           // points de vie d'un joueur
         const TTK_MAX_DIST = 800;
-        // Valeurs estimées : le jeu n'affiche pas la réduction exacte des protections
-        const TTK_ARMOR = { helmet: 0.35, vest: 0.30 };
         const ATT_SLOTS = [
             { slot: 'Optique', label: 'Viseur', re: /viseur|optique/i },
             { slot: 'Canon', label: 'Canon / silencieux', re: /silencieux|canon/i },
@@ -2068,10 +2099,11 @@
         }
         function ttkCalc(w, d = ttkDist) {
             const f = ttkFalloff(w, d);
-            const head = w.headDamage * f * (ttkHelmet ? 1 - TTK_ARMOR.helmet : 1);
-            const body = w.bodyDamage * f * (ttkVest ? 1 - TTK_ARMOR.vest : 1);
+            const HP = TTK_HP + (ttkBoost || 0);
+            const head = w.headDamage * f;
+            const body = w.bodyDamage * f;
             const limb = w.limbDamage * f;
-            const stk = dmg => dmg > 0 ? Math.ceil((TTK_HP - 1e-9) / dmg) : Infinity;
+            const stk = dmg => dmg > 0 ? Math.ceil((HP - 1e-9) / dmg) : Infinity;
             const time = n => {
                 if (!isFinite(n)) return Infinity;
                 const shot = 60000 / Math.max(1, w.rof);
@@ -2080,8 +2112,8 @@
                 return (n - 1) * shot + reloads * (+w.reloadTime || 0) * 1000;
             };
             const nHead = stk(head), nBody = stk(body), nLimb = stk(limb);
-            const restBody = head >= TTK_HP ? 0 : stk(body) === Infinity ? Infinity : Math.max(0, Math.ceil((TTK_HP - head - 1e-9) / body));
-            const nMix = head >= TTK_HP ? 1 : 1 + restBody;
+            const restBody = head >= HP ? 0 : stk(body) === Infinity ? Infinity : Math.max(0, Math.ceil((HP - head - 1e-9) / body));
+            const nMix = head >= HP ? 1 : 1 + restBody;
             return {
                 f, head, body, limb, nHead, nBody, nLimb, nMix, restBody,
                 tHead: time(nHead), tBody: time(nBody), tLimb: time(nLimb), tMix: time(nMix)
@@ -2209,7 +2241,8 @@
                 ['Vitesse de visée (accessoires)', w => w.aimSpeed, v => (v > 0 ? '+' : '') + v, v => ((v + 9) / 18) * 100],
                 ['Portée dégâts max', w => w.range, v => v, v => pct(v, maxRange)],
                 ['Chargeur max', w => w.capacity, v => v + ' balles', v => pct(v, maxCapacity), false, ''],
-                ['Rechargement', w => w.reloadTime, v => v + 's', v => (1 - v / 6) * 100, true, 's', 1]
+                ['Rechargement', w => w.reloadTime, v => v + 's', v => (1 - v / 6) * 100, true, 's', 1],
+                ['Portée sonore (estim.)', w => (typeof sndRange === 'function' ? sndRange(w).final : 0), v => v + ' studs', v => (1 - v / 1200) * 100, true, ' studs']
             ];
             return `
                 <div class="flex flex-wrap items-center gap-2 text-[11px] font-mono text-tactical-muted -mt-2">
@@ -2217,7 +2250,7 @@
                     <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-orange-400"></span>Intermédiaire / égalité</span>
                     <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-tactical-red"></span>Moins bon</span>
                     <span class="flex items-center gap-1.5"><span class="text-cyan-400">◆</span>Modifié par les accessoires</span>
-                    <span class="ml-auto">TTK calculé à <b class="text-white">${ttkDist} studs</b>${ttkHelmet || ttkVest ? ' • cible protégée' : ''} (onglet « TTK & portée »)</span>
+                    <span class="ml-auto">TTK calculé à <b class="text-white">${ttkDist} studs</b>${ttkBoost ? ' • cible boostée +' + ttkBoost + ' PV' : ''} (onglet « TTK & portée »)</span>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-${Math.min(weaponsToCompare.length, 3)} gap-6">
                     ${eff.map((weapon, wi) => {
@@ -2285,8 +2318,9 @@
                     <input id="ttk-dist" type="range" min="0" max="${TTK_MAX_DIST}" step="5" value="${ttkDist}" class="w-full" style="accent-color:#00ff88">
                     <div class="flex justify-between text-[10px] font-mono text-tactical-muted"><span>0</span><span>200</span><span>400</span><span>600</span><span>${TTK_MAX_DIST}</span></div>
                     <div class="flex flex-wrap gap-4 pt-1">
-                        <label class="flex items-center gap-2 text-xs text-white cursor-pointer"><input type="checkbox" id="ttk-helmet" ${ttkHelmet ? 'checked' : ''} style="accent-color:#e5c07b"> Cible avec casque militaire <span class="text-tactical-muted font-mono">(-${TTK_ARMOR.helmet * 100} % tête)</span></label>
-                        <label class="flex items-center gap-2 text-xs text-white cursor-pointer"><input type="checkbox" id="ttk-vest" ${ttkVest ? 'checked' : ''} style="accent-color:#e5c07b"> Gilet pare-balles <span class="text-tactical-muted font-mono">(-${TTK_ARMOR.vest * 100} % corps)</span></label>
+                        <label class="flex items-center gap-2 text-xs text-white">Booster de la cible
+                            <select id="ttk-boost" class="bg-tactical-card border border-tactical-border rounded-lg px-2 py-1 text-xs text-white">${TTK_BOOSTS.map(([v,l]) => `<option value="${v}" ${ttkBoost === v ? 'selected' : ''}>${l}</option>`).join('')}</select></label>
+                        <span class="text-[10px] text-tactical-muted font-mono self-center">Casques et gilets = cosmétiques dans AR2 (aucune protection)</span>
                     </div>
                 </div>`;
         }
@@ -2359,7 +2393,7 @@
                     <div class="text-[10px] font-bold uppercase tracking-widest text-tactical-muted mb-2">Accessoires équipés (modifient la portée pour le silencieux artisanal)</div>
                     <div class="grid grid-cols-1 md:grid-cols-${Math.min(weapons.length, 3)} gap-4">${weapons.map(w => `<div><div class="text-xs font-bold text-white mb-1">${w.name}</div>${attSelectors(w)}</div>`).join('')}</div>
                 </div>
-                <p class="text-[10px] text-tactical-muted leading-relaxed">Calcul : ${TTK_HP} PV par joueur. Les dégâts sont pleins jusqu'à la « portée dégâts max », baissent en ligne droite puis restent au minimum après la « portée min » (même règle que le jeu). Le dégât minimum est une stat cachée : il est estimé à 50 % (calibres légers), 60 % (calibres lourds) ou 70 % (fusils de précision). Le TTK compte le temps entre la 1re et la dernière balle à la cadence max (RPM), avec un rechargement si le chargeur est vide. Les réductions du casque et du gilet sont des estimations.</p>`;
+                <p class="text-[10px] text-tactical-muted leading-relaxed">Calcul : ${TTK_HP} PV par joueur. Les dégâts sont pleins jusqu'à la « portée dégâts max », baissent en ligne droite puis restent au minimum après la « portée min » (même règle que le jeu). Le dégât minimum est une stat cachée : il est estimé à 50 % (calibres légers), 60 % (calibres lourds) ou 70 % (fusils de précision). Le TTK compte le temps entre la 1re et la dernière balle à la cadence max (RPM), avec un rechargement si le chargeur est vide. Dans AR2, casques et gilets pare-balles sont purement cosmétiques (aucune réduction de dégâts, cf. wiki « Cosmetics ») : seuls les boosters ajoutent des PV temporaires.</p>`;
         }
 
         // Événements du comparateur (accessoires, distance, protections, écarts)
@@ -2372,9 +2406,8 @@
                 renderModalContent();
                 return;
             }
-            if (e.target.id === 'ttk-helmet' || e.target.id === 'ttk-vest') {
-                ttkHelmet = document.getElementById('ttk-helmet').checked;
-                ttkVest = document.getElementById('ttk-vest').checked;
+            if (e.target.id === 'ttk-boost') {
+                ttkBoost = +e.target.value;
                 const box = document.getElementById('ttk-results');
                 if (box) box.innerHTML = buildTTKResults(compareList.map(id => ALL_ITEMS.find(w => w.id === id)).filter(Boolean));
                 return;
@@ -2933,7 +2966,12 @@
             const isMap = currentGroup === 'carte', isCreator = currentGroup === 'createur', isFind = currentGroup === 'finditem', isXh = currentGroup === 'crosshair', isLieux = currentGroup === 'lieux';
             const isBuild = currentGroup === 'build', isRun = currentGroup === 'lootrun';
             const isBal = currentGroup === 'balistique', isBoss = currentGroup === 'boss';
-            const special = isMap || isCreator || isFind || isXh || isLieux || isBuild || isRun || isBal || isBoss;
+            const isSv = currentGroup === 'survie', isDf = currentGroup === 'defi';
+            const special = isMap || isCreator || isFind || isXh || isLieux || isBuild || isRun || isBal || isBoss || isSv || isDf;
+            document.getElementById('survie-section').classList.toggle('hidden', !isSv);
+            document.getElementById('defi-section').classList.toggle('hidden', !isDf);
+            if (isSv && typeof svRender === 'function') svRender();
+            if (isDf && typeof dfRender === 'function') dfRender();
             document.getElementById('balistique-section').classList.toggle('hidden', !isBal);
             document.getElementById('boss-section').classList.toggle('hidden', !isBoss);
             if (isBal && typeof balRender === 'function') balRender();
@@ -5222,6 +5260,488 @@
         document.addEventListener('DOMContentLoaded', () => {
             vhInit(); wishRender();
         });
+    </script>
+    <style>
+        .ph-badge{display:inline-flex;align-items:center;gap:.35rem;margin-top:.4rem;font:700 10px 'JetBrains Mono',monospace;padding:.2rem .5rem;border-radius:.45rem;border:1px solid #2a2f3a;background:#0f1115;color:#cbd5e1;cursor:pointer}
+        .ph-badge:hover{border-color:#93c5fd;color:#fff}
+        .ph-new{background:#f59e0b22;color:#fcd34d;border-radius:.3rem;padding:0 .3rem}
+        .sv-bul{display:inline-block;width:5px;height:12px;border-radius:2px 2px 1px 1px;background:linear-gradient(#fcd34d,#b45309)}
+        .df-card{background:linear-gradient(135deg,#2a1647 0%,#151821 60%);border:1px solid #c084fc66;box-shadow:0 0 30px #c084fc1a}
+    </style>
+    <script>
+
+        // ============================================================
+        // ROUND 4 : sustain, portée sonore, survie & soins, historique des patchs, défi random, Kin Flats
+        // ============================================================
+        const UPD_URL = 'https://roblox-apocalypse-rising.fandom.com/wiki/Updates_(Apocalypse_Rising_2)';
+        const fmtS = v => !isFinite(v) ? '—' : (v < 10 ? v.toFixed(2) : v.toFixed(1)).replace('.', ',') + ' s';
+        const fmtN = (v, d = 0) => !isFinite(v) ? '—' : v.toFixed(d).replace('.', ',');
+        const wById = id => WEAPONS_DATA.find(w => w.id === id);
+
+        // ---------- 1) Chargeur choisi (influence le TTK, le tableau et le sustain) ----------
+        let cmpMag = {};
+        const magList = w => [...new Set(String((w._base || w).mags || '').split(/[^0-9]+/).map(Number).filter(n => n > 0))].sort((a, b) => a - b);
+        const _effW = effWeapon;
+        effWeapon = function (w) { const o = _effW(w); const m = cmpMag[w.id]; if (m && magList(w).includes(m)) o.capacity = m; return o; };
+
+        // ---------- 2) Portée sonore (estimation) ----------
+        const SND_BASE = [[/subsonic/i, 250], [/plastic/i, 150], [/13\.2/, 1100], [/7\.62mm NATO|Rimmed|\.30-06/i, 900], [/12 Gauge/i, 600], [/\.44|\.357/, 550], [/5\.56|5\.45|7\.62mm Soviet|\.30 Carbine/i, 600], [/9mm|\.45|Tokarev/i, 450]];
+        const SND_INTEGRAL = { 'filtered-aks-74u': 0.45, 'silent-partner-m1911': 0.3 };
+        const SND_SUP = { 'oil-filter': 0.45, 'std-sup': 0.33, 'heavy-sup': 0.25, 'mil-sup': 0.28, 'soviet-mil-sup': 0.28, 'nato-sup': 0.26, 'spetsnaz-sup': 0.26, 'pro-sup': 0.28 };
+        function sndRange(w) {
+            const b = w._base || w;
+            const base = (SND_BASE.find(([r]) => r.test(b.caliber || '')) || [0, 500])[1];
+            const sup = (w._atts || []).find(a => SND_SUP[a.id]);
+            let f = 1, label = 'Sans silencieux';
+            if (sup) { f = SND_SUP[sup.id]; label = sup.name; }
+            else if (SND_INTEGRAL[b.id]) { f = SND_INTEGRAL[b.id]; label = 'Silencieux intégré'; }
+            else if (/subsonic/i.test(b.caliber || '')) label = 'Munition subsonique (déjà discrète)';
+            return { base, final: Math.round(base * f / 10) * 10, f, label };
+        }
+
+        // ---------- 3) Combat Sustain (sous le TTK) ----------
+        let csSquad = 3, csHit = 1;
+        function buildSustain(weapons) {
+            const eff = weapons.map(effWeapon);
+            const rows = eff.map(w => {
+                const r = ttkCalc(w);
+                const cap = Math.max(1, +w.capacity || 1), shot = 60 / Math.max(1, w.rof), rl = +w.reloadTime || 0;
+                const nB = isFinite(r.nBody) ? Math.ceil(r.nBody / csHit) : Infinity;
+                const nM = isFinite(r.nMix) ? Math.ceil(r.nMix / csHit) : Infinity;
+                const dump = (cap - 1) * shot;
+                const killsMag = isFinite(nB) ? Math.floor(cap / nB) : 0;
+                const killsMagH = isFinite(nM) ? Math.floor(cap / nM) : 0;
+                const burst = r.body * csHit / shot;
+                const sustained = cap * r.body * csHit / (cap * shot + rl);
+                const S = csSquad * nB;
+                const reloads = isFinite(S) ? Math.floor((S - 1) / cap) : Infinity;
+                const tSquad = isFinite(S) ? (S - 1) * shot + reloads * rl + (csSquad - 1) * 0.35 : Infinity;
+                return { w, cap, dump, killsMag, killsMagH, burst, sustained, reloads, tSquad, mags: isFinite(S) ? Math.ceil(S / cap) : Infinity, nB };
+            });
+            const maxS = Math.max(...rows.map(x => x.sustained), 1), bestT = Math.min(...rows.map(x => x.tSquad));
+            return `
+                <div class="bg-tactical-bg border border-tactical-border rounded-2xl p-4 space-y-4" id="cs-block">
+                    <div class="flex flex-wrap items-center gap-3">
+                        <div class="text-[10px] font-bold uppercase tracking-widest text-orange-300 flex-1 min-w-[200px]">Combat Sustain — munitions &amp; temps de survie</div>
+                        <label class="text-xs text-white flex items-center gap-2">Escouade ennemie
+                            <select id="cs-squad" class="bg-tactical-card border border-tactical-border rounded-lg px-2 py-1 text-xs text-white">${[1, 2, 3, 4].map(n => `<option value="${n}" ${csSquad === n ? 'selected' : ''}>${n} joueur${n > 1 ? 's' : ''}</option>`).join('')}</select></label>
+                        <label class="text-xs text-white flex items-center gap-2">Balles qui touchent
+                            <select id="cs-hit" class="bg-tactical-card border border-tactical-border rounded-lg px-2 py-1 text-xs text-white">${[[1, '100 %'], [0.75, '75 %'], [0.5, '50 %'], [0.33, '33 %']].map(([v, l]) => `<option value="${v}" ${csHit === v ? 'selected' : ''}>${l}</option>`).join('')}</select></label>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-${Math.min(rows.length, 3)} gap-3">
+                        ${rows.map((x, i) => {
+                            const ml = magList(x.w);
+                            const ok = x.killsMag >= csSquad;
+                            return `<div class="rounded-xl border border-tactical-border p-3 space-y-2" style="border-top:3px solid ${RADAR_COLORS[i]}">
+                                <div class="flex items-center justify-between gap-2"><b class="text-sm text-white">${hx(x.w.name)}</b>
+                                    ${ml.length > 1 ? `<select data-mag-w="${x.w.id}" class="bg-tactical-card border border-tactical-border rounded-lg px-2 py-1 text-[11px] text-white" title="Chargeur équipé">${ml.map(m => `<option value="${m}" ${m === x.cap ? 'selected' : ''}>Chargeur ${m}</option>`).join('')}</select>` : `<span class="text-[11px] font-mono text-tactical-muted">Chargeur ${x.cap}</span>`}</div>
+                                <div class="grid grid-cols-2 gap-2 text-[11px]">
+                                    <div class="bg-tactical-card rounded-lg p-2"><div class="text-tactical-muted text-[9px] uppercase">Vider le chargeur</div><b class="text-white font-mono text-sm">${fmtS(x.dump)}</b></div>
+                                    <div class="bg-tactical-card rounded-lg p-2"><div class="text-tactical-muted text-[9px] uppercase">Kills par chargeur</div><b class="text-white font-mono text-sm">${x.killsMag}</b> <span class="text-tactical-muted">corps • ${x.killsMagH} tête+corps</span></div>
+                                    <div class="bg-tactical-card rounded-lg p-2"><div class="text-tactical-muted text-[9px] uppercase">DPS en rafale</div><b class="text-white font-mono text-sm">${fmtN(x.burst)}</b></div>
+                                    <div class="bg-tactical-card rounded-lg p-2"><div class="text-tactical-muted text-[9px] uppercase">DPS soutenu (rechargement inclus)</div><b class="text-white font-mono text-sm">${fmtN(x.sustained)}</b></div>
+                                </div>
+                                <div class="h-2 rounded-full bg-tactical-card overflow-hidden"><div class="h-full rounded-full" style="width:${(x.sustained / maxS * 100).toFixed(1)}%;background:${RADAR_COLORS[i]}"></div></div>
+                                <div class="text-xs ${x.tSquad === bestT ? 'text-tactical-accent' : 'text-white'}">Escouade de ${csSquad} : <b class="font-mono">${fmtS(x.tSquad)}</b> • ${isFinite(x.mags) ? x.mags : '—'} chargeur${x.mags > 1 ? 's' : ''} • ${isFinite(x.reloads) ? x.reloads : '—'} rechargement${x.reloads > 1 ? 's' : ''}</div>
+                                <div class="text-[11px] ${ok ? 'text-green-300' : 'text-amber-300'}">${ok ? `Tu peux finir les ${csSquad} sans recharger.` : x.killsMag ? `Rechargement obligatoire après ${x.killsMag} kill${x.killsMag > 1 ? 's' : ''}.` : 'Un chargeur ne suffit pas pour un seul kill au corps.'}</div>
+                            </div>`;
+                        }).join('')}
+                    </div>
+                    <p class="text-[10px] text-tactical-muted leading-relaxed">Calcul à ${ttkDist} studs, tirs au corps (balles nécessaires ÷ % de balles qui touchent). Temps escouade = toutes les balles à la cadence max + rechargements + 0,35 s pour changer de cible. DPS soutenu = dégâts d'un chargeur ÷ (temps de tir + rechargement).</p>
+                </div>`;
+        }
+        function buildSound(weapons) {
+            const eff = weapons.map(effWeapon), s = eff.map(sndRange), mx = Math.max(...s.map(x => x.base), 1);
+            return `
+                <div class="bg-tactical-bg border border-tactical-border rounded-2xl p-4 space-y-3">
+                    <div class="text-[10px] font-bold uppercase tracking-widest text-sky-300">Portée sonore des tirs (estimation)</div>
+                    ${eff.map((w, i) => `<div class="space-y-1">
+                        <div class="flex flex-wrap items-center gap-2 text-xs"><b class="text-white">${hx(w.name)}</b><span class="text-tactical-muted">${hx(s[i].label)}</span>
+                            <span class="ml-auto font-mono text-white">${s[i].final !== s[i].base ? `<s class="text-tactical-muted">${s[i].base}</s> → ` : ''}<b>${s[i].final} studs</b></span>
+                            <button type="button" data-snd-map="${w.id}" class="text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-lg border border-sky-400/50 text-sky-300 hover:bg-sky-400/10">Voir le rayon sur la carte</button></div>
+                        <div class="relative h-2.5 rounded-full bg-tactical-card overflow-hidden"><div class="absolute inset-y-0 left-0 rounded-full opacity-30" style="width:${(s[i].base / mx * 100).toFixed(1)}%;background:${RADAR_COLORS[i]}"></div><div class="absolute inset-y-0 left-0 rounded-full" style="width:${(s[i].final / mx * 100).toFixed(1)}%;background:${RADAR_COLORS[i]}"></div></div>
+                    </div>`).join('')}
+                    <p class="text-[10px] text-tactical-muted leading-relaxed">Le jeu ne publie pas ces distances : base estimée par calibre (9 mm ≈ 450, 5.56/5.45/7.62×39 ≈ 600, 7.62 NATO/.30-06 ≈ 900 studs…). Le <a class="underline" href="${UPD_URL}" target="_blank" rel="noopener">changelog officiel</a> confirme seulement les écarts : −150 studs pour les calibres intermédiaires, +150 pour les gros calibres, son réduit pour l'AS VAL et le VSS. Change le silencieux dans « Accessoires équipés » juste en dessous.</p>
+                </div>`;
+        }
+        const _btr = buildTTKResults;
+        buildTTKResults = ws => _btr(ws) + buildSustain(ws) + buildSound(ws);
+        const cmpRerenderTTK = () => { const box = document.getElementById('ttk-results'); if (box) box.innerHTML = buildTTKResults(compareList.map(id => ALL_ITEMS.find(w => w.id === id)).filter(Boolean)); };
+        document.addEventListener('change', e => {
+            const m = e.target.closest('[data-mag-w]');
+            if (m) { cmpMag[m.dataset.magW] = +m.value; renderModalContent(); return; }
+            if (e.target.id === 'cs-squad') { csSquad = +e.target.value; cmpRerenderTTK(); }
+            if (e.target.id === 'cs-hit') { csHit = +e.target.value; cmpRerenderTTK(); }
+        });
+
+        // ---------- Cercle sonore sur la carte ----------
+        let sndCircle = null;
+        document.addEventListener('click', e => {
+            const b = e.target.closest('[data-snd-map]'); if (!b) return;
+            const w = WEAPONS_DATA.find(x => x.id === b.dataset.sndMap); if (!w) return;
+            const ew = effWeapon(w), s = sndRange(ew);
+            sndCircle = { r: s.final, name: w.name, label: s.label };
+            if (typeof closeModal === 'function') closeModal();
+            currentGroup = 'carte'; renderMainTabs(); onGroupChange();
+            setTimeout(() => { if (!mapSelected) selectPoint(mapWorld === 'kf' ? 'kf-kin' : 'l0'); else drawMap(); sndChip(); }, 60);
+        });
+        function sndChip() {
+            let c = document.getElementById('snd-chip');
+            if (!c) { const mc = document.getElementById('map-canvas'); if (!mc) return; (mc.parentElement.parentElement).insertAdjacentHTML('beforebegin', '<div id="snd-chip" class="hidden mb-2 flex flex-wrap items-center gap-2 text-xs bg-sky-500/10 border border-sky-400/40 rounded-xl px-3 py-2"></div>'); c = document.getElementById('snd-chip'); }
+            if (!sndCircle) { c.classList.add('hidden'); return; }
+            c.classList.remove('hidden');
+            c.innerHTML = `<span class="w-3 h-3 rounded-full border-2 border-sky-300 shrink-0"></span><span class="text-white">Cercle sonore : <b>${hx(sndCircle.name)}</b> (${hx(sndCircle.label)}) ≈ <b>${sndCircle.r} studs</b></span><span class="text-tactical-muted">Clique sur un lieu pour déplacer le cercle. Échelle de carte estimée.</span><button type="button" id="snd-off" class="ml-auto text-tactical-muted hover:text-white">✕ Retirer</button>`;
+            document.getElementById('snd-off').onclick = () => { sndCircle = null; sndChip(); drawMap(); };
+        }
+
+        // ---------- Kin Flats : 2e carte ----------
+        let mapWorld = 'halsey';
+        const KF_POINTS = [{"uid": "kf-kin", "name": "Kin", "cat": "ville", "x": 427, "y": 631, "desc": "La plus grande ville de Kin Flats et la plus dangereuse : hordes d'infectés, bandits et joueurs. 2 casernes de pompiers, commissariat, hôpital, église, clinique et 2 supérettes ; un tiers de la ville est industriel (sud).", "island": "Kin Flats", "world": "kf", "approx": true, "kind": "loc"}, {"uid": "kf-vernal", "name": "Vernal", "cat": "ville", "x": 923, "y": 418, "desc": "Grande ville de l'est : église, hôpital, supérette et commissariat. Bon loot médical et police.", "island": "Kin Flats", "world": "kf", "approx": true, "kind": "loc"}, {"uid": "kf-hark", "name": "Hark", "cat": "ville", "x": 174, "y": 87, "desc": "Ville du nord-ouest (case B1) avec supérette et caserne de pompiers. Proche des spawns du bord de carte.", "island": "Kin Flats", "world": "kf", "approx": true, "kind": "loc"}, {"uid": "kf-mason", "name": "Mason", "cat": "ville", "x": 880, "y": 581, "desc": "Petite ville avec une église et une clinique (cases E4/F4). Fermes autour.", "island": "Kin Flats", "world": "kf", "approx": true, "kind": "loc"}, {"uid": "kf-korri", "name": "Korri", "cat": "ville", "x": 705, "y": 770, "desc": "Ville moyenne au sud-est de Kin : maisons civiles, entrepôts et commissariat. Loot civil et un peu de militaire bas niveau (parfois mieux, rarement).", "island": "Kin Flats", "world": "kf", "approx": true, "kind": "loc"}, {"uid": "kf-olke", "name": "Olke", "cat": "ville", "x": 488, "y": 202, "desc": "Petite ville du nord avec supérette, près du cimetière.", "island": "Kin Flats", "world": "kf", "approx": true, "kind": "loc"}, {"uid": "kf-dirk", "name": "Dirk", "cat": "ville", "x": 101, "y": 537, "desc": "Petite ville de l'ouest (A4) : caserne de pompiers et clinique.", "island": "Kin Flats", "world": "kf", "approx": true, "kind": "loc"}, {"uid": "kf-yale", "name": "Yale", "cat": "ville", "x": 174, "y": 865, "desc": "Petite ville du sud-ouest (B6) avec supérette, à côté de Trinity HQ.", "island": "Kin Flats", "world": "kf", "approx": true, "kind": "loc"}, {"uid": "kf-bump", "name": "Bump Flatts", "cat": "ville", "x": 104, "y": 155, "desc": "Petit hameau de mobile homes et de caisses industrielles (A1/A2), au bord de la carte : beaucoup de joueurs y apparaissent.", "island": "Kin Flats", "world": "kf", "approx": true, "kind": "loc"}, {"uid": "kf-pitts", "name": "Pitts Park", "cat": "ville", "x": 253, "y": 489, "desc": "Petit quartier résidentiel / parc caravanes à l'ouest de Kin (B4).", "island": "Kin Flats", "world": "kf", "approx": true, "kind": "loc"}, {"uid": "kf-trinity", "name": "Trinity HQ", "cat": "militaire", "x": 148, "y": 808, "desc": "Complexe Trinity : zone industrielle, hangar, héliport et deux bâtiments (un pare-balles), accès au toit par l'échelle. Loot militaire et civil, armes secondaires et accessoires très fréquents. Gardé par des infectés militaires et policiers.", "island": "Kin Flats", "world": "kf", "approx": true, "kind": "loc"}, {"uid": "kf-refugee", "name": "Refugee Camp", "cat": "militaire", "x": 871, "y": 79, "desc": "Grand camp de tentes au nord-est, entouré de barricades et gardé par des infectés militaires : loot militaire.", "island": "Kin Flats", "world": "kf", "approx": true, "kind": "loc"}, {"uid": "kf-outpost", "name": "Military Outpost", "cat": "militaire", "x": 784, "y": 240, "desc": "Avant-poste militaire (E2) ajouté à la carte en 2014 : tentes et loot militaire. Absent de la liste officielle AR2 du wiki mais cité par les joueurs.", "island": "Kin Flats", "world": "kf", "approx": true, "kind": "loc"}, {"uid": "kf-prison", "name": "Prison", "cat": "poi", "x": 732, "y": 474, "desc": "Prison au centre-est de la carte : peu de loot mais très fréquentée, à faire en groupe.", "island": "Kin Flats", "world": "kf", "approx": true, "kind": "loc"}, {"uid": "kf-radio", "name": "Radio Station", "cat": "poi", "x": 671, "y": 631, "desc": "Station radio au sud-est de Kin (D4) : antenne visible de loin, bon point d'observation.", "island": "Kin Flats", "world": "kf", "approx": true, "kind": "loc"}, {"uid": "kf-factory", "name": "Factory", "cat": "poi", "x": 897, "y": 773, "desc": "Usine (F5) : grande zone industrielle, beaucoup de matériaux et de caisses.", "island": "Kin Flats", "world": "kf", "approx": true, "kind": "loc"}, {"uid": "kf-mansion", "name": "Mansion", "cat": "poi", "x": 183, "y": 234, "desc": "Le Manoir (« Gusmanak's Mansion ») au nord-ouest : lieu présent dans presque tous les Apocalypse Rising.", "island": "Kin Flats", "world": "kf", "approx": true, "kind": "loc"}, {"uid": "kf-mine", "name": "Old Mine", "cat": "poi", "x": 444, "y": 71, "desc": "Vieille mine au nord (C1), isolée et peu visitée.", "island": "Kin Flats", "world": "kf", "approx": true, "kind": "loc"}, {"uid": "kf-cemetery", "name": "Cemetery", "cat": "poi", "x": 610, "y": 292, "desc": "Cimetière au centre-nord (D2), près d'Olke.", "island": "Kin Flats", "world": "kf", "approx": true, "kind": "loc"}, {"uid": "kf-fort", "name": "Fort Ruins", "cat": "poi", "x": 514, "y": 884, "desc": "Ruines de fort au sud (C6/D6), entre Yale et Korri.", "island": "Kin Flats", "world": "kf", "approx": true, "kind": "loc"}];
+        KF_POINTS.forEach(p => MAP_POINTS.push(p));
+        const KF_STUDS_PER_UNIT = 4000 / 1045;   // Kin Flats ≈ 4 000 studs de large (estimation)
+        const KF_IMG = 'assets/kin-flats-map.jpg';
+        const _pv = pointVisible;
+        pointVisible = p => (p.world || 'halsey') === mapWorld && _pv(p);
+        const _gs = gridSquare;
+        gridSquare = (x, y) => mapWorld !== 'kf' ? _gs(x, y) : 'ABCDEF'[Math.max(0, Math.min(5, Math.floor(x / (MAP_W / 6))))] + Math.max(1, Math.min(6, Math.floor(y / (MAP_H / 6)) + 1));
+        const _rms = renderMapSVG;
+        renderMapSVG = function () {
+            let svg = _rms();
+            const k = mapView.w / MAP_W;
+            if (mapWorld === 'kf') {
+                const a = svg.indexOf('<rect x="-2000"'), b = svg.indexOf('<g id="map-routes">'), b2 = svg.indexOf('</g>', b) + 4;
+                if (a > 0 && b > a) svg = svg.slice(0, a) + `<rect x="-2000" y="-2000" width="5000" height="5000" fill="#1c2a1c"/><image href="${KF_IMG}" x="0" y="0" width="${MAP_W}" height="${MAP_H}" preserveAspectRatio="none"/><rect x="0" y="0" width="${MAP_W}" height="${MAP_H}" fill="#000" opacity=".12" pointer-events="none"/><g id="map-routes"></g>` + svg.slice(b2);
+            }
+            if (sndCircle) {
+                const c = mapSelected || MAP_POINTS.find(p => p.uid === (mapWorld === 'kf' ? 'kf-kin' : 'l0'));
+                const r = sndCircle.r / (mapWorld === 'kf' ? KF_STUDS_PER_UNIT : LR_STUDS_PER_UNIT);
+                const circ = `<g pointer-events="none"><circle cx="${c.x}" cy="${c.y}" r="${r.toFixed(1)}" fill="#38bdf8" fill-opacity=".12" stroke="#7dd3fc" stroke-width="${2 * Math.max(k, .35)}" stroke-dasharray="${8 * Math.max(k, .35)} ${5 * Math.max(k, .35)}"/><text x="${c.x}" y="${(c.y - r - 6 * Math.max(k, .4)).toFixed(1)}" text-anchor="middle" fill="#bae6fd" style="font:700 ${13 * Math.max(k, .45)}px 'JetBrains Mono',monospace;paint-order:stroke;stroke:#0b0f14;stroke-width:3px">≈ ${sndCircle.r} studs</text></g>`;
+                svg = svg.replace('<g id="map-markers">', circ + '<g id="map-markers">');
+            }
+            return svg;
+        };
+        const _sp = selectPoint;
+        selectPoint = function (uid, zoom) {
+            const p = MAP_POINTS.find(q => q.uid === uid);
+            if (p && (p.world || 'halsey') !== mapWorld) { mapWorld = p.world || 'halsey'; if (mapWorld === 'kf') mapMode = 'normal'; renderMapModes(); renderMapLegend(); }
+            return _sp(uid, zoom);
+        };
+        function setMapWorld(w) {
+            if (w === mapWorld) return;
+            mapWorld = w; mapSelected = null; if (w === 'kf') mapMode = 'normal';
+            mapSearch = ''; const ms = document.getElementById('map-search'); if (ms) ms.value = '';
+            mapView = { x: 0, y: 0, w: MAP_W, h: MAP_H };
+            refreshMap(); renderMapResults();
+        }
+        const _rmm = renderMapModes;
+        renderMapModes = function () {
+            _rmm();
+            const box = document.getElementById('map-modes');
+            const wbtn = (id, label) => `<button data-world="${id}" class="px-3.5 py-1.5 rounded-lg text-xs font-extrabold uppercase tracking-wider whitespace-nowrap border transition-all" style="${mapWorld === id ? 'background:#ffffff;color:#0f1115;border-color:#ffffff' : 'border-color:#2a2f3a;color:#e5e7eb'}">${label}</button>`;
+            const worlds = `<div class="flex gap-1.5 pr-2 mr-1 border-r border-tactical-border">${wbtn('halsey', 'Halsey Islands')}${wbtn('kf', 'Kin Flats')}</div>`;
+            if (mapWorld === 'kf') box.innerHTML = worlds + `<span class="text-[11px] text-tactical-muted self-center">Carte classique « Reimagined » (mobile + PC)</span>`;
+            else box.insertAdjacentHTML('afterbegin', worlds);
+            const h2 = document.querySelector('#map-section h2'); if (h2) h2.textContent = mapWorld === 'kf' ? 'Carte de Kin Flats' : "Carte de l'archipel";
+        };
+        document.addEventListener('click', e => { const b = e.target.closest('[data-world]'); if (b) { e.stopPropagation(); setMapWorld(b.dataset.world); } }, true);
+        const _rml = renderMapLegend;
+        renderMapLegend = function () {
+            _rml();
+            const lg = document.getElementById('map-legend');
+            lg.querySelectorAll('[data-mapcat]').forEach(inp => { const n = MAP_POINTS.filter(p => (p.world || 'halsey') === mapWorld && p.cat === inp.dataset.mapcat && (p.kind !== 'season' || p.mode === mapMode) && (p.kind !== 'infected' || p.mode === 'normal' || p.mode === mapMode)).length; const sp = inp.closest('label').querySelector('.font-mono'); if (sp) sp.textContent = n; });
+            if (mapWorld === 'kf') lg.insertAdjacentHTML('afterbegin', `<div class="mb-4 p-3 rounded-xl border border-emerald-400/30 bg-emerald-400/5 text-[11px] text-gray-300 leading-relaxed space-y-1.5">
+                <div class="text-[10px] font-bold uppercase tracking-widest text-emerald-300">Kin Flats</div>
+                <p>2e carte d'AR2 : la carte « Reimagined » d'Apocalypse Rising 1, ajoutée le 17 sept. 2026 (jouable sur mobile). Région sans eau, plate avec des collines.</p>
+                <p>Loot exclusif limité : gilets cosmétiques AR, béret Trinity, tenues camo Trinity bleue et rouge. Grenades M67, Mk 2, RGD-5 et F1 aussi présentes.</p>
+                <p>Le crash d'hélicoptère (non marqué) change de position. Choisis ta région de spawn dans l'onglet Personnage.</p>
+                <p class="text-tactical-muted">Positions d'après la carte du wiki (approximatives). Sources : <a class="underline" href="https://roblox-apocalypse-rising.fandom.com/wiki/Kin_Flats" target="_blank" rel="noopener">wiki Kin Flats</a>, <a class="underline" href="https://devforum.roblox.com/t/apocalypse-rising-2-beta-release-changelog/3793954" target="_blank" rel="noopener">changelog officiel</a>.</p></div>`);
+        };
+        const _rmi = renderMapInfo;
+        renderMapInfo = function () {
+            _rmi();
+            if (!mapSelected && mapWorld === 'kf') { const box = document.getElementById('map-info'); const ps = box.querySelectorAll('p'); if (ps[1]) ps[1].textContent = 'Kin Flats : 20 lieux marqués. Clique sur un point pour voir le loot.'; }
+        };
+
+        // ---------- 4) Historique des patchs ----------
+        const PATCH = {"D": [["2026-11-06", ""], ["2026-11-05", ""], ["2026-10-28", ""], ["2026-10-23", ""], ["2026-10-22", "Halloween Part 2"], ["2026-10-15", "Halloween"], ["2026-10-08", ""], ["2026-10-06", ""], ["2026-10-02", ""], ["2026-09-17", "Roblox 20th Anniversary"], ["2026-08-13", "Soviet Takeover"], ["2026-07-23", ""], ["2026-07-20", ""], ["2026-06-18", "The Drying"], ["2026-05-15", ""], ["2026-05-08", ""], ["2026-05-04", ""], ["2026-05-01", "Console Support"], ["2026-04-27", ""], ["2026-03-27", "Easter"], ["2026-03-17", ""], ["2026-03-07", ""], ["2026-03-02", ""], ["2026-02-20", ""], ["2026-02-14", ""], ["2026-02-05", "Valentine's Day"], ["2026-01-19", ""], ["2026-01-09", ""], ["2025-12-19", "Christmas"], ["2025-12-03", ""], ["2025-12-02", ""], ["2025-11-25", ""], ["2025-11-24", ""], ["2025-10-30", "Halloween Part 2"], ["2025-10-17", "Halloween"], ["2025-09-22", ""], ["2025-09-02", "The Drying Part 2"], ["2025-08-15", "The Drying"], ["2025-08-07", ""], ["2025-07-25", ""], ["2025-07-23", ""], ["2025-07-08", ""], ["2025-07-03", ""], ["2025-07-01", "Beta Map Release"], ["2025-03-28", ""], ["2025-02-13", ""], ["2025-02-11", ""], ["2025-02-08", ""], ["2025-01-20", ""], ["2024-12-17", ""], ["2024-12-12", "Christmas"], ["2024-10-28", ""], ["2024-10-26", ""], ["2024-10-17", "Halloween"], ["2024-09-21", ""], ["2024-06-19", ""], ["2024-06-07", "The Drying"], ["2024-03-31", ""], ["2024-02-29", ""], ["2024-02-14", ""], ["2024-01-26", ""], ["2024-01-25", ""], ["2024-01-23", ""], ["2024-01-12", ""], ["2024-01-09", ""], ["2023-12-25", ""], ["2023-12-16", "Christmas"], ["2023-12-12", ""], ["2023-11-27", ""], ["2023-11-16", ""], ["2023-10-27", ""], ["2023-10-17", "Halloween"], ["2023-09-30", ""], ["2023-09-01", ""], ["2023-08-10", ""], ["2023-07-31", "The Drying"], ["2023-07-08", ""], ["2023-05-04", ""], ["2023-01-16", ""], ["2022-12-19", "Christmas"], ["2022-10-28", "Halloween"], ["2022-08-26", ""], ["2022-08-14", ""], ["2022-08-04", ""], ["2022-07-22", ""], ["2022-07-18", ""], ["2022-07-01", "Alpha Map Free Release"], ["2022-07-01", ""], ["2022-06-28", ""], ["2022-06-27", ""], ["2022-06-26", ""], ["2022-06-25", ""], ["2022-06-23", ""], ["2022-06-21", ""], ["2022-06-15", ""], ["2022-06-14", ""], ["2022-06-11", ""], ["2022-06-10", ""], ["2022-06-04", ""], ["2022-06-02", ""], ["2021-12-18", "Christmas"], ["2021-01-07", ""], ["2020-12-29", ""], ["2020-12-24", "Alpha v2.1"], ["2020-10-02", ""], ["2020-09-29", "Alpha v2.0"], ["2020-03-05", ""], ["2020-01-06", "Alpha v1.0"], ["2019-11-11", ""], ["2019-11-01", ""], ["2019-10-05", ""], ["2019-09-24", ""], ["2019-07-30", ""], ["2019-07-24", ""], ["2019-07-07", ""], ["2019-04-21", ""], ["2019-02-10", ""], ["2019-01-04", ""], ["2018-12-30", ""], ["2018-12-11", ""], ["2018-11-10", ""], ["2018-11-01", "\"Hotfix\""], ["2018-10-31", ""], ["2018-09-03", ""], ["2018-08-24", ""], ["2018-05-01", ""], ["2018-04-21", ""], ["2018-04-18", ""], ["2018-02-20", ""], ["2018-01-10", ""], ["2018-01-06", ""], ["2017-12-26", ""], ["2017-12-25", ""], ["2017-10-19", ""], ["2017-09-17", ""], ["2017-09-11", ""], ["2017-09-09", ""], ["2017-08-18", ""], ["2017-08-10", ""], ["2017-08-09", ""], ["2017-08-04", "Apocalypse Rising 2 First Release"], ["2017-07-27", ""]], "P": {"mp5": [[0, "Firearms whose caliber has no large ammo container now get a spare ammo budget based on ammo packs instead of magazines, for that caliber only. For example, the MP5’s budget has changed from 150 to 250 rounds", "chg"], [32, "Added MP5 to low-tier military security case loot pool", "add"], [32, "Removed MP5 from professional case loot pool", "chg"], [77, "Police stations now have two tiers of container spawns. Thin black weapon cases now include the Mini-14, M16A2, Maverick Tactical, and 788 Carbine. Higher-tier police firearms now spawn in thin green cases, and include the SPAS-12, AC-556, M14 DMR, and MP5. Depending on the police station, only 1-3 of these high-tier spawns will be present.", "buff"], [124, "Added four new firearms: PSG-1, L96A1, MP5, and the M9", "add"]], "vss": [[1, "Changed AS VAL to no longer spawn within the same firearm loot pool as the VSS Vintorez and OTs-14", "chg"], [1, "Changed OTs-14 to be half as common as the VSS Vintorez within its firearm loot pool", "chg"], [10, "30rd AS VAL/OTs/VSS rifle magazine", "chg"], [25, "Reduced AS VAL and VSS Vintorez fire sound distance parameters to make shooting less audible at extreme range", "mix"]], "as-val": [[1, "Changed AS VAL to no longer spawn within the same firearm loot pool as the VSS Vintorez and OTs-14", "chg"], [10, "30rd AS VAL/OTs/VSS rifle magazine", "chg"], [25, "Reduced AS VAL and VSS Vintorez fire sound distance parameters to make shooting less audible at extreme range", "mix"]], "ppsh-41": [[8, "Added PPSh-41 SMG with 71rd and 35rd magazines, as well as the option to mount an optic", "add"]], "an-94": [[10, "Added AN-94 Assault Rifle as a limited event firearm", "add"]], "m14": [[10, "30rd M14 battle rifle magazine", "chg"], [10, "Rebalanced M14 Battle Rifle recoil to reduce excessive visual kick while keeping it just as challenging to control", "nerf"], [32, "Added M14 BR to light surplus crate loot pool", "add"], [32, "Increased chance of finding XM177, M14 BR, and M60 in heavy surplus crate", "buff"], [32, "Added AC-556, M14 BR, and AUG to professional case loot pool", "add"], [68, "M14 BR/DMR: Increased damage and range - Reduced velocity", "mix"], [86, "Changed M14 Battle Rifle to only spawn alongside other Vietnam War era firearms", "chg"], [100, "Slightly increased recoil for M60 machine gun, and M14 Battle Rifle", "nerf"], [105, "Removed all “extended” magazines except the AK-47/AKM 40-round magazine, M14/G3/FAL 30-round magazine, and the Thompson 50-round drum (all smaller magazines are still present)", "chg"], [108, "Increased effective range of G3, FAL, M14 by ~100 studs", "buff"], [111, "Decreased recoil for the M14", "buff"], [111, "Increased damage (slightly) for FAL and M14", "buff"]], "thompson": [[10, "30rd M1 Thompson smg magazine", "chg"], [10, "Changed 50rd M1 Thompson drum magazine to now incur a significant penalty to aim speed", "chg"], [32, "Increased chance of finding M1 Thompson and M1918A2 BAR in light surplus crate loot pool", "buff"], [32, "Increased chance of finding M1 Thompson, M1918A2 BAR, and M1919A6 in heavy surplus crate", "buff"], [32, "Increased chance of finding M1 Thompson, M16, and XM177 in light surplus crate", "buff"], [103, "Slightly reduced Thompson recoil", "buff"], [105, "Removed all “extended” magazines except the AK-47/AKM 40-round magazine, M14/G3/FAL 30-round magazine, and the Thompson 50-round drum (all smaller magazines are still present)", "chg"], [122, "Added 50-round drum magazine for the M1 Thompson", "add"]], "m93r": [[10, "30rd M93R machine pistol magazine", "chg"], [39, "Added M93R Burst Machine Pistol,", "add"]], "tec-9": [[10, "32rd TEC-9 machine pistol magazine", "chg"]], "ak-47": [[10, "40rd AK-47 rifle magazine", "chg"], [10, "40rd AK-47/AKM/RPK rifle magazine", "chg"], [30, "Fixed some AK-47 variants missing details in the model", "fix"], [32, "Increased chance of finding AK-47 and RPK in respective loot pool", "buff"], [32, "Added AK-47, Model 94 Ranger, and Python Revolver custom weapon case loot pool", "add"], [32, "Added .357 Magnum ammo and 30rd AK-47 magazines to corresponding ammo pools", "add"], [100, "Added AKM/AK-47 drum magazine as an uncommon loot drop from the Infected Spetsnaz (boss)", "add"], [105, "Removed all “extended” magazines except the AK-47/AKM 40-round magazine, M14/G3/FAL 30-round magazine, and the Thompson 50-round drum (all smaller magazines are still present)", "chg"], [116, "Changed AK-47 recoil to be harder to control when aiming down sights", "chg"]], "msg-90": [[10, "30rd G3/PSG-1/MSG-90 rifle magazines", "chg"], [10, "Slightly decreased PSG-1 and MSG-90 marksman rifle recoil", "nerf"]], "psg-1": [[10, "30rd G3/PSG-1/MSG-90 rifle magazines", "chg"], [10, "Slightly decreased PSG-1 and MSG-90 marksman rifle recoil", "nerf"], [68, "PSG-1: Reduced damage and range - Increased firerate to be more in-line with other semi-automatic rifles - Added optional ability to mount optics (PSG scope is default until an optic is attached)", "mix"], [100, "Reduced bullet drop for L96A1, PSG-1, and Mosin PU Sniper", "buff"], [103, "Slightly reduced PSG-1 sway when aiming", "buff"], [105, "Reduced PSG-1 magazine capacity to 5 rounds", "nerf"], [108, "Increased effective range of L96A1, PSG-1, Mosin PU Sniper, by ~75 studs", "buff"], [113, "Reduced overall damage of PSG-1 and Remington 788", "nerf"], [117, "Reduced ADS accuracy for all firearms except PSG-1 and L96A1", "chg"], [122, "Changed M1903, Model 788, PSG-1, and the L96A1 to deal 30 base damage (kills a player in two headshots)", "chg"], [123, "Changed PSG-1 semi-auto fire-rate to be 25% slower", "nerf"], [124, "Added four new firearms: PSG-1, L96A1, MP5, and the M9", "add"]], "g3": [[10, "30rd G3/PSG-1/MSG-90 rifle magazines", "chg"], [10, "Changed FAL 30rd, G3/MSG 30rd, M1918A2 BAR 30rd, and Skorpion 30rd magazines to now incur a small penalty to aim speed", "chg"], [41, "G3: implemented new weapon model, improved recoil control,", "buff"], [68, "G3: Reduced range", "nerf"], [105, "Removed all “extended” magazines except the AK-47/AKM 40-round magazine, M14/G3/FAL 30-round magazine, and the Thompson 50-round drum (all smaller magazines are still present)", "chg"], [108, "Increased effective range of G3, FAL, M14 by ~100 studs", "buff"], [122, "Added six new firearms: M1909 Snubnose revolver, Maverick 88, M1 Garand, Lupara (Sawn-off DB), G3, and the Hi-Power", "add"]], "uzi": [[10, "32rd UZI smg magazines", "chg"]], "bar": [[10, "30rd M1918A2 BAR magazine", "chg"], [10, "Changed FAL 30rd, G3/MSG 30rd, M1918A2 BAR 30rd, and Skorpion 30rd magazines to now incur a small penalty to aim speed", "chg"], [28, "Added 30-round M1918A2 BAR magazine", "add"], [32, "Increased chance of finding M1 Thompson and M1918A2 BAR in light surplus crate loot pool", "buff"], [32, "Increased chance of finding M1 Thompson, M1918A2 BAR, and M1919A6 in heavy surplus crate", "buff"], [113, "M1918 BAR (headshot multiplier was too high)", "chg"]], "akm": [[10, "40rd AK-47/AKM/RPK rifle magazine", "chg"], [32, "Increased chance of finding AKM and RPK in respective loot pool", "buff"], [100, "Added AKM/AK-47 drum magazine as an uncommon loot drop from the Infected Spetsnaz (boss)", "add"], [105, "Removed all “extended” magazines except the AK-47/AKM 40-round magazine, M14/G3/FAL 30-round magazine, and the Thompson 50-round drum (all smaller magazines are still present)", "chg"], [113, "AKM Assault Rifle (will spawn where SKS/AK47s are found)", "chg"]], "rpk": [[10, "40rd AK-47/AKM/RPK rifle magazine", "chg"], [32, "Increased chance of finding AKM and RPK in respective loot pool", "buff"], [32, "Increased chance of finding AK-47 and RPK in respective loot pool", "buff"], [46, "Removed chance for RPK to naturally spawn with a drum mag (infected that have a chance, still do)", "chg"], [46, "Added chance for RPK to naturally spawn with a 40rd extended mag", "add"], [46, "Slightly decreased accuracy for RPK", "nerf"], [46, "Changed descriptions for 7.62mm Soviet AK magazines to include RPK", "chg"], [47, "Added 8 new firearms: PP-19 Bizon SMG, RPK LMG, MAT-49 SMG, Model 44 Carbine, Skorpion vz.65 Machine Pistol, G17 Pistol, P220 Pistol, M2 Carbine.", "add"]], "ak-74": [[10, "45rd AK-74/74U/RPK-74 rifle magazine", "chg"], [32, "Increased chance of finding AK-74 in respective loot pool", "buff"], [45, "Fixed plum AK-74 magazine", "fix"], [85, "Changed Spetsnaz Camp random event Boss to sometimes drop an AK-74 instead of the “Spetsnaz” AKS-74U all the time", "chg"], [113, "AK-74 Assault Rifle", "chg"]], "skorpion-vz-65": [[10, "Added 30rd Skorpion smg magazine with a small chance for it to spawn naturally with the firearm", "add"], [10, "Changed FAL 30rd, G3/MSG 30rd, M1918A2 BAR 30rd, and Skorpion 30rd magazines to now incur a small penalty to aim speed", "chg"], [46, "Corrected descriptions for Skorpion and P220 pistol", "chg"], [46, "Changed descriptions for 9mm Soviet to include Skorpion and PP-19", "chg"], [47, "Added 8 new firearms: PP-19 Bizon SMG, RPK LMG, MAT-49 SMG, Model 44 Carbine, Skorpion vz.65 Machine Pistol, G17 Pistol, P220 Pistol, M2 Carbine.", "add"]], "fal": [[10, "Changed FAL 30rd, G3/MSG 30rd, M1918A2 BAR 30rd, and Skorpion 30rd magazines to now incur a small penalty to aim speed", "chg"], [105, "Removed all “extended” magazines except the AK-47/AKM 40-round magazine, M14/G3/FAL 30-round magazine, and the Thompson 50-round drum (all smaller magazines are still present)", "chg"], [108, "Increased effective range of G3, FAL, M14 by ~100 studs", "buff"], [111, "Increased damage (slightly) for FAL and M14", "buff"]], "mosin-m44": [[10, "Changed Mosin-Nagant M44 Carbine to now deal up to 53 headshot damage, reduced its aimed accuracy, slightly reduced its range, and lowered max damage at range", "nerf"], [32, "Added Mosin-Nagant M44 Carbine and Obrez Mosin-Nagant to militia case loot pools", "add"], [60, "Fixed M44 Carbine skins", "fix"], [60, "Increased M44 Carbine max damage to 40", "buff"], [61, "Added Mosin-Nagant M44 Carbine", "add"]], "m21": [[10, "Slightly increased M21 marksman rifle recoil", "nerf"], [32, "Increased chance of finding M40A1 and M21 in light military crate", "buff"], [32, "Increased chance of finding M40A1, M21, and M249 in heavy military crate", "buff"], [32, "Increased chance of finding M40A1 and M21 in marksman case", "buff"], [41, "Dragunov and M21: Lowered recoil kick-up and kick-back, improving visibility", "buff"]], "maverick-88": [[10, "Changed name of \"Maverick 88 Tactical Shotgun\" to \"Model 590 Shotgun\", updated its firearm model, and slightly adjusted the pump-action sound delay to better align with its firerate", "chg"], [10, "Slightly increased Maverick 88 shotgun firerate, adjusted the pump-action sound delay, and updated its firearm model", "buff"], [30, "Fixed Maverick 88 Shotgun variants outdated loot models", "fix"], [32, "Removed Camp Carbine, Maverick 88, and P38 from militia cases", "chg"], [121, "Changed Maverick 88 spawn rate to be significantly lower", "nerf"], [122, "Added six new firearms: M1909 Snubnose revolver, Maverick 88, M1 Garand, Lupara (Sawn-off DB), G3, and the Hi-Power", "add"]], "model-590": [[10, "Changed name of \"Maverick 88 Tactical Shotgun\" to \"Model 590 Shotgun\", updated its firearm model, and slightly adjusted the pump-action sound delay to better align with its firerate", "chg"]], "hi-power": [[10, "Changed Hi-Power pistol magazine capacity to 13 instead of 15 rounds", "chg"], [10, "US Military Sidearm pool now includes the M1911 instead of the Hi-Power", "chg"], [10, "US Military Sidearm Officer pool now includes the G17 instead of the Hi-Power", "chg"], [10, "Enthusiast Sidearm pool now includes the Hi-Power instead of the Model 459", "chg"], [10, "Police Sidearm pool now includes the Hi-Power and Model 29", "chg"], [121, "Changed Hi-Power spawn rate to be significantly lower", "nerf"], [122, "Added six new firearms: M1909 Snubnose revolver, Maverick 88, M1 Garand, Lupara (Sawn-off DB), G3, and the Hi-Power", "add"]], "m1918-tankgewehr": [[10, "Fixed M1918 Tankgewehr and MK23 SOCOM missing muzzle flash/particle effects", "fix"], [37, "Added Trooper M1919A6 as a limited Drying event firearm along with the returning M1918 Tankgewehr", "add"], [75, "Added the M1918 Tankgewehr, a devastating event anti-tank rifle with unique stats", "add"]], "socom-mk23": [[10, "Fixed M1918 Tankgewehr and MK23 SOCOM missing muzzle flash/particle effects", "fix"], [28, "Reduced MK23 SOCOM recoil", "buff"]], "rpk-74m": [[10, "Soviet Military 5.45mm Firearm pool now includes a small chance for the RPK-74M to spawn", "chg"]], "m1911": [[10, "US Military Sidearm pool now includes the M1911 instead of the Hi-Power", "chg"], [83, "These 12-round magazines won’t work with a regular M1911", "chg"], [83, "The “Silent Partner” will accept regular 7-round M1911 magazines in addition to the 12-round magazines", "add"], [122, "Added M1909 Snubnose as the new starter weapon, instead of the M1911", "add"], [123, "Changed the M1911 to have a magazine loaded when the player spawns in", "chg"]], "g17": [[10, "US Military Sidearm Officer pool now includes the G17 instead of the Hi-Power", "chg"], [47, "Added 8 new firearms: PP-19 Bizon SMG, RPK LMG, MAT-49 SMG, Model 44 Carbine, Skorpion vz.65 Machine Pistol, G17 Pistol, P220 Pistol, M2 Carbine.", "add"]], "model-459": [[10, "Enthusiast Sidearm pool now includes the Hi-Power instead of the Model 459", "chg"]], "model-29": [[10, "Police Sidearm pool now includes the Hi-Power and Model 29", "chg"], [10, "Common Civilian Sidearm pool now has a slightly lower chance for the Model 29 to spawn", "nerf"], [57, "Fixed Model 29 front sight [the red color was accidentally removed in a recent update]", "fix"]], "l85a1": [[13, "Added L85A1 Assault Rifle", "add"]], "aks-74u": [[13, "Fixed AKS-74U sightline calibration to correct unintentional projectile behavior when aiming down sights", "fix"], [27, "Adjusted AKS-74U recoil", "chg"], [99, "Leaked \"Ripped\" AKS-74U Assault Carbine (now \"Spetsnaz\" AKS-74U)", "chg"], [99, "Leaked \"Choked\" AKS-74U Assault Carbine (now \"Filtered\" AKS-74U)", "chg"], [108, "Slightly reduced AKS-74U firerate", "nerf"], [109, "Tweaked recoil for AKS-74U", "chg"], [113, "AKS-74U Assault Carbine", "chg"]], "snubnose": [[14, "Added \"Knife & Beans\" and \"Beans Only\" (no melee or equipment) as free Starter Kit options besides the default Snubnose kit.", "add"], [115, "Newly spawned players now have a Pocket Knife in addition to their Snubnose Revolver", "add"], [122, "Added six new firearms: M1909 Snubnose revolver, Maverick 88, M1 Garand, Lupara (Sawn-off DB), G3, and the Hi-Power", "add"], [122, "Added M1909 Snubnose as the new starter weapon, instead of the M1911", "add"]], "famas": [[19, "Added FAMAS Assault Rifle", "add"]], "m16a2": [[19, "Slightly increased burst firerate for M16A2", "buff"], [19, "Fixed M16A2 character posing so the rifle is not held so high in first-person", "fix"], [68, "Improved burst fire mode recoil for M16A2, AUG and others with burst fire", "nerf"], [77, "Police stations now have two tiers of container spawns. Thin black weapon cases now include the Mini-14, M16A2, Maverick Tactical, and 788 Carbine. Higher-tier police firearms now spawn in thin green cases, and include the SPAS-12, AC-556, M14 DMR, and MP5. Depending on the police station, only 1-3 of these high-tier spawns will be present.", "buff"], [77, "Military locations now have two tiers of containers spawns. Thin green weapon cases will only spawn the M16A2 or M14 DMR. Large green weapon cases may spawn either firearm, and/or the M249. This means the M249 will only have a chance to spawn in large weapon cases.", "chg"]], "ump45": [[24, "Added finalized fire sound effect to UMP45 SMG, and slightly reduced the model scale", "nerf"], [25, "Added UMP45 SMG", "add"]], "ots-14-groza": [[27, "Adjusted OTS-14 Groza recoil", "chg"]], "desert-eagle": [[28, "Fixed gun skin texture for Desert Eagle", "fix"]], "m40a1": [[32, "Added M40A1 and M4A1 to light military crate loot pool", "add"], [32, "Increased chance of finding M40A1 and M21 in light military crate", "buff"], [32, "Increased chance of finding M40A1, M21, and M249 in heavy military crate", "buff"], [32, "Increased chance of finding M40A1 and M21 in marksman case", "buff"], [68, "M40A1 Sniper Rifle", "chg"]], "m4a1": [[32, "Added M40A1 and M4A1 to light military crate loot pool", "add"], [32, "Added M4A1 to heavy military crate loot pool", "add"], [32, "Added M4A1 to the pool marksman case loot pool", "add"], [36, "Adjusted accuracy and limb damage stats for M4A1 and Operator M4A1 [this was an oversight that made the Operator worse than intended]", "chg"], [41, "M4A1: lowered camera shake and improved vertical recoil control,,", "buff"], [118, "Removed M4A1 and replaced it with the XM177", "chg"]], "m249-saw": [[32, "Increased chance of finding M40A1, M21, and M249 in heavy military crate", "buff"], [47, "Changed M249 Paratrooper to aim slightly faster compared to the standard M249", "buff"], [68, "M249 SAW LMG updated model", "chg"], [77, "Military locations now have two tiers of containers spawns. Thin green weapon cases will only spawn the M16A2 or M14 DMR. Large green weapon cases may spawn either firearm, and/or the M249. This means the M249 will only have a chance to spawn in large weapon cases.", "chg"], [109, "Some firearm magazines like the M60 and M249 boxes will no longer spawn anywhere else, except with the firearm", "chg"]], "m1903": [[32, "Removed M3A1 and M1903 from heavy surplus crate loot pool", "chg"], [43, "Changed M1903 to use loose ammo boxes to reload instead of requiring clips.", "chg"], [68, "M1903: Increased range, velocity, and headshot damage", "buff"], [111, "Increased reload speed of M1903, M1 Garand, and SKS", "nerf"], [122, "Changed M1903, Model 788, PSG-1, and the L96A1 to deal 30 base damage (kills a player in two headshots)", "chg"], [122, "Changed firerate of Model 788, M1903 and L96A1 to be significantly lower", "nerf"], [137, "Map, compass, m1903 icons fixed", "fix"], [137, "M1903 icon fixed", "fix"]], "m3a1": [[32, "Removed M3A1 and M1903 from heavy surplus crate loot pool", "chg"], [32, "Removed M3A1 from light surplus crate loot pool", "chg"], [32, "Removed M3A1 from heavy surplus crate loot pool", "chg"], [113, "M3A1 (headshot multiplier was too high)", "chg"]], "m1919a6": [[32, "Increased chance of finding M1 Thompson, M1918A2 BAR, and M1919A6 in heavy surplus crate", "buff"], [56, "Changed M1919A6 LMG to be included in the US surplus loot pool and removed its Rare status", "chg"], [85, "Slightly improved spawnrate for PKM and M1919A6", "buff"], [105, "Changed spawn location for Mosin PU Sniper and M1919A6 LMG", "chg"], [115, "Added five “Rare” firearms - Makarov, Mosin PU Sniper, MP 40, M1919A6 LMG, Python Revolver", "add"]], "xm177": [[32, "Increased chance of finding M1 Thompson, M16, and XM177 in light surplus crate", "buff"], [32, "Increased chance of finding XM177, M14 BR, and M60 in heavy surplus crate", "buff"], [108, "Changed XM177 to no longer spawn in military or police locations", "chg"], [109, "Increased recoil for AUG Assault Rifle and XM177 Assault Carbine", "nerf"], [111, "Increased recoil for the XM177 Assault Carbine", "nerf"], [118, "Removed M4A1 and replaced it with the XM177", "chg"]], "m60": [[32, "Increased chance of finding XM177, M14 BR, and M60 in heavy surplus crate", "buff"], [79, "Added “Santa’s Pig” Machine Gun, a Special modified M60 that only has a chance to drop from Infected Santa.", "add"], [100, "Slightly increased recoil for M60 machine gun, and M14 Battle Rifle", "nerf"], [109, "Some firearm magazines like the M60 and M249 boxes will no longer spawn anywhere else, except with the firearm", "chg"]], "pkm": [[32, "Increased chance of finding PKM in respective loot pool", "buff"], [85, "Slightly improved spawnrate for PKM and M1919A6", "buff"], [113, "PKM Machine Gun", "chg"]], "mosin-nagant": [[32, "Increased chance of finding Mosin-Nagant PU Sniper and SVT-40 in respective loot pool", "buff"], [68, "Mosin PU: Increased firerate and range - Added optional ability to mount optics (PU scope is default until an optic is attached)", "buff"], [100, "Reduced bullet drop for L96A1, PSG-1, and Mosin PU Sniper", "buff"], [105, "Changed spawn location for Mosin PU Sniper and M1919A6 LMG", "chg"], [108, "Increased effective range of L96A1, PSG-1, Mosin PU Sniper, by ~75 studs", "buff"], [115, "Added five “Rare” firearms - Makarov, Mosin PU Sniper, MP 40, M1919A6 LMG, Python Revolver", "add"]], "svt-40": [[32, "Increased chance of finding Mosin-Nagant PU Sniper and SVT-40 in respective loot pool", "buff"], [68, "SVT-40: Increased damage and range", "buff"], [71, "Added SVT-40 Battle Rifle", "add"]], "obrez-mosin-nagant": [[32, "Added Mosin-Nagant M44 Carbine and Obrez Mosin-Nagant to militia case loot pools", "add"], [45, "Increased Obrez Mosin Nagant aim speed", "buff"], [61, "Increased Mosin “Obrez” muzzle flash chance", "nerf"], [68, "Obrez Mosin: Increased damage, firerate, range, and accuracy - Added ability to mount optics", "buff"], [99, "Leaked \"Obrez\" Mosin", "chg"]], "camp-carbine": [[32, "Removed Camp Carbine, Maverick 88, and P38 from militia cases", "chg"], [112, "Slightly decreased Camp Carbine headshot multiplier", "nerf"], [115, "Added two new (non-rare) firearms - Camp Carbine, AUG Assault Rifle", "add"]], "p38": [[32, "Removed Camp Carbine, Maverick 88, and P38 from militia cases", "chg"]], "ac-556": [[32, "Added AC-556, M14 BR, and AUG to professional case loot pool", "add"], [47, "Changed AC-556 to have a chance of spawning two 30rd magazines", "chg"], [77, "Police stations now have two tiers of container spawns. Thin black weapon cases now include the Mini-14, M16A2, Maverick Tactical, and 788 Carbine. Higher-tier police firearms now spawn in thin green cases, and include the SPAS-12, AC-556, M14 DMR, and MP5. Depending on the police station, only 1-3 of these high-tier spawns will be present.", "buff"], [93, "Leaked AC-556", "chg"]], "aug": [[32, "Added AC-556, M14 BR, and AUG to professional case loot pool", "add"], [68, "Reduced inventory size for XM177s, AUG, MP-40 and Patriot", "nerf"], [68, "Improved burst fire mode recoil for M16A2, AUG and others with burst fire", "nerf"], [105, "Reduced AUG firerate to 720 RPM", "nerf"], [108, "Slightly reduced AUG firerate", "nerf"], [109, "Increased recoil for AUG Assault Rifle and XM177 Assault Carbine", "nerf"], [111, "Increased recoil for the AUG Assault Rifle", "nerf"], [115, "Added two new (non-rare) firearms - Camp Carbine, AUG Assault Rifle", "add"]], "model-44": [[32, "Added Model 44 Carbine to common weapon case loot pool", "add"], [32, "Removed Model 44 Carbine and .44 Magnum ammo from corresponding loot pools", "chg"], [39, "Adjusted Model 44 Carbine recoil", "chg"], [47, "Added 8 new firearms: PP-19 Bizon SMG, RPK LMG, MAT-49 SMG, Model 44 Carbine, Skorpion vz.65 Machine Pistol, G17 Pistol, P220 Pistol, M2 Carbine.", "add"]], "model-94-ranger": [[32, "Added AK-47, Model 94 Ranger, and Python Revolver custom weapon case loot pool", "add"], [32, "Changed Model 94 Ranger, Python Revolver, and .357 Magnum ammo to no longer be Rare-tagged", "chg"]], "python": [[32, "Added AK-47, Model 94 Ranger, and Python Revolver custom weapon case loot pool", "add"], [32, "Changed Model 94 Ranger, Python Revolver, and .357 Magnum ammo to no longer be Rare-tagged", "chg"], [109, "Increased damage for Python Revolver", "buff"], [115, "Added five “Rare” firearms - Makarov, Mosin PU Sniper, MP 40, M1919A6 LMG, Python Revolver", "add"]], "operator-m4a1": [[36, "Adjusted accuracy and limb damage stats for M4A1 and Operator M4A1 [this was an oversight that made the Operator worse than intended]", "chg"]], "broadside-lupara": [[36, "Updated Lupara and Broadside Lupara firearm models", "chg"], [90, "Leaked \"Broadside\" Lupara Shotgun", "chg"]], "lupara": [[36, "Updated Lupara and Broadside Lupara firearm models", "chg"], [43, "Updated double barrel shotguns and lupara animations to load only one shell if a shell is already loaded.", "chg"], [122, "Added six new firearms: M1909 Snubnose revolver, Maverick 88, M1 Garand, Lupara (Sawn-off DB), G3, and the Hi-Power", "add"]], "trooper-m1919a6": [[37, "Added Trooper M1919A6 as a limited Drying event firearm along with the returning M1918 Tankgewehr", "add"], [52, "Increased volume and updated sound distance parameters for Trooper M1919A6 fire sound effects", "buff"], [56, "Added SPECIAL “Trooper” M1919A6 LMG", "add"]], "vagrant-lupara": [[39, "Re-added Vagrant Lupara (Special triple-barrel shotgun secondary),", "add"], [43, "Removed 5 firearms: “Spetsnaz” AKS-74U, “Filtered” AKS-74U, “Vagrant” Lupara, “Admiral’s” M9, Type 37.", "chg"]], "dragunov": [[41, "Dragunov and M21: Lowered recoil kick-up and kick-back, improving visibility", "buff"], [68, "Dragunov Marksman Rifle - has optional ability to mount optics (SVD scope is default until an optic is attached)", "chg"]], "trapper-s-model-94": [[43, "Not mentioned here are the Trapper's Model 94 and the Sacrificial Dagger.", "chg"]], "filtered-aks-74u": [[43, "Removed 5 firearms: “Spetsnaz” AKS-74U, “Filtered” AKS-74U, “Vagrant” Lupara, “Admiral’s” M9, Type 37.", "chg"], [99, "Leaked \"Choked\" AKS-74U Assault Carbine (now \"Filtered\" AKS-74U)", "chg"]], "spetsnaz-aks-74u": [[43, "Removed 5 firearms: “Spetsnaz” AKS-74U, “Filtered” AKS-74U, “Vagrant” Lupara, “Admiral’s” M9, Type 37.", "chg"], [85, "Changed Spetsnaz Camp random event Boss to sometimes drop an AK-74 instead of the “Spetsnaz” AKS-74U all the time", "chg"], [99, "Leaked \"Ripped\" AKS-74U Assault Carbine (now \"Spetsnaz\" AKS-74U)", "chg"]], "admirals-m9": [[43, "Removed 5 firearms: “Spetsnaz” AKS-74U, “Filtered” AKS-74U, “Vagrant” Lupara, “Admiral’s” M9, Type 37.", "chg"]], "bootleg-type-37": [[43, "Removed 5 firearms: “Spetsnaz” AKS-74U, “Filtered” AKS-74U, “Vagrant” Lupara, “Admiral’s” M9, Type 37.", "chg"], [70, "Increased Type 37 SMG magazine capacity to 35 rounds", "buff"], [85, "Slightly improved special Infected spawnrate for “Bootleg” Type 37, “Silent Partner” M1911, and “Jeremiah’s” Winchester 1894", "buff"]], "silent-partner-m1911": [[43, "Not mentioned here are the \"Operator\" XM177, \"Silent Partner\" M1911 and the M14 DMR.", "chg"], [83, "Increased “Silent Partner” M1911 max damage (now 35 headshot damage)", "buff"], [83, "Changed “Silent Partner” M1911 to spawn with Special 12-round magazines", "chg"], [83, "The “Silent Partner” will accept regular 7-round M1911 magazines in addition to the 12-round magazines", "add"], [85, "Slightly improved special Infected spawnrate for “Bootleg” Type 37, “Silent Partner” M1911, and “Jeremiah’s” Winchester 1894", "buff"]], "operator-xm177": [[43, "Not mentioned here are the \"Operator\" XM177, \"Silent Partner\" M1911 and the M14 DMR.", "chg"], [83, "Added Special “Operator” XM177 Assault Carbine with side-mounted laser (drops from random event)", "add"]], "m14-dmr": [[43, "Not mentioned here are the \"Operator\" XM177, \"Silent Partner\" M1911 and the M14 DMR.", "chg"], [77, "Police stations now have two tiers of container spawns. Thin black weapon cases now include the Mini-14, M16A2, Maverick Tactical, and 788 Carbine. Higher-tier police firearms now spawn in thin green cases, and include the SPAS-12, AC-556, M14 DMR, and MP5. Depending on the police station, only 1-3 of these high-tier spawns will be present.", "buff"], [77, "Military locations now have two tiers of containers spawns. Thin green weapon cases will only spawn the M16A2 or M14 DMR. Large green weapon cases may spawn either firearm, and/or the M249. This means the M249 will only have a chance to spawn in large weapon cases.", "chg"], [93, "Leaked M14 DMR", "chg"]], "patriot": [[46, "Slightly increased firerate for Patriot", "buff"], [68, "Reduced inventory size for XM177s, AUG, MP-40 and Patriot", "nerf"], [99, "Leaked \"Patriot\" Assault Carbine", "chg"]], "p220": [[46, "Corrected descriptions for Skorpion and P220 pistol", "chg"], [47, "Added 8 new firearms: PP-19 Bizon SMG, RPK LMG, MAT-49 SMG, Model 44 Carbine, Skorpion vz.65 Machine Pistol, G17 Pistol, P220 Pistol, M2 Carbine.", "add"]], "pp-19-bizon": [[47, "Added 8 new firearms: PP-19 Bizon SMG, RPK LMG, MAT-49 SMG, Model 44 Carbine, Skorpion vz.65 Machine Pistol, G17 Pistol, P220 Pistol, M2 Carbine.", "add"]], "m2-carbine": [[47, "Added 8 new firearms: PP-19 Bizon SMG, RPK LMG, MAT-49 SMG, Model 44 Carbine, Skorpion vz.65 Machine Pistol, G17 Pistol, P220 Pistol, M2 Carbine.", "add"]], "mat-49": [[47, "Added 8 new firearms: PP-19 Bizon SMG, RPK LMG, MAT-49 SMG, Model 44 Carbine, Skorpion vz.65 Machine Pistol, G17 Pistol, P220 Pistol, M2 Carbine.", "add"]], "spas-12": [[47, "Slightly decreased firerate for Auto-5 and SPAS-12", "nerf"], [77, "Police stations now have two tiers of container spawns. Thin black weapon cases now include the Mini-14, M16A2, Maverick Tactical, and 788 Carbine. Higher-tier police firearms now spawn in thin green cases, and include the SPAS-12, AC-556, M14 DMR, and MP5. Depending on the police station, only 1-3 of these high-tier spawns will be present.", "buff"], [108, "Slightly reduced SPAS-12 firerate", "nerf"], [108, "Changed SPAS-12 to spawn in police locations instead of special forces crates", "chg"], [123, "Changed SPAS-12 reload to be about 40% longer per round", "chg"], [128, "Five new guns added: Auto-5, Coach Gun, Model 1894, Model 788, and SPAS-12.", "add"]], "auto-5": [[47, "Slightly decreased firerate for Auto-5 and SPAS-12", "nerf"], [108, "Increased Auto-5 capacity to 5 instead of 4", "buff"], [123, "Changed Auto-5 reload to be 50% longer per round", "chg"], [128, "Five new guns added: Auto-5, Coach Gun, Model 1894, Model 788, and SPAS-12.", "add"]], "m249-para": [[47, "Changed M249 Paratrooper to aim slightly faster compared to the standard M249", "buff"], [68, "M249 Paratrooper (shorter length rare variant)", "chg"]], "m1-garand": [[53, "Added M1 Garand Ping sound effect after firing the last round", "add"], [68, "M1 Garand: Increased damage, velocity, firerate, and range", "buff"], [78, "Changed M1 Garand headshot damage to 35", "chg"], [111, "Increased reload speed of M1903, M1 Garand, and SKS", "nerf"], [113, "M1 Garand (effective range and headshot multiplier was too high)", "chg"], [122, "Added six new firearms: M1909 Snubnose revolver, Maverick 88, M1 Garand, Lupara (Sawn-off DB), G3, and the Hi-Power", "add"]], "mp5k": [[56, "Removed burst fire mode from MP5K", "chg"]], "makarov": [[59, "Fixed Makarov slide not applying skins", "fix"], [115, "Added five “Rare” firearms - Makarov, Mosin PU Sniper, MP 40, M1919A6 LMG, Python Revolver", "add"]], "model-788": [[68, "Model 788/788 Carbine: Increased velocity, firerate, and range", "buff"], [103, "Slightly reduced Model 788 sway, and slightly increased effective range", "buff"], [116, "Reduced Model 788 max headshot damage to 56", "nerf"], [116, "Increased bullet drop for Model 788", "nerf"], [122, "Changed M1903, Model 788, PSG-1, and the L96A1 to deal 30 base damage (kills a player in two headshots)", "chg"], [122, "Changed firerate of Model 788, M1903 and L96A1 to be significantly lower", "nerf"], [128, "Five new guns added: Auto-5, Coach Gun, Model 1894, Model 788, and SPAS-12.", "add"]], "sweeper-desert-eagle": [[68, "Sweeper Desert Eagle: Increased headshot damage and firerate", "buff"], [99, "Leaked \"Sweeper\" Desert Eagle", "chg"]], "ao-46": [[71, "Added AO-46 SMG [We have taken creative liberties when balancing this SMG, mostly by increasing its magazine capacity]", "buff"]], "m1-carbine": [[71, "Added M1 Carbine", "add"]], "mini-14": [[77, "Police stations now have two tiers of container spawns. Thin black weapon cases now include the Mini-14, M16A2, Maverick Tactical, and 788 Carbine. Higher-tier police firearms now spawn in thin green cases, and include the SPAS-12, AC-556, M14 DMR, and MP5. Depending on the police station, only 1-3 of these high-tier spawns will be present.", "buff"]], "sks": [[78, "Changed SKS headshot damage to 31", "chg"], [111, "Increased reload speed of M1903, M1 Garand, and SKS", "nerf"], [113, "AKM Assault Rifle (will spawn where SKS/AK47s are found)", "chg"], [113, "SKS (headshot multiplier was too high)", "chg"]], "santas-pig": [[79, "Added “Santa’s Pig” Machine Gun, a Special modified M60 that only has a chance to drop from Infected Santa.", "add"]], "avtomat-makarov": [[83, "Added Special “Avtomat” Makarov Machine Pistol (with 84rd drum) to VIP servers only (this will not spawn in the main game at this time)", "add"]], "boomstick": [[90, "Leaked \"Boomstick\" Coach Gun", "chg"]], "model-788-carbine": [[93, "Leaked Model 788 Carbine", "chg"]], "snake-s-mac-10": [[99, "Leaked \"Plisskin's\" MAC-10 Suppressed (now \"Snake's\" Mac-10)", "chg"]], "mac-10": [[99, "Leaked \"Plisskin's\" MAC-10 Suppressed (now \"Snake's\" Mac-10)", "chg"]], "stunted-ak-47": [[99, "Leaked \"Stunted\" AK-47 Assault Rifle", "chg"]], "m9": [[100, "Added extended M9 as an uncommon loot drop from the Infected Admiral (boss)", "add"], [124, "Added four new firearms: PSG-1, L96A1, MP5, and the M9", "add"]], "l96a1": [[100, "Reduced bullet drop for L96A1, PSG-1, and Mosin PU Sniper", "buff"], [108, "Increased effective range of L96A1, PSG-1, Mosin PU Sniper, by ~75 studs", "buff"], [117, "Reduced ADS accuracy for all firearms except PSG-1 and L96A1", "chg"], [122, "Changed M1903, Model 788, PSG-1, and the L96A1 to deal 30 base damage (kills a player in two headshots)", "chg"], [122, "Changed firerate of Model 788, M1903 and L96A1 to be significantly lower", "nerf"], [124, "Added four new firearms: PSG-1, L96A1, MP5, and the M9", "add"]], "mp40": [[109, "Reduced recoil for MP 40 SMG", "buff"], [115, "Added five “Rare” firearms - Makarov, Mosin PU Sniper, MP 40, M1919A6 LMG, Python Revolver", "add"]], "m16a1": [[109, "Reduced recoil for M16A1", "buff"]], "coach-gun": [[128, "Five new guns added: Auto-5, Coach Gun, Model 1894, Model 788, and SPAS-12.", "add"]]}};
+        const PH_KIND = { buff: ['Buff', '#4ade80'], nerf: ['Nerf', '#f87171'], mix: ['Buff + nerf', '#fbbf24'], chg: ['Changement', '#93c5fd'], add: ['Ajout', '#c084fc'], fix: ['Correctif', '#94a3b8'] };
+        const FR_M = ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'];
+        const phDate = d => { const [y, m, dd] = d.split('-'); return `${+dd} ${FR_M[+m - 1]} ${y}`; };
+        const PH_KEY = 'ar2_return_date_v1';
+        let phSince = localStorage.getItem(PH_KEY) || '', phFilter = 'all';
+        const phList = id => (PATCH.P[id] || []).map(([di, txt, k]) => ({ date: PATCH.D[di][0], title: PATCH.D[di][1], txt, k }));
+        function phBadge(w) {
+            const L = phList(w.id); if (!L.length) return '';
+            const b = L.filter(e => e.k === 'buff').length, n = L.filter(e => e.k === 'nerf').length;
+            const recent = phSince ? L.filter(e => e.date >= phSince).length : 0;
+            return `<button type="button" data-ph="${w.id}" class="ph-badge" title="Historique des buffs / nerfs (changelog officiel)">Historique <b class="text-green-400">▲${b}</b> <b class="text-red-400">▼${n}</b>${recent ? `<span class="ph-new">${recent} depuis ton retour</span>` : ''}</button>`;
+        }
+        const _rwc4 = renderWeaponCard;
+        renderWeaponCard = w => _rwc4(w).replace(/(<p class="text-\[10px\] font-mono text-tactical-muted mt-1">Mode:[^<]*<\/p>)/, '$1' + phBadge(w));
+        function phOpen(id) {
+            const w = wById(id); if (!w) return;
+            let m = document.getElementById('ph-modal');
+            if (!m) { document.body.insertAdjacentHTML('beforeend', '<div id="ph-modal" class="fixed inset-0 z-[60] bg-black/80 backdrop-blur-md flex items-center justify-center p-4"><div class="bg-tactical-card border border-tactical-border rounded-2xl w-full max-w-2xl max-h-[85vh] flex flex-col" id="ph-box"></div></div>'); m = document.getElementById('ph-modal'); m.addEventListener('click', e => { if (e.target === m) m.remove(); }); }
+            m.dataset.w = id; phDraw();
+        }
+        function phDraw() {
+            const m = document.getElementById('ph-modal'); if (!m) return;
+            const w = wById(m.dataset.w), all = phList(w.id);
+            const L = all.filter(e => phFilter === 'all' || e.k === phFilter);
+            const cnt = k => all.filter(e => e.k === k).length;
+            document.getElementById('ph-box').innerHTML = `
+                <div class="flex items-start justify-between gap-3 p-5 border-b border-tactical-border">
+                    <div><div class="text-[10px] font-bold uppercase tracking-widest text-tactical-muted">Historique des nerfs / buffs</div>
+                        <h3 class="text-xl font-extrabold text-white">${hx(w.name)} <span class="text-xs font-mono px-2 py-0.5 rounded border ${getTierBadgeClass(w.tier)}">Tier ${w.tier}</span></h3>
+                        <p class="text-[11px] text-tactical-muted mt-1">${all.length} modification${all.length > 1 ? 's' : ''} trouvée${all.length > 1 ? 's' : ''} dans le changelog, de la plus récente à la plus ancienne.</p></div>
+                    <button type="button" id="ph-close" class="text-tactical-muted hover:text-white">✕</button>
+                </div>
+                <div class="px-5 py-3 flex flex-wrap items-center gap-2 border-b border-tactical-border">
+                    ${[['all', 'Tout', '#e5e7eb', all.length]].concat(Object.entries(PH_KIND).map(([k, [l, c]]) => [k, l, c, cnt(k)])).filter(x => x[3]).map(([k, l, c, n]) => `<button type="button" data-phf="${k}" class="text-[11px] font-bold px-2.5 py-1 rounded-lg border" style="${phFilter === k ? `background:${c};color:#0f1115;border-color:${c}` : `border-color:${c}55;color:${c}`}">${l} ${n}</button>`).join('')}
+                    <label class="ml-auto text-[11px] text-tactical-muted flex items-center gap-1.5">Je reviens après le <input type="date" id="ph-since" value="${phSince}" class="bg-tactical-bg border border-tactical-border rounded px-1.5 py-0.5 text-white text-[11px]"></label>
+                </div>
+                <div class="p-5 overflow-y-auto space-y-2 flex-1">
+                    ${L.length ? L.map(e => `<div class="rounded-xl border ${phSince && e.date >= phSince ? 'border-amber-400/60 bg-amber-400/5' : 'border-tactical-border bg-tactical-bg'} p-3">
+                        <div class="flex flex-wrap items-center gap-2 mb-1"><span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded" style="background:${PH_KIND[e.k][1]}22;color:${PH_KIND[e.k][1]}">${PH_KIND[e.k][0]}</span>
+                            <span class="text-xs font-mono text-white">${phDate(e.date)}</span>${e.title ? `<span class="text-[11px] text-tactical-muted">• ${hx(e.title)}</span>` : ''}${phSince && e.date >= phSince ? '<span class="text-[10px] text-amber-300 font-bold ml-auto">NOUVEAU POUR TOI</span>' : ''}</div>
+                        <p class="text-xs text-gray-300 leading-relaxed" lang="en">${hx(e.txt)}</p></div>`).join('') : '<p class="text-sm text-tactical-muted">Aucune entrée pour ce filtre.</p>'}
+                </div>
+                <p class="px-5 py-3 border-t border-tactical-border text-[10px] text-tactical-muted leading-relaxed">Texte original du changelog (en anglais), extrait de la page <a class="underline" href="${UPD_URL}" target="_blank" rel="noopener">Updates du wiki AR2</a>. AR2 n'a pas de numéros de version : les patchs sont datés. Le classement buff / nerf est automatique (mots-clés) : lis la ligne pour le détail.</p>`;
+            document.getElementById('ph-close').onclick = () => m.remove();
+        }
+        document.addEventListener('click', e => {
+            const b = e.target.closest('[data-ph]');
+            if (b) { e.preventDefault(); e.stopPropagation(); phOpen(b.dataset.ph); return; }
+            const f = e.target.closest('[data-phf]'); if (f) { phFilter = f.dataset.phf; phDraw(); }
+        }, true);
+        document.addEventListener('change', e => { if (e.target.id === 'ph-since') { phSince = e.target.value; localStorage.setItem(PH_KEY, phSince); phDraw(); if (typeof renderGrid === 'function') renderGrid(); } });
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') { const m = document.getElementById('ph-modal'); if (m) m.remove(); } });
+
+        // ---------- 5) Survie & Soins ----------
+        const SV_HEALS = ['bandage', 'field-dressing', 'small-medkit', 'large-medkit', 'military-medkit', 'ai2-medkit'];
+        const SV_KEY = 'ar2_survie_v1';
+        let sv = Object.assign({ hp: 10, target: 100, inv: { bandage: 2, 'field-dressing': 0, 'small-medkit': 1, 'large-medkit': 0, 'military-medkit': 1, 'ai2-medkit': 0 }, trauma: false, enemy: 'fal', dist: 50, myHp: 100, boost: 0 }, (() => { try { return JSON.parse(localStorage.getItem(SV_KEY)) || {}; } catch (e) { return {}; } })());
+        const svSave = () => localStorage.setItem(SV_KEY, JSON.stringify(sv));
+        const healItem = id => HEAL_ITEMS_DATA.find(h => h.id === id);
+        function svPlan(need, inv) {
+            const H = SV_HEALS.map(healItem).filter(h => h && (inv[h.id] || 0) > 0);
+            let best = null;
+            const rec = (i, cnt, heal, time) => {
+                if (heal >= need) { const items = cnt.reduce((a, b) => a + b, 0); if (!best || time < best.time - 1e-9 || (Math.abs(time - best.time) < 1e-9 && heal < best.heal)) best = { time, heal, cnt: cnt.slice(), items }; return; }
+                if (i >= H.length) return;
+                const h = H[i], mx = Math.min(inv[h.id], Math.ceil(need / h.healAmount));
+                for (let n = 0; n <= mx; n++) { cnt[i] = n; rec(i + 1, cnt, heal + n * h.healAmount, time + n * h.useTime); }
+                cnt[i] = 0;
+            };
+            rec(0, H.map(() => 0), 0, 0);
+            if (!best) { const heal = H.reduce((t, h) => t + h.healAmount * inv[h.id], 0), time = H.reduce((t, h) => t + h.useTime * inv[h.id], 0); return { ok: false, heal, time, seq: H.map(h => [h, inv[h.id]]) }; }
+            return { ok: true, time: best.time, heal: best.heal, seq: H.map((h, i) => [h, best.cnt[i]]).filter(x => x[1] > 0).sort((a, b) => b[0].healAmount - a[0].healAmount) };
+        }
+        function svRender() {
+            const root = document.getElementById('sv-root'); if (!root) return;
+            const need = Math.max(0, sv.target - sv.hp);
+            const plan = need ? svPlan(need, sv.inv) : { ok: true, time: 0, heal: 0, seq: [] };
+            const slowT = plan.seq.reduce((t, [h, n]) => t + (h.slows ? h.useTime * n : 0), 0);
+            const tempHp = plan.seq.reduce((t, [h, n]) => t + (h.tempHealth || 0) * n, 0) + (sv.trauma && plan.seq.length ? Math.round(0.2 * Math.max(...plan.seq.map(([h]) => h.healAmount))) : 0);
+            const colors = { bandage: '#e5e7eb', 'field-dressing': '#a3e635', 'small-medkit': '#fb923c', 'large-medkit': '#f87171', 'military-medkit': '#4ade80', 'ai2-medkit': '#f472b6' };
+            const H = SV_HEALS.map(healItem).filter(Boolean);
+            const w = wById(sv.enemy) || WEAPONS_DATA[0];
+            const f = ttkFalloff(w, sv.dist), tot = sv.myHp + sv.boost;
+            const hits = dmg => dmg > 0 ? Math.ceil((tot - 1e-9) / dmg) : Infinity;
+            const nb = hits(w.bodyDamage * f), nh = hits(w.headDamage * f), nl = hits(w.limbDamage * f);
+            const tdown = n => (n - 1) * 60 / w.rof + Math.floor((n - 1) / Math.max(1, w.capacity)) * w.reloadTime;
+            const fastest = plan.seq.length ? Math.min(...plan.seq.map(([h]) => h.useTime)) : healItem('military-medkit').useTime;
+            const shotsDuring = Math.floor(fastest * w.rof / 60) + 1;
+            const bullets = n => !isFinite(n) ? '—' : `<span class="inline-flex flex-wrap gap-0.5 align-middle">${Array.from({ length: Math.min(n, 30) }, () => '<span class="sv-bul"></span>').join('')}${n > 30 ? '<span class="text-[10px] text-tactical-muted">…</span>' : ''}</span>`;
+            root.innerHTML = `
+                <div class="bg-tactical-card border border-tactical-border rounded-2xl p-4 space-y-4">
+                    <div class="text-[10px] font-bold uppercase tracking-widest text-rose-300">Calculateur de soins</div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <label class="cr-field"><span>PV de départ : <b class="text-white" id="sv-hp-v">${sv.hp}</b></span><input type="range" id="sv-hp" min="1" max="99" value="${sv.hp}" style="accent-color:#fb7185"></label>
+                        <label class="cr-field"><span>Objectif : <b class="text-white" id="sv-tg-v">${sv.target}</b> PV</span><input type="range" id="sv-tg" min="10" max="100" step="5" value="${sv.target}" style="accent-color:#4ade80"></label>
+                    </div>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                        ${H.map(h => `<label class="bg-tactical-bg border border-tactical-border rounded-xl p-2 flex flex-col gap-1">
+                            <span class="text-[11px] font-bold text-white flex items-center gap-1.5"><span class="w-2 h-2 rounded-full" style="background:${colors[h.id]}"></span>${hx(h.name)}</span>
+                            <span class="text-[10px] text-tactical-muted font-mono">+${h.healAmount} PV • ${String(h.useTime).replace('.', ',')} s • ${h.size}${h.slows ? ' • ralentit' : ''}</span>
+                            <input type="number" min="0" max="9" data-sv-inv="${h.id}" value="${sv.inv[h.id] || 0}" class="bg-tactical-card border border-tactical-border rounded px-2 py-1 text-xs text-white w-full"></label>`).join('')}
+                    </div>
+                    <label class="flex items-center gap-2 text-xs text-white"><input type="checkbox" id="sv-trauma" ${sv.trauma ? 'checked' : ''} style="accent-color:#fb7185"> J'ai un Trauma Kit (+20 % du soin en PV temporaires, 40 s)</label>
+                    <div class="rounded-xl border ${plan.ok ? 'border-green-400/40 bg-green-400/5' : 'border-amber-400/40 bg-amber-400/5'} p-3 space-y-2">
+                        ${need === 0 ? '<p class="text-sm text-white">Tu es déjà à l\'objectif.</p>' : `
+                        <div class="flex flex-wrap items-baseline gap-2"><span class="text-xs text-tactical-muted">${plan.ok ? 'Plan le plus rapide' : 'Pas assez de soins'} :</span><b class="text-2xl font-extrabold text-white font-mono">${fmtS(plan.time)}</b>
+                            <span class="text-xs text-tactical-muted">pour ${plan.ok ? '+' + need : '+' + plan.heal + ' / ' + need} PV</span></div>
+                        <div class="flex h-6 rounded-lg overflow-hidden border border-tactical-border">${plan.seq.flatMap(([h, n]) => Array.from({ length: n }, () => `<div title="${hx(h.name)} : ${h.useTime} s" class="h-full border-r border-black/40 text-[9px] font-bold text-black flex items-center justify-center overflow-hidden" style="flex:${h.useTime};background:${colors[h.id]}">${h.useTime}s</div>`)).join('')}</div>
+                        <ul class="text-xs text-gray-300 space-y-0.5">${plan.seq.map(([h, n]) => `<li>${n} × ${hx(h.name)} <span class="text-tactical-muted">(${n * h.healAmount} PV, ${fmtS(n * h.useTime)})</span></li>`).join('')}</ul>
+                        <p class="text-[11px] ${slowT ? 'text-amber-300' : 'text-green-300'}">${slowT ? `Tu es ralenti pendant ${fmtS(slowT)} (pas de saut).` : 'Aucun ralentissement : tu peux bouger à vitesse normale.'}${tempHp ? ` +${tempHp} PV temporaires en bonus.` : ''}${plan.ok && plan.heal > need ? ` ${plan.heal - need} PV gaspillés.` : ''}</p>`}
+                    </div>
+                    <div>
+                        <div class="text-[10px] font-bold uppercase tracking-widest text-tactical-muted mb-1.5">Comparaison : un seul type de soin pour +${need} PV</div>
+                        <div class="overflow-x-auto"><table class="w-full text-xs"><thead><tr class="text-tactical-muted text-[10px] uppercase"><th class="text-left py-1">Soin</th><th class="text-right">Nombre</th><th class="text-right">Temps</th><th class="text-right">PV/s</th><th class="text-right">Cases</th></tr></thead><tbody>
+                        ${H.map(h => { const n = Math.ceil(need / h.healAmount) || 0, [a, b] = h.size.split('x').map(Number); return `<tr class="border-t border-tactical-border/50"><td class="py-1 text-white">${hx(h.name)}${h.slows ? '' : ' <span class="text-green-300 text-[10px]">sans ralentir</span>'}</td><td class="text-right font-mono">${n}</td><td class="text-right font-mono">${fmtS(n * h.useTime)}</td><td class="text-right font-mono">${fmtN(h.healAmount / h.useTime, 1)}</td><td class="text-right font-mono">${n * a * b}</td></tr>`; }).join('')}
+                        </tbody></table></div>
+                    </div>
+                    <p class="text-[10px] text-tactical-muted">Il n'y a pas d'antidouleurs (painkillers) dans AR2. Valeurs du <a class="underline" href="https://roblox-apocalypse-rising.fandom.com/wiki/Consumables_(Apocalypse_Rising_2)" target="_blank" rel="noopener">wiki Consumables</a>. EMS MedKit et Transfusion Bag (5 nov. 2026) : stats pas encore publiées.</p>
+                </div>
+                <div class="bg-tactical-card border border-tactical-border rounded-2xl p-4 space-y-4">
+                    <div class="text-[10px] font-bold uppercase tracking-widest text-orange-300">Duel inversé — combien de balles tu encaisses</div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <label class="cr-field"><span>Arme ennemie</span><select id="sv-enemy">${WEAPONS_DATA.filter(x => !x.custom).slice().sort((a, b) => a.name.localeCompare(b.name)).map(x => `<option value="${x.id}" ${x.id === w.id ? 'selected' : ''}>${hx(x.name)} (Tier ${x.tier})</option>`).join('')}</select></label>
+                        <label class="cr-field"><span>Distance : <b class="text-white" id="sv-d-v">${sv.dist}</b> studs</span><input type="range" id="sv-dist" min="0" max="800" step="5" value="${sv.dist}" style="accent-color:#fb923c"></label>
+                        <label class="cr-field"><span>Tes PV : <b class="text-white" id="sv-my-v">${sv.myHp}</b></span><input type="range" id="sv-my" min="1" max="100" value="${sv.myHp}" style="accent-color:#fb7185"></label>
+                        <label class="cr-field"><span>Booster actif</span><select id="sv-boost">${TTK_BOOSTS.map(([v, l]) => `<option value="${v}" ${sv.boost === v ? 'selected' : ''}>${l}</option>`).join('')}</select></label>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2 text-center">
+                        ${[['Corps', nb, '#fb923c'], ['Tête', nh, '#f87171'], ['Membres', nl, '#facc15']].map(([l, n, c]) => `<div class="bg-tactical-bg border border-tactical-border rounded-xl p-2"><div class="text-[10px] uppercase text-tactical-muted">${l}</div><div class="text-2xl font-extrabold font-mono" style="color:${c}">${isFinite(n) ? n : '—'}</div><div class="text-[10px] text-tactical-muted">balle${n > 1 ? 's' : ''} • tombé en ${fmtS(tdown(n))}</div></div>`).join('')}
+                    </div>
+                    <div class="text-xs text-gray-300">Balles au corps avant de tomber : ${bullets(nb)}</div>
+                    <div class="rounded-xl border border-orange-400/30 bg-orange-400/5 p-3 text-xs text-gray-300 leading-relaxed">
+                        À ${sv.dist} studs, une balle de <b class="text-white">${hx(w.name)}</b> fait <b class="text-white">${fmtN(w.bodyDamage * f, 1)}</b> au corps et <b class="text-white">${fmtN(w.headDamage * f, 1)}</b> à la tête (${tot} PV en tout).
+                        Pendant ton soin le plus rapide (${fmtS(fastest)}), il peut tirer <b class="text-white">${shotsDuring}</b> balle${shotsDuring > 1 ? 's' : ''} : ${shotsDuring >= nb ? '<b class="text-red-300">assez pour te tuer, ne te soigne pas à découvert.</b>' : '<b class="text-green-300">pas assez pour te tuer si tu as tous tes PV.</b>'}
+                    </div>
+                    <p class="text-[10px] text-tactical-muted">Les gilets pare-balles et casques d'AR2 sont <b>purement cosmétiques</b> (<a class="underline" href="https://roblox-apocalypse-rising.fandom.com/wiki/Cosmetics_(Apocalypse_Rising_2)" target="_blank" rel="noopener">wiki Cosmetics</a>) : ton gilet n'arrête aucune balle. Seuls les boosters (PV temporaires) augmentent ce que tu encaisses. Dégâts à distance : même calcul que le TTK (dégât minimum estimé).</p>
+                </div>`;
+        }
+        document.addEventListener('input', e => {
+            const t = e.target; if (!t.closest || !t.closest('#sv-root')) return;
+            const lab = { 'sv-hp': 'sv-hp-v', 'sv-tg': 'sv-tg-v', 'sv-dist': 'sv-d-v', 'sv-my': 'sv-my-v' }[t.id];
+            if (lab) document.getElementById(lab).textContent = t.value;
+        });
+        document.addEventListener('change', e => {
+            const t = e.target; if (!t.closest || !t.closest('#sv-root')) return;
+            if (t.id === 'sv-enemy') sv.enemy = t.value; else if (t.id === 'sv-boost') sv.boost = +t.value; else if (t.id === 'sv-trauma') sv.trauma = t.checked;
+            else if (t.id === 'sv-hp') sv.hp = +t.value; else if (t.id === 'sv-tg') sv.target = +t.value; else if (t.id === 'sv-dist') sv.dist = +t.value; else if (t.id === 'sv-my') sv.myHp = +t.value;
+            else if (t.dataset.svInv) sv.inv[t.dataset.svInv] = Math.max(0, Math.min(9, Math.round(+t.value) || 0)); else return;
+            svSave(); svRender();
+        });
+
+        // ---------- 6) Défi Random ----------
+        const isSoviet = w => w.wclass === 'Soviet' || /soviet|tokarev|rimmed|subsonic/i.test(w.caliber || '');
+        const DF_RULES = [
+            { t: 'Interdit : viseurs grossissants (viseur point rouge / mécanique uniquement)', g: 'optic' },
+            { t: 'Uniquement des armes soviétiques', g: 'pool', pool: isSoviet },
+            { t: 'Uniquement des armes civiles', g: 'pool', pool: w => w.wclass === 'Civil' },
+            { t: 'Aucun silencieux', g: 'sup' },
+            { t: 'Interdit de conduire un véhicule', g: 'veh' },
+            { t: 'Mêlée uniquement jusqu\'à l\'objectif, l\'arme imposée ensuite', g: 'melee' },
+            { t: 'Pas de sac plus grand que 12 cases', g: 'bag' },
+            { t: 'Maximum 2 soins dans ton inventaire', g: 'heal' },
+            { t: 'Seulement des Gauze Bandages pour te soigner', g: 'heal' },
+            { t: 'Pas d\'arme secondaire', g: 'sec' },
+            { t: 'Pistolet seulement en arme secondaire', g: 'sec' },
+            { t: 'Interdit de sprinter dans les villes', g: 'move' },
+            { t: 'Accroupi dans tous les bâtiments', g: 'move' },
+            { t: 'Interdit de ramasser une autre arme principale', g: 'pick' },
+            { t: 'Pas de booster (Health / Stamina)', g: 'boost' },
+            { t: 'Tu dois finir avec au moins 1 chargeur plein', g: 'ammo' },
+            { t: 'Aucun accessoire sur l\'arme', g: 'optic' },
+            { t: 'Jouer de nuit uniquement (attends la nuit pour partir)', g: 'night' },
+        ];
+        const DF_OBJ = [
+            l => `Rejoins ${l} et survis 5 minutes sur place`,
+            l => `Fouille entièrement ${l} puis extrais-toi à plus de 500 studs`,
+            l => `Atteins ${l} sans te soigner une seule fois`,
+            l => `Tiens ${l} contre les infectés pendant 3 minutes`,
+        ];
+        let df = { seed: 0, diff: 2, tier: 'all', world: 'halsey' };
+        const dfRng = seed => () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+        function dfGen(o) {
+            const r = dfRng(o.seed), pick = a => a[Math.floor(r() * a.length)];
+            const nRules = { 1: 1, 2: 2, 3: 3 }[o.diff] || 2;
+            const rules = []; const used = new Set(); let guard = 0;
+            while (rules.length < nRules && guard++ < 50) { const x = pick(DF_RULES); if (!used.has(x.g)) { used.add(x.g); rules.push(x); } }
+            let pool = WEAPONS_DATA.filter(w => !w.custom && w.tier !== 'Z');
+            const pr = rules.find(x => x.pool); if (pr) pool = pool.filter(pr.pool);
+            if (o.tier === 'cd') { const p2 = pool.filter(w => w.tier === 'C' || w.tier === 'D'); if (p2.length) pool = p2; }
+            if (o.tier === 'nos') { const p2 = pool.filter(w => w.tier !== 'S'); if (p2.length) pool = p2; }
+            const weapon = pick(pool);
+            const world = o.world === 'both' ? (r() < 0.5 ? 'halsey' : 'kf') : o.world;
+            const locs = MAP_POINTS.filter(p => p.kind === 'loc' && (p.world || 'halsey') === world && !p.custom && p.cat !== 'cache');
+            const spawn = pick(locs);
+            let obj, objUid;
+            const bosses = world === 'halsey' && typeof BOSS_DATA !== 'undefined' ? BOSS_DATA.filter(b => (b.map || []).some(u => MAP_POINTS.some(p => p.uid === u))) : [];
+            if (o.diff >= 3 && bosses.length && r() < 0.6) { const b = pick(bosses); objUid = b.map.find(u => MAP_POINTS.some(p => p.uid === u)); obj = `Élimine le boss ${b.name} (${b.fr || b.type})`; }
+            else { let t = pick(locs), g2 = 0; while (t.uid === spawn.uid && g2++ < 10) t = pick(locs); objUid = t.uid; obj = pick(DF_OBJ)(t.name); }
+            const ver = Math.floor(r() * 9000 + 1000);
+            return { weapon, spawn, obj, objUid, rules, world, code: ver };
+        }
+        const dfLink = () => location.origin + location.pathname + '#defi=' + b64Enc(df);
+        function dfText(c) {
+            return `**DÉFI AR2 #${df.seed}** (${['', 'Facile', 'Normal', 'Hardcore'][df.diff]}) — ${c.world === 'kf' ? 'Kin Flats' : 'Halsey Islands'}\n` +
+                `> Arme imposée : **${c.weapon.name}** (Tier ${c.weapon.tier}, ${c.weapon.caliber})\n` +
+                `> Spawn : **${c.spawn.name}**\n> Objectif : ${c.obj}\n` +
+                c.rules.map(x => `> Contrainte : ${x.t}`).join('\n') + `\nLien : ${dfLink()}`;
+        }
+        function dfRender(msg) {
+            const root = document.getElementById('df-root'); if (!root) return;
+            if (!df.seed) df.seed = Math.floor(Math.random() * 1e6) + 1;
+            const c = dfGen(df);
+            const opt = (id, v, l) => `<button type="button" data-df-${id}="${v}" class="px-3 py-1.5 rounded-lg text-xs font-bold border ${String(df[id]) === String(v) ? 'bg-purple-400 text-black border-purple-400' : 'border-tactical-border text-tactical-muted hover:text-white'}">${l}</button>`;
+            root.innerHTML = `
+                <div class="grid grid-cols-1 xl:grid-cols-[320px_1fr] gap-4">
+                    <div class="bg-tactical-card border border-tactical-border rounded-2xl p-4 space-y-4">
+                        <div><div class="text-[10px] font-bold uppercase tracking-widest text-tactical-muted mb-1.5">Difficulté</div><div class="flex flex-wrap gap-1.5">${opt('diff', 1, 'Facile (1 règle)')}${opt('diff', 2, 'Normal (2)')}${opt('diff', 3, 'Hardcore (3 + boss)')}</div></div>
+                        <div><div class="text-[10px] font-bold uppercase tracking-widest text-tactical-muted mb-1.5">Armes possibles</div><div class="flex flex-wrap gap-1.5">${opt('tier', 'all', 'Tous les tiers')}${opt('tier', 'cd', 'Tier C/D seulement')}${opt('tier', 'nos', 'Sans Tier S')}</div></div>
+                        <div><div class="text-[10px] font-bold uppercase tracking-widest text-tactical-muted mb-1.5">Carte</div><div class="flex flex-wrap gap-1.5">${opt('world', 'halsey', 'Halsey Islands')}${opt('world', 'kf', 'Kin Flats')}${opt('world', 'both', 'Au hasard')}</div></div>
+                        <button type="button" id="df-new" class="w-full xh-dl primary py-3 text-sm font-extrabold uppercase tracking-wider">Générer un défi random</button>
+                        <p class="text-[10px] text-tactical-muted">${DF_RULES.length} contraintes possibles. Chaque défi a un numéro : le même numéro redonne le même tirage.</p>
+                    </div>
+                    <div class="space-y-3">
+                        <div id="df-card" class="df-card rounded-2xl p-5 space-y-4">
+                            <div class="flex items-start justify-between gap-3"><div><div class="text-[10px] font-bold uppercase tracking-[.25em] text-purple-300">Défi AR2 #${df.seed}</div>
+                                <div class="text-xs text-tactical-muted mt-0.5">${['', 'Facile', 'Normal', 'Hardcore'][df.diff]} • ${c.world === 'kf' ? 'Kin Flats' : 'Halsey Islands'}</div></div>
+                                <span class="text-xs font-mono font-bold px-2 py-0.5 rounded border ${getTierBadgeClass(c.weapon.tier)}">Tier ${c.weapon.tier}</span></div>
+                            <div class="flex items-center gap-4"><div class="p-2 bg-black/30 rounded-xl border border-white/10 shrink-0">${getWeaponSVG(c.weapon.iconType)}</div>
+                                <div><div class="text-[10px] uppercase tracking-widest text-tactical-muted">Arme imposée</div><div class="text-2xl font-extrabold text-white">${hx(c.weapon.name)}</div><div class="text-xs font-mono text-tactical-muted">${hx(c.weapon.category)} • ${hx(c.weapon.caliber)} • ${c.weapon.capacity} balles</div></div></div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                <button type="button" data-df-go="${c.spawn.uid}" class="text-left bg-black/25 border border-white/10 rounded-xl p-3 hover:border-green-400/60"><div class="text-[10px] uppercase tracking-widest text-green-300">Zone de spawn</div><div class="text-sm font-bold text-white">${hx(c.spawn.name)}</div><div class="text-[10px] text-tactical-muted">Voir sur la carte →</div></button>
+                                <button type="button" data-df-go="${c.objUid}" class="text-left bg-black/25 border border-white/10 rounded-xl p-3 hover:border-amber-400/60"><div class="text-[10px] uppercase tracking-widest text-amber-300">Objectif</div><div class="text-sm font-bold text-white">${hx(c.obj)}</div><div class="text-[10px] text-tactical-muted">Voir sur la carte →</div></button>
+                            </div>
+                            <div><div class="text-[10px] uppercase tracking-widest text-red-300 mb-1.5">Contraintes</div><ul class="space-y-1">${c.rules.map(x => `<li class="flex gap-2 text-sm text-white"><span class="text-red-400 font-bold">✕</span>${hx(x.t)}</li>`).join('')}</ul></div>
+                        </div>
+                        <div class="flex flex-wrap gap-2">
+                            <button type="button" id="df-copy" class="xh-btn">Copier pour Discord</button>
+                            <button type="button" id="df-link" class="xh-btn">Copier le lien</button>
+                            <button type="button" id="df-png" class="xh-btn">Télécharger l'image</button>
+                            <span id="df-msg" class="text-xs text-tactical-accent self-center">${msg || ''}</span>
+                        </div>
+                        <textarea id="df-txt" readonly rows="7" class="w-full bg-tactical-bg border border-tactical-border rounded-xl p-3 text-[11px] font-mono text-gray-300">${hx(dfText(c))}</textarea>
+                    </div>
+                </div>`;
+        }
+        function dfPng() {
+            const c = dfGen(df), cv = document.createElement('canvas'); cv.width = 1000; cv.height = 560;
+            const x = cv.getContext('2d');
+            const g = x.createLinearGradient(0, 0, 1000, 560); g.addColorStop(0, '#1e1033'); g.addColorStop(1, '#0f1115'); x.fillStyle = g; x.fillRect(0, 0, 1000, 560);
+            x.strokeStyle = '#c084fc'; x.lineWidth = 4; x.strokeRect(10, 10, 980, 540);
+            x.fillStyle = '#d8b4fe'; x.font = 'bold 22px sans-serif'; x.fillText(`DÉFI AR2 #${df.seed} • ${['', 'Facile', 'Normal', 'Hardcore'][df.diff]} • ${c.world === 'kf' ? 'Kin Flats' : 'Halsey Islands'}`, 40, 60);
+            x.fillStyle = '#9ca3af'; x.font = '16px sans-serif'; x.fillText('ARME IMPOSÉE', 40, 110);
+            x.fillStyle = '#fff'; x.font = 'bold 46px sans-serif'; x.fillText(`${c.weapon.name}  (Tier ${c.weapon.tier})`, 40, 160);
+            x.fillStyle = '#9ca3af'; x.font = '18px sans-serif'; x.fillText(`${c.weapon.category} • ${c.weapon.caliber}`, 40, 192);
+            x.fillStyle = '#86efac'; x.font = 'bold 20px sans-serif'; x.fillText('SPAWN : ' + c.spawn.name, 40, 245);
+            x.fillStyle = '#fcd34d'; x.fillText('OBJECTIF : ' + c.obj, 40, 280);
+            x.fillStyle = '#fca5a5'; x.font = 'bold 18px sans-serif'; x.fillText('CONTRAINTES', 40, 330);
+            x.fillStyle = '#fff'; x.font = '20px sans-serif'; c.rules.forEach((rr, i) => x.fillText('✕  ' + rr.t, 40, 365 + i * 34));
+            x.fillStyle = '#6b7280'; x.font = '14px sans-serif'; x.fillText('surax000.github.io/Ar2-wiki-et-map-interactive', 40, 530);
+            const a = document.createElement('a'); a.download = `defi-ar2-${df.seed}.png`; a.href = cv.toDataURL('image/png'); a.click();
+        }
+        document.addEventListener('click', e => {
+            const root = e.target.closest('#df-root'); if (!root) return;
+            const b = e.target.closest('[data-df-diff],[data-df-tier],[data-df-world]');
+            if (b) { if (b.dataset.dfDiff) df.diff = +b.dataset.dfDiff; if (b.dataset.dfTier) df.tier = b.dataset.dfTier; if (b.dataset.dfWorld) df.world = b.dataset.dfWorld; dfRender(); return; }
+            if (e.target.closest('#df-new')) { df.seed = Math.floor(Math.random() * 1e6) + 1; dfRender(); return; }
+            const go = e.target.closest('[data-df-go]'); if (go) { goMapPoint(go.dataset.dfGo); return; }
+            if (e.target.closest('#df-copy')) { toolCopy(dfText(dfGen(df)), document.getElementById('df-txt')).then(ok => { document.getElementById('df-msg').textContent = ok ? 'Copié : colle-le dans Discord.' : 'Sélectionne le texte et copie-le.'; }); return; }
+            if (e.target.closest('#df-link')) { toolCopy(dfLink()).then(ok => { document.getElementById('df-msg').textContent = ok ? 'Lien copié.' : dfLink(); }); return; }
+            if (e.target.closest('#df-png')) dfPng();
+        });
+        const _th = toolsHash;
+        toolsHash = function () {
+            if (location.hash.startsWith('#defi=')) { try { df = Object.assign(df, b64Dec(location.hash.slice(6))); toolGoTab('defi'); return true; } catch (e) { console.warn('Défi invalide', e); } }
+            return _th();
+        };
+        window.addEventListener('hashchange', () => { if (location.hash.startsWith('#defi=')) toolsHash(); });
+
     </script>
 </body>
 </html>
