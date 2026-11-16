@@ -8,10 +8,10 @@
 </head>
 <body>
 <header class="top">
-    <div class="brand"><img src="assets/icon.png" alt=""><div><b>AR2 Crosshair</b><span id="ver">v1.1.1</span></div></div>
+    <div class="brand"><img src="assets/icon.png" alt=""><div><b>AR2 Crosshair</b><span id="ver">v1.2.0</span></div></div>
     <div class="top-actions">
         <button id="vis-btn" class="btn primary">Crosshair affiché</button>
-        <span class="hint">Ctrl+Alt+X afficher / masquer • Ctrl+Alt+S réglages • Ctrl+Alt+flèches déplacer</span>
+        <span class="hint">Ctrl+Alt+X afficher / masquer • Ctrl+Alt+A couleur auto • Ctrl+Alt+O objectifs • Ctrl+Alt+flèches déplacer</span>
     </div>
 </header>
 <div id="upd-banner" class="banner hidden"><span id="upd-text"></span><button id="upd-btn" class="btn sm primary">Redémarrer et installer</button></div>
@@ -57,6 +57,25 @@
             <div class="field"><label>Couleur</label><div class="row gap"><input type="color" data-k="color"><div id="swatches" class="row gap wrap"></div></div></div>
             <div class="field"><label>Opacité <b data-v="opacity"></b></label><input type="range" min="0.1" max="1" step="0.05" data-k="opacity"></div>
         </details>
+        <details open id="ac-box"><summary>Couleur automatique</summary>
+            <p class="muted small">L'appli regarde le fond juste autour du crosshair et met la couleur la plus visible (sur du vert : magenta, sur le ciel : jaune…). Le crosshair lui-même n'est pas pris en compte.</p>
+            <div class="field"><label class="tog"><input type="checkbox" id="ac-enabled"> Activer la couleur automatique <span class="muted">(Ctrl+Alt+A)</span></label></div>
+            <div class="field"><label>Mode</label><select id="ac-mode" class="w100">
+                <option value="contrast">La plus visible (parmi ma palette)</option>
+                <option value="opposite">Couleur opposée au fond</option>
+                <option value="bw">Noir ou blanc seulement</option></select></div>
+            <div class="field"><label>Rafraîchissement <b id="ac-interval-v"></b></label><input type="range" id="ac-interval" min="100" max="5000" step="50"></div>
+            <div class="row gap wrap small" id="ac-int-presets"><button class="chip" data-aci="150">Rapide</button><button class="chip" data-aci="400">Normal</button><button class="chip" data-aci="1000">Économie</button><button class="chip" data-aci="3000">Lent</button></div>
+            <div class="field"><label>Zone analysée <b id="ac-zone-v"></b></label><input type="range" id="ac-zone" min="40" max="600" step="10"></div>
+            <div class="field"><label>Anti-clignotement <b id="ac-sens-v"></b></label><input type="range" id="ac-sens" min="0" max="80" step="5"></div>
+            <div class="field"><label>Fondu de couleur <b id="ac-fade-v"></b></label><input type="range" id="ac-fade" min="0" max="1000" step="20"></div>
+            <div class="field row gap wrap"><label class="tog"><input type="checkbox" id="ac-outline"> Contour auto (noir / blanc)</label><label class="tog"><input type="checkbox" id="ac-glow"> La lueur suit la couleur</label></div>
+            <div class="field"><label>Palette <span class="muted">(clique une couleur pour la retirer)</span></label>
+                <div class="row gap wrap" id="ac-palette"></div>
+                <div class="row gap mt-s"><input type="color" id="ac-add-color" value="#ff00ff"><button id="ac-add" class="btn sm">Ajouter</button><button id="ac-pal-reset" class="btn sm ghost">Palette d'origine</button></div>
+            </div>
+            <div id="ac-live" class="live small"></div>
+        </details>
         <details open><summary>Dimensions</summary>
             <div class="field"><label>Longueur des branches <b data-v="length"></b></label><input type="range" min="0" max="60" step="0.5" data-k="length"></div>
             <div class="field"><label>Épaisseur <b data-v="thickness"></b></label><input type="range" min="0.5" max="12" step="0.5" data-k="thickness"></div>
@@ -97,6 +116,38 @@
                 <select id="as-adsmode" class="mt-s"><option value="hold">Clic droit maintenu</option><option value="toggle">Clic droit en bascule</option></select></div>
             <div id="as-status" class="small muted"></div>
         </details>
+        <details id="wl-box"><summary>Liste blanche (applis)</summary>
+            <p class="muted small">Le crosshair s'affiche seulement quand une des applis cochées est au premier plan. Décoche tout le reste : bureau, navigateur, Discord…</p>
+            <div class="field"><label class="tog"><input type="checkbox" id="wl-enabled"> Activer la liste blanche</label></div>
+            <div id="wl-list"></div>
+            <div class="lrow addrow mt-s"><input id="wl-name" placeholder="Nom (ex : Roblox)"><input id="wl-match" placeholder="Titre contient…"><button id="wl-add" class="btn sm">+</button></div>
+            <div class="row gap mt-s wrap"><button id="wl-cap" class="btn sm">Ajouter la fenêtre active (dans 3 s)</button><span id="wl-msg" class="small muted"></span></div>
+            <div id="wl-status" class="small muted mt-s"></div>
+        </details>
+        <details id="ck-box"><summary>Objectifs (liste à cocher)</summary>
+            <p class="muted small">Ta liste d'objectifs, affichable en petit dans un coin de l'écran pendant que tu joues. Ctrl+Alt+O = afficher / masquer, Ctrl+Alt+N = cocher l'objectif suivant.</p>
+            <div class="field"><label>Titre</label><input id="ck-title" maxlength="40" class="w100"></div>
+            <div id="ck-list"></div>
+            <div class="row gap mt-s"><input id="ck-new" placeholder="Nouvel objectif…" class="grow" maxlength="120"><button id="ck-add" class="btn sm">Ajouter</button></div>
+            <div class="row gap wrap mt-s" id="ck-presets"></div>
+            <div class="row gap wrap mt-s"><button id="ck-uncheck" class="btn sm ghost">Tout décocher</button><button id="ck-clean" class="btn sm ghost">Retirer les cochés</button><button id="ck-paste-btn" class="btn sm ghost">Coller une liste</button></div>
+            <div id="ck-paste-box" class="hidden mt-s"><textarea id="ck-paste" rows="5" class="w100" placeholder="Un objectif par ligne. Marche aussi avec la fiche du Défi Random copiée depuis le site."></textarea><button id="ck-paste-go" class="btn sm mt-s">Ajouter ces objectifs</button></div>
+            <div class="field mt"><label class="tog"><input type="checkbox" id="ck-overlay"> Afficher par-dessus le jeu</label></div>
+            <div class="field row gap"><label class="muted small">Coin</label><select id="ck-corner"><option value="tr">Haut droite</option><option value="tl">Haut gauche</option><option value="br">Bas droite</option><option value="bl">Bas gauche</option></select><label class="tog"><input type="checkbox" id="ck-hidedone"> Cacher les cochés</label></div>
+            <div class="field"><label>Taille <b id="ck-scale-v"></b></label><input type="range" id="ck-scale" min="0.6" max="2" step="0.1"></div>
+            <div class="field"><label>Opacité <b id="ck-op-v"></b></label><input type="range" id="ck-op" min="0.2" max="1" step="0.05"></div>
+        </details>
+        <details id="bk-box"><summary>Sauvegarde (import / export)</summary>
+            <p class="muted small">Exporte tout (profils, couleur auto, liste blanche, objectifs, changement d'arme, raccourcis, réglages) dans un fichier ou un code à coller. L'import accepte aussi un code AR2X- et la sauvegarde du site AR2 Armory.</p>
+            <div class="row gap wrap" id="bk-sections"></div>
+            <div class="row gap wrap mt-s"><button id="bk-save" class="btn sm primary">Exporter dans un fichier</button><button id="bk-copy" class="btn sm">Copier le code</button></div>
+            <textarea id="bk-in" rows="4" class="w100 mt-s mono" placeholder="Colle ici un code AR2CFG-…, un JSON de sauvegarde ou un code AR2X-…"></textarea>
+            <div class="row gap wrap mt-s"><button id="bk-open" class="btn sm">Ouvrir un fichier…</button>
+                <label class="tog small"><input type="radio" name="bk-mode" value="merge" checked> Ajouter à mes réglages</label>
+                <label class="tog small"><input type="radio" name="bk-mode" value="replace"> Tout remplacer</label>
+                <button id="bk-import" class="btn sm primary">Importer</button></div>
+            <div id="bk-msg" class="small muted mt-s"></div>
+        </details>
         <details><summary>Raccourcis clavier</summary>
             <p class="muted small">Clique dans une case puis appuie sur ta combinaison (ex : Ctrl+Alt+X). Échap pour annuler.</p>
             <div id="hotkeys"></div>
@@ -112,6 +163,7 @@
     </section>
 </main>
 <script src="crosshair-core.js"></script>
+<script src="autocolor.js"></script>
 <script src="weapons.js"></script>
 <script src="settings.js"></script>
 </body>

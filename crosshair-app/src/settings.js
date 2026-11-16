@@ -2,7 +2,7 @@
 const C = window.AR2Crosshair;
 // Mode démo (ouverture dans un navigateur, sans Electron)
 if (!window.xh) {
-    const st = { cfg: { active: 0, profiles: C.PRESETS.map((p, i) => ({ id: 'p' + i, name: p.name, settings: C.withDefaults(p.s) })), display: 0, autoUpdate: true, autoSwitch: { enabled: true, onlyRoblox: true, holsterHide: true, adsHide: false, adsMode: 'hold', slots: {}, labels: {} }, hotkeys: { toggle: 'Control+Alt+X', settings: 'Control+Alt+S', nextProfile: 'Control+Alt+P', center: 'Control+Alt+C', up: 'Control+Alt+Up', down: 'Control+Alt+Down', left: 'Control+Alt+Left', right: 'Control+Alt+Right' }, startHidden: false, launchAtStartup: false, moveStep: 1 }, visible: true, displays: [{ i: 0, label: 'Écran 1 – 1920×1080 (principal)' }], version: '1.1.1', update: { state: 'none', mode: 'auto', version: '1.1.1' }, hook: { started: true }, installed: true };
+    const st = { cfg: { active: 0, profiles: C.PRESETS.map((p, i) => ({ id: 'p' + i, name: p.name, settings: C.withDefaults(p.s) })), display: 0, autoUpdate: true, autoSwitch: { enabled: true, onlyRoblox: true, holsterHide: true, adsHide: false, adsMode: 'hold', slots: {}, labels: {} }, hotkeys: { toggle: 'Control+Alt+X', settings: 'Control+Alt+S', nextProfile: 'Control+Alt+P', center: 'Control+Alt+C', autoColor: 'Control+Alt+A', checklist: 'Control+Alt+O', checkNext: 'Control+Alt+N', up: 'Control+Alt+Up', down: 'Control+Alt+Down', left: 'Control+Alt+Left', right: 'Control+Alt+Right' }, startHidden: false, launchAtStartup: false, moveStep: 1, autoColor: JSON.parse(JSON.stringify(window.AR2AutoColor.DEFAULTS)), whitelist: { enabled: false, apps: [{ id: 'roblox', name: 'Roblox', match: 'Roblox', on: true }, { id: 'minecraft', name: 'Minecraft', match: 'Minecraft', on: false }] }, checklist: { title: 'Objectifs', overlay: false, corner: 'tr', scale: 1, opacity: 0.85, hideDone: false, items: [{ id: 'a', text: 'Trouver un sac à dos', done: true }, { id: 'b', text: 'Une arme à feu + 2 chargeurs', done: false }] } }, autoColor: { samples: 0 }, fgTitle: null, presets: { debut: 'Début de partie', militaire: 'Run militaire', boss: 'Chasse au boss' }, visible: true, displays: [{ i: 0, label: 'Écran 1 – 1920×1080 (principal)' }], version: '1.2.0', update: { state: 'none', mode: 'auto', version: '1.2.0' }, hook: { started: true }, installed: true };
     const cur = () => st.cfg.profiles[st.cfg.active].settings;
     window.xh = {
         getState: async () => st, update: async p => { Object.assign(cur(), p); return st; },
@@ -14,15 +14,22 @@ if (!window.xh) {
             if (action === 'import') { st.cfg.profiles.push({ name, settings: C.withDefaults(C.fromCode(code)) }); st.cfg.active = st.cfg.profiles.length - 1; }
             return st;
         },
-        setVisible: async v => { st.visible = v; return st; }, openUrl: async () => {}, checkUpdate: async () => st, installUpdate: async () => false, onState: () => {}, onSettings: () => {}
+        setVisible: async v => { st.visible = v; return st; },
+        setExtras: async p => { ['autoColor', 'whitelist', 'checklist'].forEach(k => { if (p[k]) st.cfg[k] = Object.assign({}, st.cfg[k], p[k]); }); return st; },
+        checklistPreset: async k => { st.cfg.checklist.items = ['Objectif A', 'Objectif B', 'Objectif C'].map((t, i) => ({ id: k + i, text: t, done: false })); st.cfg.checklist.title = st.presets[k]; return st; },
+        wlCapture: async () => ({ ok: true, title: 'Roblox' }),
+        backupExport: async o => { const b = { app: 'ar2-crosshair', format: 1, version: st.version, data: { profiles: st.cfg.profiles, autoColor: st.cfg.autoColor, whitelist: st.cfg.whitelist, checklist: st.cfg.checklist, hotkeys: st.cfg.hotkeys } }; return o && o.as === 'code' ? 'AR2CFG-' + btoa(unescape(encodeURIComponent(JSON.stringify(b)))) : JSON.stringify(b, null, 2); },
+        backupSave: async () => ({ ok: true, file: 'ar2-crosshair-sauvegarde.json' }), backupOpen: async () => null,
+        backupInspect: async t => { let x = String(t).trim(); if (/^AR2CFG-/.test(x)) x = decodeURIComponent(escape(atob(x.slice(7)))); if (/^AR2X-/.test(x)) return { sections: ['profiles'] }; const o = JSON.parse(x); if (o.app === 'ar2-armory') return { sections: ['profiles'] }; if (o.app !== 'ar2-crosshair') throw new Error('format inconnu'); return { sections: Object.keys(o.data) }; },
+        backupImport: async ({ text }) => { const r = await window.xh.backupInspect(text); return { ...st, done: r.sections, fails: [] }; }, openUrl: async () => {}, checkUpdate: async () => st, installUpdate: async () => false, onState: () => {}, onSettings: () => {}
     };
 }
 
-let S = null, bg = 'game', zoom = 1;
+let S = null, bg = 'game', zoom = 1, pvColor = null, pvPick = null;
 const $ = s => document.querySelector(s);
 const cur = () => S.cfg.profiles[S.cfg.active].settings;
 const SW = ['#00ff88', '#ff2d55', '#ffffff', '#22d3ee', '#facc15', '#fb923c', '#e879f9', '#a3e635', '#3b82f6', '#000000'];
-const HK_LABELS = { toggle: 'Afficher / masquer', settings: 'Ouvrir les réglages', nextProfile: 'Profil suivant', center: 'Recentrer', up: 'Monter', down: 'Descendre', left: 'Gauche', right: 'Droite' };
+const HK_LABELS = { toggle: 'Afficher / masquer', settings: 'Ouvrir les réglages', nextProfile: 'Profil suivant', center: 'Recentrer', autoColor: 'Couleur auto on / off', checklist: 'Objectifs à l\'écran', checkNext: 'Cocher l\'objectif suivant', up: 'Monter', down: 'Descendre', left: 'Gauche', right: 'Droite' };
 
 function drawBg(ctx, w, h) {
     if (bg === 'dark') { ctx.fillStyle = '#14171c'; ctx.fillRect(0, 0, w, h); return; }
@@ -42,8 +49,18 @@ function renderPreview() {
     cv.width = w * dpr; cv.height = h * dpr;
     const ctx = cv.getContext('2d'); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     drawBg(ctx, w, h);
+    let s = cur();
+    const a = S.cfg.autoColor;
+    if (a && a.enabled && window.AR2AutoColor) {
+        // simulation dans l'aperçu : même calcul que dans le jeu, sur le fond de l'aperçu
+        const z = Math.max(20, Math.min(Math.min(w, h) - 4, a.zone / zoom)) * dpr;
+        const img = ctx.getImageData(Math.round(w * dpr / 2 - z / 2), Math.round(h * dpr / 2 - z / 2), Math.round(z), Math.round(z));
+        const an = AR2AutoColor.analyze(img.data, img.width * img.height);
+        if (an) { const r = AR2AutoColor.pick(an, a, pvColor); pvColor = r.color; s = Object.assign({}, s, { color: r.color }, a.outline ? { outlineColor: r.outline } : {}, a.glow ? { glowColor: r.color } : {}); pvPick = r; }
+    } else pvPick = null;
+    if (S.cfg.autoColor) renderACLive();
     ctx.save(); ctx.translate(w / 2, h / 2); ctx.scale(zoom, zoom); ctx.imageSmoothingEnabled = false;
-    C.draw(ctx, 0, 0, cur());
+    C.draw(ctx, 0, 0, s);
     ctx.restore();
 }
 function mini(cv, s, size) {
@@ -113,7 +130,7 @@ function renderUpdate() {
     b.classList.toggle('hidden', !show);
     if (show) { $('#upd-text').textContent = txt + (u.state === 'ready' ? " Elle s'installera aussi toute seule à la fermeture de l'appli." : u.mode === 'manual' ? ' (version portable : télécharge la nouvelle version)' : ''); $('#upd-btn').textContent = u.state === 'ready' ? 'Redémarrer et installer' : 'Télécharger'; }
 }
-function renderAll() { renderProfiles(); renderStyles(); renderControls(); renderHotkeys(); renderAuto(); renderUpdate(); renderPreview(); }
+function renderAll() { renderProfiles(); renderStyles(); renderControls(); renderHotkeys(); renderAuto(); renderUpdate(); renderPreview(); renderAC(); renderWL(); renderCK(); renderBK(); }
 
 async function upd(partial) {
     Object.assign(cur(), partial);
@@ -201,3 +218,173 @@ $('#slots').addEventListener('change', e => {
 $('#autoUpdate').onchange = async e => { S = await xh.setConfig({ autoUpdate: e.target.checked }); renderUpdate(); };
 $('#upd-check').onclick = async () => { $('#upd-status').textContent = 'Recherche de mise à jour…'; S = await xh.checkUpdate(); renderUpdate(); };
 $('#upd-btn').onclick = () => xh.installUpdate();
+
+// ================= Couleur automatique =================
+const esc = t => String(t == null ? '' : t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const focused = id => document.activeElement && document.activeElement.id === id;
+const setX = async p => { S = await xh.setExtras(p); };
+function renderAC() {
+    const a = S.cfg.autoColor; if (!a) return;
+    $('#ac-enabled').checked = !!a.enabled; $('#ac-mode').value = a.mode;
+    if (!focused('ac-interval')) $('#ac-interval').value = a.interval;
+    $('#ac-interval-v').textContent = `${a.interval} ms (${(1000 / a.interval).toFixed(a.interval >= 1000 ? 1 : 0)} / s)`;
+    if (!focused('ac-zone')) $('#ac-zone').value = a.zone; $('#ac-zone-v').textContent = a.zone + ' px';
+    if (!focused('ac-sens')) $('#ac-sens').value = a.sensitivity; $('#ac-sens-v').textContent = a.sensitivity + ' %';
+    if (!focused('ac-fade')) $('#ac-fade').value = a.fade; $('#ac-fade-v').textContent = a.fade ? a.fade + ' ms' : 'aucun';
+    $('#ac-outline').checked = !!a.outline; $('#ac-glow').checked = !!a.glow;
+    document.querySelectorAll('[data-aci]').forEach(b => b.classList.toggle('active', +b.dataset.aci === a.interval));
+    $('#ac-palette').innerHTML = (a.palette || []).map((c, i) => `<div class="psw" data-pi="${i}" title="${c}" style="background:${c}"></div>`).join('');
+    $('#ac-palette').parentElement.style.opacity = a.mode === 'contrast' ? 1 : .5;
+    renderACLive();
+}
+function renderACLive() {
+    const a = S.cfg.autoColor, st = S.autoColor || {}; if (!a) return;
+    const box = $('#ac-live');
+    if (!a.enabled) { box.innerHTML = '<span class="muted">Désactivée : le crosshair garde la couleur du profil.</span>'; return; }
+    const m = { stream: 'flux vidéo de l\'écran', thumbnail: 'capture d\'écran (mode secours)' }[st.method] || 'démarrage…';
+    const pv = pvPick ? `<span>Aperçu : fond <span class="sq" style="background:${pvPick.bg}"></span> → <span class="sq" style="background:${pvPick.color}"></span></span>` : '';
+    box.innerHTML = (st.color ? `<span>Jeu : fond <span class="sq" style="background:${st.bg}"></span> → <span class="sq" style="background:${st.color}"></span> <b>${st.color}</b></span><span class="muted">visibilité ${st.score} • ${m} • ${st.rate || 0} analyses/s</span>` : `<span class="muted">${S.shown === false ? 'Crosshair masqué : analyse en pause.' : 'En attente de la première analyse… (' + m + ')'}</span>`)
+        + pv + (st.error ? `<span class="err">${esc(st.error)}</span>` : '');
+}
+$('#ac-enabled').onchange = async e => { await setX({ autoColor: { enabled: e.target.checked } }); renderAC(); renderPreview(); };
+$('#ac-mode').onchange = async e => { pvColor = null; await setX({ autoColor: { mode: e.target.value } }); renderAC(); renderPreview(); };
+[['ac-interval', 'interval'], ['ac-zone', 'zone'], ['ac-sens', 'sensitivity'], ['ac-fade', 'fade']].forEach(([id, k]) => {
+    $('#' + id).addEventListener('input', e => { S.cfg.autoColor[k] = +e.target.value; renderAC(); if (k === 'zone') renderPreview(); });
+    $('#' + id).addEventListener('change', async e => { await setX({ autoColor: { [k]: +e.target.value } }); renderAC(); });
+});
+$('#ac-outline').onchange = async e => { await setX({ autoColor: { outline: e.target.checked } }); renderPreview(); };
+$('#ac-glow').onchange = async e => { await setX({ autoColor: { glow: e.target.checked } }); renderPreview(); };
+$('#ac-int-presets').addEventListener('click', async e => { const b = e.target.closest('[data-aci]'); if (!b) return; await setX({ autoColor: { interval: +b.dataset.aci } }); renderAC(); });
+$('#ac-palette').addEventListener('click', async e => { const b = e.target.closest('[data-pi]'); if (!b) return; const p = S.cfg.autoColor.palette.slice(); if (p.length <= 2) return; p.splice(+b.dataset.pi, 1); pvColor = null; await setX({ autoColor: { palette: p } }); renderAC(); renderPreview(); });
+$('#ac-add').onclick = async () => { const c = $('#ac-add-color').value.toLowerCase(), p = S.cfg.autoColor.palette.slice(); if (p.includes(c) || p.length >= 16) return; p.push(c); await setX({ autoColor: { palette: p } }); renderAC(); renderPreview(); };
+$('#ac-pal-reset').onclick = async () => { pvColor = null; await setX({ autoColor: { palette: AR2AutoColor.DEFAULT_PALETTE.slice() } }); renderAC(); renderPreview(); };
+
+// ================= Liste blanche =================
+function renderWL() {
+    const w = S.cfg.whitelist; if (!w) return;
+    $('#wl-enabled').checked = !!w.enabled;
+    const box = $('#wl-list');
+    if (!(document.activeElement && box.contains(document.activeElement))) {
+        box.innerHTML = '<div class="lrow muted small"><span></span><span>Appli</span><span>Le titre de la fenêtre contient</span><span></span></div>' + w.apps.map((a, i) => `<div class="lrow"><input type="checkbox" data-wlon="${i}" ${a.on ? 'checked' : ''}><input type="text" data-wlname="${i}" value="${esc(a.name)}"><input type="text" data-wlmatch="${i}" value="${esc(a.match)}"><button class="ib" data-wldel="${i}" title="Retirer">×</button></div>`).join('');
+    }
+    const t = S.fgTitle;
+    $('#wl-status').innerHTML = !w.enabled ? 'Désactivée : le crosshair s\'affiche partout.' : t === null || t === undefined ? 'Fenêtre active inconnue (Windows seulement) : rien n\'est masqué.' : `Fenêtre active : <b>${esc(t || '(sans titre)')}</b> • ${S.autoHidden && S.autoHidden.wl ? '<span class="err">crosshair masqué</span>' : '<span class="ok">crosshair autorisé</span>'}`;
+}
+const wlSet = async apps => { await setX({ whitelist: { apps } }); renderWL(); };
+$('#wl-enabled').onchange = async e => { await setX({ whitelist: { enabled: e.target.checked } }); renderWL(); };
+$('#wl-list').addEventListener('change', e => {
+    const t = e.target, apps = JSON.parse(JSON.stringify(S.cfg.whitelist.apps));
+    if (t.dataset.wlon !== undefined) apps[+t.dataset.wlon].on = t.checked;
+    else if (t.dataset.wlname !== undefined) apps[+t.dataset.wlname].name = t.value.trim() || apps[+t.dataset.wlname].name;
+    else if (t.dataset.wlmatch !== undefined) { if (!t.value.trim()) return renderWL(); apps[+t.dataset.wlmatch].match = t.value.trim(); }
+    else return;
+    t.blur(); wlSet(apps);
+});
+$('#wl-list').addEventListener('click', e => { const b = e.target.closest('[data-wldel]'); if (!b) return; const apps = S.cfg.whitelist.apps.slice(); apps.splice(+b.dataset.wldel, 1); wlSet(apps); });
+$('#wl-add').onclick = () => {
+    const m = $('#wl-match').value.trim() || $('#wl-name').value.trim(); if (!m) return;
+    const apps = S.cfg.whitelist.apps.concat([{ name: $('#wl-name').value.trim() || m, match: m, on: true }]);
+    $('#wl-name').value = ''; $('#wl-match').value = ''; wlSet(apps);
+};
+$('#wl-cap').onclick = async () => {
+    const msg = $('#wl-msg'); let n = 3;
+    msg.textContent = `Clique sur la fenêtre du jeu… ${n}`; msg.className = 'small';
+    const iv = setInterval(() => { n--; if (n > 0) msg.textContent = `Clique sur la fenêtre du jeu… ${n}`; }, 1000);
+    const r = await xh.wlCapture(3000); clearInterval(iv);
+    if (!r.ok) { msg.textContent = r.error; msg.className = 'small err'; return; }
+    const title = (r.title || '').trim();
+    if (!title) { msg.textContent = 'Fenêtre sans titre.'; msg.className = 'small err'; return; }
+    if (S.cfg.whitelist.apps.some(a => a.match.toLowerCase() === title.toLowerCase())) { msg.textContent = `« ${title} » est déjà dans la liste.`; msg.className = 'small muted'; return; }
+    await wlSet(S.cfg.whitelist.apps.concat([{ name: title.slice(0, 40), match: title, on: true }]));
+    msg.textContent = `Ajouté : « ${title} »`; msg.className = 'small ok';
+};
+
+// ================= Objectifs =================
+const uidc = () => Math.random().toString(36).slice(2, 10);
+function renderCK() {
+    const c = S.cfg.checklist; if (!c) return;
+    if (!focused('ck-title')) $('#ck-title').value = c.title || '';
+    const box = $('#ck-list');
+    if (!(document.activeElement && box.contains(document.activeElement) && document.activeElement.type === 'text')) {
+        box.innerHTML = c.items.length ? c.items.map((it, i) => `<div class="ckrow ${it.done ? 'done' : ''}"><input type="checkbox" data-ckdone="${i}" ${it.done ? 'checked' : ''}><input type="text" data-cktext="${i}" value="${esc(it.text)}" maxlength="120"><button class="ib mv" data-ckup="${i}" title="Monter">↑</button><button class="ib mv" data-ckdown="${i}" title="Descendre">↓</button><button class="ib" data-ckdel="${i}" title="Supprimer">×</button></div>`).join('') : '<p class="muted small">Aucun objectif. Ajoute-en un ou prends une liste toute prête.</p>';
+    }
+    const done = c.items.filter(i => i.done).length;
+    $('#ck-box summary').textContent = `Objectifs (liste à cocher) • ${done}/${c.items.length}`;
+    $('#ck-presets').innerHTML = '<span class="muted small">Listes prêtes :</span>' + Object.entries(S.presets || {}).map(([k, n]) => `<button class="chip" data-ckp="${k}">${esc(n)}</button>`).join('');
+    $('#ck-overlay').checked = !!c.overlay; $('#ck-corner').value = c.corner || 'tr'; $('#ck-hidedone').checked = !!c.hideDone;
+    if (!focused('ck-scale')) $('#ck-scale').value = c.scale; $('#ck-scale-v').textContent = 'x' + (+c.scale).toFixed(1);
+    if (!focused('ck-op')) $('#ck-op').value = c.opacity; $('#ck-op-v').textContent = Math.round(c.opacity * 100) + ' %';
+}
+const ckSet = async p => { await setX({ checklist: p }); renderCK(); };
+const ckItems = () => JSON.parse(JSON.stringify(S.cfg.checklist.items));
+$('#ck-list').addEventListener('change', e => {
+    const t = e.target, it = ckItems();
+    if (t.dataset.ckdone !== undefined) it[+t.dataset.ckdone].done = t.checked;
+    else if (t.dataset.cktext !== undefined) { const v = t.value.trim(); if (v) it[+t.dataset.cktext].text = v; t.blur(); }
+    else return;
+    ckSet({ items: it });
+});
+$('#ck-list').addEventListener('click', e => {
+    const b = e.target.closest('[data-ckup],[data-ckdown],[data-ckdel]'); if (!b) return;
+    const it = ckItems();
+    if (b.dataset.ckdel !== undefined) it.splice(+b.dataset.ckdel, 1);
+    else { const i = +(b.dataset.ckup ?? b.dataset.ckdown), j = b.dataset.ckup !== undefined ? i - 1 : i + 1; if (j < 0 || j >= it.length) return; [it[i], it[j]] = [it[j], it[i]]; }
+    ckSet({ items: it });
+});
+const ckAdd = () => { const v = $('#ck-new').value.trim(); if (!v) return; $('#ck-new').value = ''; ckSet({ items: ckItems().concat([{ id: uidc(), text: v, done: false }]) }); };
+$('#ck-add').onclick = ckAdd;
+$('#ck-new').addEventListener('keydown', e => { if (e.key === 'Enter') ckAdd(); });
+$('#ck-title').addEventListener('change', e => ckSet({ title: e.target.value.trim() || 'Objectifs' }));
+$('#ck-presets').addEventListener('click', async e => { const b = e.target.closest('[data-ckp]'); if (!b) return; if (S.cfg.checklist.items.length && !confirm('Remplacer ta liste actuelle par « ' + b.textContent + ' » ?')) return; S = await xh.checklistPreset(b.dataset.ckp); renderCK(); });
+$('#ck-uncheck').onclick = () => ckSet({ items: ckItems().map(i => ({ ...i, done: false })) });
+$('#ck-clean').onclick = () => ckSet({ items: ckItems().filter(i => !i.done) });
+$('#ck-paste-btn').onclick = () => $('#ck-paste-box').classList.toggle('hidden');
+// Une ligne = un objectif. Nettoie les puces, le gras et les lignes de la fiche Défi (« > Contrainte : … »)
+function parseLines(txt) {
+    return String(txt || '').split(/\r?\n/).map(l => l.replace(/\*\*/g, '').replace(/^\s*(>|-|\*|•|\d+[.)]|\[[ xX]?\])\s*/, '').trim())
+        .filter(l => l && !/^(lien|link)\s*:/i.test(l) && !/^https?:\/\//.test(l) && !/^DÉFI AR2/i.test(l))
+        .map(l => l.replace(/^(Contrainte|Objectif|Spawn|Arme imposée)\s*:\s*/i, (m, k) => /contrainte/i.test(k) ? '' : k + ' : '))
+        .map(l => l.slice(0, 120));
+}
+$('#ck-paste-go').onclick = () => { const L = parseLines($('#ck-paste').value); if (!L.length) return; $('#ck-paste').value = ''; $('#ck-paste-box').classList.add('hidden'); ckSet({ items: ckItems().concat(L.map(t => ({ id: uidc(), text: t, done: false }))) }); };
+$('#ck-overlay').onchange = e => ckSet({ overlay: e.target.checked });
+$('#ck-corner').onchange = e => ckSet({ corner: e.target.value });
+$('#ck-hidedone').onchange = e => ckSet({ hideDone: e.target.checked });
+[['ck-scale', 'scale'], ['ck-op', 'opacity']].forEach(([id, k]) => {
+    $('#' + id).addEventListener('input', e => { S.cfg.checklist[k] = +e.target.value; renderCK(); });
+    $('#' + id).addEventListener('change', e => ckSet({ [k]: +e.target.value }));
+});
+
+// ================= Sauvegarde =================
+const BK = { profiles: 'Profils', autoSwitch: "Changement d'arme", autoColor: 'Couleur auto', whitelist: 'Liste blanche', checklist: 'Objectifs', hotkeys: 'Raccourcis', general: 'Réglages généraux' };
+let bkSel = Object.keys(BK);
+function renderBK() {
+    $('#bk-sections').innerHTML = Object.entries(BK).map(([k, l]) => `<label class="tog small"><input type="checkbox" data-bks="${k}" ${bkSel.includes(k) ? 'checked' : ''}> ${l}</label>`).join('');
+}
+const bkMsg = (t, ok = true) => { $('#bk-msg').textContent = t; $('#bk-msg').className = 'small mt-s ' + (ok ? 'ok' : 'err'); };
+$('#bk-sections').addEventListener('change', e => { const k = e.target.dataset.bks; if (!k) return; bkSel = e.target.checked ? [...new Set(bkSel.concat(k))] : bkSel.filter(x => x !== k); });
+$('#bk-save').onclick = async () => { if (!bkSel.length) return bkMsg('Coche au moins une partie à exporter.', false); const r = await xh.backupSave({ sections: bkSel }); if (r && r.ok) bkMsg('Sauvegarde enregistrée : ' + r.file); };
+$('#bk-copy').onclick = async () => {
+    if (!bkSel.length) return bkMsg('Coche au moins une partie à exporter.', false);
+    const code = await xh.backupExport({ sections: bkSel, as: 'code' });
+    try { await navigator.clipboard.writeText(code); } catch (e) { $('#bk-in').value = code; $('#bk-in').select(); document.execCommand('copy'); }
+    bkMsg(`Code copié (${Math.round(code.length / 1024 * 10) / 10} Ko). Colle-le dans l'appli sur un autre PC ou envoie-le à un ami.`);
+};
+$('#bk-open').onclick = async () => { const t = await xh.backupOpen(); if (t) { $('#bk-in').value = t; inspect(); } };
+async function inspect() {
+    const t = $('#bk-in').value.trim(); if (!t) return null;
+    try { const r = await xh.backupInspect(t); bkMsg('Sauvegarde reconnue : ' + r.sections.map(k => BK[k] || k).join(', ') + (r.exported ? ` (du ${new Date(r.exported).toLocaleDateString('fr-FR')})` : '')); return r; }
+    catch (e) { bkMsg('Code ou fichier non reconnu : ' + String(e.message || e).replace(/^Error invoking remote method '[^']+': (Error: )?/, ''), false); return null; }
+}
+$('#bk-in').addEventListener('change', inspect);
+$('#bk-import').onclick = async () => {
+    const r = await inspect(); if (!r) return;
+    const mode = document.querySelector('input[name=bk-mode]:checked').value;
+    if (mode === 'replace' && !confirm('Remplacer tes réglages par ceux de la sauvegarde ? (seulement les parties cochées)')) return;
+    try {
+        const res = await xh.backupImport({ text: $('#bk-in').value, mode, sections: bkSel });
+        S = res; renderAll();
+        bkMsg('Importé : ' + (res.done || []).map(k => BK[k] || k).join(', ') + ((res.fails || []).length ? ` • raccourcis déjà pris : ${res.fails.join(', ')}` : ''));
+        $('#bk-in').value = '';
+    } catch (e) { bkMsg('Import impossible : ' + String(e.message || e), false); }
+};

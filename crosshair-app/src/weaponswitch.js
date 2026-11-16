@@ -66,4 +66,4 @@ function start(h) {
 }
 function stop() { try { if (hook && state.started) hook.stop(); } catch (e) {} state.started = false; }
 function tap(key) { if (hook && keys) hook.keyTap(keys[key]); }
-module.exports = { start, stop, state, foregroundTitle, tap };
+module.exports = { start, stop, state, foregroundTitle, tap, loadForeground };

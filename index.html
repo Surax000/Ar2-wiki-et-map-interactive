@@ -161,6 +161,11 @@
                         <span class="text-tactical-gold font-bold" id="stier-count">…</span>
                     </button>
                 </div>
+                <!-- Sauvegarde globale (import / export) -->
+                <button id="bk-btn" title="Exporter / importer toutes tes données" class="flex items-center gap-2 px-3.5 py-2 text-xs font-bold uppercase tracking-wider text-tactical-muted border border-tactical-border rounded-xl hover:text-tactical-accent hover:border-tactical-accent/60 transition-all">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M8 12l4 4 4-4M12 4v12"/></svg>
+                    <span class="hidden sm:inline">Sauvegarde</span>
+                </button>
                 <!-- Bouton Aide à la compréhension -->
                 <button id="help-btn" class="flex items-center gap-2 px-3.5 py-2 text-xs font-bold uppercase tracking-wider text-tactical-muted border border-tactical-border rounded-xl hover:text-tactical-accent hover:border-tactical-accent/60 transition-all">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -5742,6 +5747,203 @@
         };
         window.addEventListener('hashchange', () => { if (location.hash.startsWith('#defi=')) toolsHash(); });
 
+    </script>
+    <script>
+    /* ===== Calculateur du sac (onglet Build) ===== */
+    (function () {
+        if (typeof bdRenderStats !== 'function') return;
+        // Taux de vidage (valeurs du jeu, voir sources dans la carte)
+        const BC_E = 100 / 18;     // énergie : 100 en 18 min
+        const BC_H = 100 / 15.5;   // hydratation : 100 en 15,5 min
+        const BC_SPRINT = 2.25;    // le sprint vide 2,25x plus vite
+        const BC_KEY = 'ar2_bagcalc_v1';
+        let bc = Object.assign({ e: 100, h: 100, sprint: 25, from: 10, to: 100 }, (() => { try { return JSON.parse(localStorage.getItem(BC_KEY)) || {}; } catch (e) { return {}; } })());
+        const bcSave = () => { try { localStorage.setItem(BC_KEY, JSON.stringify(bc)); } catch (e) {} };
+        const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+        const fs = t => t < 60 ? (Math.round(t * 10) / 10).toString().replace('.', ',') + ' s' : Math.floor(t / 60) + ' min ' + String(Math.round(t % 60)).padStart(2, '0') + ' s';
+        const fm = m => m >= 60 ? Math.floor(m / 60) + ' h ' + String(Math.round(m % 60)).padStart(2, '0') : Math.round(m) + ' min';
+        // plan le plus rapide pour regagner `need` PV avec l'inventaire (mêmes règles que Survie & Soins)
+        function plan(need, H) {
+            let best = null;
+            const rec = (i, cnt, heal, time) => {
+                if (heal >= need) { if (!best || time < best.time - 1e-9 || (Math.abs(time - best.time) < 1e-9 && heal < best.heal)) best = { time, heal, cnt: cnt.slice() }; return; }
+                if (i >= H.length) return;
+                const [h, n0] = H[i], mx = Math.min(n0, Math.ceil(need / h.healAmount));
+                for (let n = 0; n <= mx; n++) { cnt[i] = n; rec(i + 1, cnt, heal + n * h.healAmount, time + n * h.useTime); }
+                cnt[i] = 0;
+            };
+            rec(0, H.map(() => 0), 0, 0);
+            if (!best) return { ok: false, heal: H.reduce((t, [h, n]) => t + h.healAmount * n, 0), time: H.reduce((t, [h, n]) => t + h.useTime * n, 0), seq: H };
+            return { ok: true, heal: best.heal, time: best.time, seq: H.map(([h], i) => [h, best.cnt[i]]).filter(x => x[1] > 0) };
+        }
+        function render() {
+            const st = document.getElementById('bd-stats'); if (!st) return;
+            let box = document.getElementById('bd-bagcalc');
+            if (!box) { box = document.createElement('div'); box.id = 'bd-bagcalc'; box.className = 'bg-tactical-card border border-tactical-border rounded-2xl p-4 mt-4'; st.after(box); }
+            if (box.contains(document.activeElement) && document.activeElement.type === 'range') return;
+            const inv = {}, food = [];
+            bd.items.forEach(it => { const d = bdDef(it.key); if (!d) return; if (d.k === 'h') { inv[d.ref.id] = inv[d.ref.id] || [d.ref, 0]; inv[d.ref.id][1]++; } if (d.k === 'f') food.push(d.ref); });
+            const all = Object.values(inv);
+            const heals = all.filter(([h]) => h.healAmount > 0 && h.useTime > 0).sort((a, b) => b[0].healAmount - a[0].healAmount);
+            const totalHeal = heals.reduce((t, [h, n]) => t + h.healAmount * n, 0);
+            const tempHp = all.reduce((t, [h, n]) => t + (h.tempHealth || 0) * n, 0);
+            const need = Math.max(0, bc.to - bc.from);
+            const P = need ? plan(need, heals) : { ok: true, heal: 0, time: 0, seq: [] };
+            const slowT = P.seq.reduce((t, [h, n]) => t + (h.slows ? h.useTime * n : 0), 0);
+            const fullHeals = Math.floor(totalHeal / 90);
+            // autonomie : réserve (barre de départ + aliments) / vitesse de vidage
+            const mult = 1 + (BC_SPRINT - 1) * bc.sprint / 100;
+            const sumE = food.reduce((t, f) => t + (f.energy || 0), 0), sumH = food.reduce((t, f) => t + (f.hydration || 0), 0);
+            const hold = v => v >= 100 ? 0.5 : 0; // une barre pleine tient 30 s avant de baisser
+            const minE = Math.max(0, bc.e + sumE) / (BC_E * mult) + hold(bc.e), minH = Math.max(0, bc.h + sumH) / (BC_H * mult) + hold(bc.h);
+            const auto = Math.min(minE, minH), lim = minE <= minH ? 'énergie (nourriture)' : 'hydratation (eau)';
+            const bar = (m, c) => `<div class="w-full bg-tactical-border/50 h-1.5 rounded-full overflow-hidden"><div class="h-full rounded-full" style="width:${Math.min(100, m / Math.max(minE, minH, 1) * 100)}%;background:${c}"></div></div>`;
+            box.innerHTML = `
+                <div class="text-[10px] font-bold uppercase tracking-widest text-rose-300 mb-3">Calculateur du sac</div>
+                <div class="space-y-1.5 text-xs font-mono">
+                    ${rowKV('PV régénérables', `<span class="text-green-300">${totalHeal} PV</span>`)}
+                    ${rowKV('Soins complets (10 → 100)', fullHeals ? fullHeals + ' fois' : '<span class="text-tactical-red">0</span>')}
+                    ${tempHp ? rowKV('PV temporaires (boosters)', '+' + tempHp) : ''}
+                </div>
+                <div class="mt-3 pt-3 border-t border-tactical-border/60">
+                    <div class="flex items-center justify-between text-[11px] text-tactical-muted mb-1"><span>Remonter de <b class="text-white" id="bc-from-v">${bc.from}</b> à <b class="text-white" id="bc-to-v">${bc.to}</b> PV en combat</span></div>
+                    <div class="grid grid-cols-2 gap-2 mb-2"><input type="range" id="bc-from" min="1" max="99" value="${bc.from}" style="accent-color:#fb7185"><input type="range" id="bc-to" min="10" max="100" step="5" value="${bc.to}" style="accent-color:#4ade80"></div>
+                    ${need === 0 ? '<p class="text-xs text-white">Déjà à l\'objectif.</p>' : `
+                    <div class="flex items-baseline gap-2"><b class="text-2xl font-extrabold font-mono whitespace-nowrap ${P.ok ? 'text-white' : 'text-amber-300'}">${heals.length ? fs(P.time) : '—'}</b><span class="text-[11px] text-tactical-muted">${!heals.length ? 'aucun soin dans le sac' : P.ok ? 'plan le plus rapide' : `pas assez : +${P.heal} / ${need} PV`}</span></div>
+                    ${P.seq.length ? `<ul class="text-[11px] text-gray-300 mt-1 space-y-0.5">${P.seq.map(([h, n]) => `<li>${n} × ${esc(h.name)} <span class="text-tactical-muted">(+${n * h.healAmount} PV, ${fs(n * h.useTime)}${h.slows ? ', ralentit' : ''})</span></li>`).join('')}</ul>` : ''}
+                    ${P.seq.length ? `<p class="text-[11px] mt-1 ${slowT ? 'text-amber-300' : 'text-green-300'}">${slowT ? `Ralenti pendant ${fs(slowT)}.` : 'Sans ralentissement.'}</p>` : ''}`}
+                </div>
+                <div class="mt-3 pt-3 border-t border-tactical-border/60">
+                    <div class="text-[10px] font-bold uppercase tracking-widest text-tactical-muted mb-2">Autonomie nourriture / eau</div>
+                    <div class="grid grid-cols-3 gap-2 text-[10px] text-tactical-muted mb-2">
+                        <label class="flex flex-col gap-1">Énergie <b class="text-white" id="bc-e-v">${bc.e}</b><input type="range" id="bc-e" min="0" max="100" step="5" value="${bc.e}" style="accent-color:#facc15"></label>
+                        <label class="flex flex-col gap-1">Eau <b class="text-white" id="bc-h-v">${bc.h}</b><input type="range" id="bc-h" min="0" max="100" step="5" value="${bc.h}" style="accent-color:#38bdf8"></label>
+                        <label class="flex flex-col gap-1">Sprint <b class="text-white" id="bc-s-v">${bc.sprint} %</b><input type="range" id="bc-s" min="0" max="100" step="5" value="${bc.sprint}" style="accent-color:#fb923c"></label>
+                    </div>
+                    <div class="flex items-baseline gap-2"><b class="text-2xl font-extrabold font-mono text-white whitespace-nowrap">${fm(auto)}</b><span class="text-[11px] text-tactical-muted">avant de tomber à 0 • limite : <b class="text-amber-300">${lim}</b></span></div>
+                    <div class="space-y-1.5 mt-2 text-[11px] font-mono">
+                        <div class="flex justify-between"><span class="text-yellow-300">Énergie : ${bc.e} ${sumE >= 0 ? '+' : ''}${sumE}</span><span class="text-white">${fm(minE)}</span></div>${bar(minE, '#facc15')}
+                        <div class="flex justify-between"><span class="text-sky-300">Eau : ${bc.h} ${sumH >= 0 ? '+' : ''}${sumH}</span><span class="text-white">${fm(minH)}</span></div>${bar(minH, '#38bdf8')}
+                    </div>
+                    ${food.some(f => (f.hydration || 0) < 0) ? `<p class="text-[11px] text-amber-300 mt-1">Attention : ${esc(food.filter(f => f.hydration < 0).map(f => f.name).join(', '))} donne soif.</p>` : ''}
+                    ${!food.length ? '<p class="text-[11px] text-tactical-muted mt-1">Aucune nourriture ni boisson dans le sac.</p>' : ''}
+                </div>
+                <p class="text-[10px] text-tactical-muted mt-3 leading-relaxed">Estimation : l'énergie se vide en 18 min, l'eau en 15,5 min, et le sprint les vide 2,25 fois plus vite (<a class="underline" href="https://devforum.roblox.com/t/apocalypse-rising-2-alpha-changelog-04022021/1146078" target="_blank" rel="noopener">changelog AR2</a>, <a class="underline" href="https://roblox-apocalypse-rising.fandom.com/wiki/Time" target="_blank" rel="noopener">wiki Time</a>). Calcul fait en mangeant au bon moment (rien de gaspillé au-delà de 100). Soins : <a class="underline" href="https://roblox-apocalypse-rising.fandom.com/wiki/Consumables_(Apocalypse_Rising_2)" target="_blank" rel="noopener">wiki Consumables</a>.</p>`;
+            const bind = (id, k, v) => { const el = document.getElementById(id); el.oninput = () => { bc[k] = +el.value; if (k === 'from' && bc.from >= bc.to) bc.to = Math.min(100, Math.ceil((bc.from + 1) / 5) * 5); document.getElementById(v).textContent = bc[k] + (k === 'sprint' ? ' %' : ''); }; el.onchange = () => { el.oninput(); bcSave(); el.blur(); render(); }; };
+            bind('bc-from', 'from', 'bc-from-v'); bind('bc-to', 'to', 'bc-to-v'); bind('bc-e', 'e', 'bc-e-v'); bind('bc-h', 'h', 'bc-h-v'); bind('bc-s', 'sprint', 'bc-s-v');
+        }
+        const orig = bdRenderStats;
+        bdRenderStats = function () { orig.apply(this, arguments); try { render(); } catch (e) { console.error(e); } };
+        window.bcRender = render;
+        render();
+    })();
+
+    /* ===== Sauvegarde globale : export / import de toutes les données du site ===== */
+    (function () {
+        const GROUPS = [
+            ['builds', 'Builds de sac', k => k.startsWith('ar2_builds')],
+            ['crosshair', 'Crosshair', k => k === 'ar2_crosshair_web'],
+            ['map', 'Carte (lieux perso, routes, loot runs)', k => k.startsWith('ar2_custom_locations') || k.startsWith('ar2_loot_route') || k.startsWith('ar2_runs')],
+            ['weapons', 'Armes personnalisées', k => k.startsWith('ar2_custom_weapons')],
+            ['wishlist', 'Liste de loot (wishlist)', k => k.startsWith('ar2_wishlist')],
+            ['survie', 'Survie, soins et calculateur du sac', k => k.startsWith('ar2_survie') || k.startsWith('ar2_bagcalc')],
+            ['other', 'Autres réglages', () => true],
+        ];
+        const groupOf = k => GROUPS.find(g => g[2](k))[0];
+        const keys = () => Object.keys(localStorage).filter(k => k.startsWith('ar2_')).sort();
+        const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+        let sel = GROUPS.map(g => g[0]);
+        function build() {
+            const data = {};
+            keys().forEach(k => { if (sel.includes(groupOf(k))) data[k] = localStorage.getItem(k); });
+            return { app: 'ar2-armory', format: 1, exported: new Date().toISOString(), data };
+        }
+        const toCode = o => 'AR2SAVE-' + btoa(unescape(encodeURIComponent(JSON.stringify(o))));
+        function parse(text) {
+            let t = String(text || '').trim();
+            if (/^AR2(SAVE|CFG)-/.test(t)) t = decodeURIComponent(escape(atob(t.replace(/^AR2(SAVE|CFG)-/, '').replace(/-/g, '+').replace(/_/g, '/'))));
+            if (/^AR2X-/.test(t)) {
+                if (!window.AR2Crosshair) throw new Error('code crosshair illisible');
+                return { app: 'ar2-armory', format: 1, data: { ar2_crosshair_web: JSON.stringify(window.AR2Crosshair.fromCode(t)) }, note: 'Code crosshair' };
+            }
+            const o = JSON.parse(t);
+            if (o && o.app === 'ar2-crosshair' && o.data) {
+                // sauvegarde de l'appli : on prend le profil actif comme crosshair du site
+                const P = o.data.profiles || []; const p = P[o.data.active || 0] || P[0];
+                if (!p) throw new Error("pas de profil de crosshair dans cette sauvegarde de l'appli");
+                return { app: 'ar2-armory', format: 1, data: { ar2_crosshair_web: JSON.stringify(p.settings) }, note: `Appli AR2 Crosshair (profil « ${p.name} »)` };
+            }
+            if (!o || o.app !== 'ar2-armory' || typeof o.data !== 'object') throw new Error("ce n'est pas une sauvegarde AR2 Armory");
+            return o;
+        }
+        function mergeVal(oldV, newV) {
+            try {
+                const a = JSON.parse(oldV), b = JSON.parse(newV);
+                if (Array.isArray(a) && Array.isArray(b)) { const seen = new Set(a.map(x => JSON.stringify(x))); return JSON.stringify(a.concat(b.filter(x => !seen.has(JSON.stringify(x))))); }
+                if (a && b && typeof a === 'object' && typeof b === 'object' && !Array.isArray(a) && !Array.isArray(b)) return JSON.stringify(Object.assign({}, a, b));
+            } catch (e) {}
+            return newV;
+        }
+        function open() {
+            if (document.getElementById('bk-modal')) return;
+            const m = document.createElement('div'); m.id = 'bk-modal';
+            m.className = 'fixed inset-0 z-[80] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4';
+            m.innerHTML = `<div class="bg-tactical-card border border-tactical-border rounded-2xl w-full max-w-xl max-h-[92vh] overflow-y-auto shadow-2xl">
+                <div class="flex items-center justify-between px-5 py-4 border-b border-tactical-border"><h2 class="text-lg font-bold text-white">Sauvegarde du site</h2><button id="bk-x" class="p-2 text-tactical-muted hover:text-white rounded-lg" aria-label="Fermer">✕</button></div>
+                <div class="p-5 space-y-4 text-sm">
+                    <p class="text-xs text-tactical-muted leading-relaxed">Tes données (builds, crosshair, lieux de la carte, loot runs, wishlist, soins…) sont enregistrées seulement dans ce navigateur. Exporte-les pour les garder ou les passer sur un autre PC. L'import accepte aussi une sauvegarde ou un code de l'appli AR2 Crosshair.</p>
+                    <div><div class="text-[10px] font-bold uppercase tracking-widest text-tactical-muted mb-2">Parties</div><div id="bk-g" class="grid grid-cols-1 sm:grid-cols-2 gap-1.5"></div></div>
+                    <div class="flex flex-wrap gap-2">
+                        <button id="bk-dl" class="px-3 py-2 rounded-lg bg-tactical-accent text-black text-xs font-bold">Télécharger le fichier</button>
+                        <button id="bk-cp" class="px-3 py-2 rounded-lg border border-tactical-border text-white text-xs font-bold hover:border-tactical-accent">Copier le code</button>
+                    </div>
+                    <div class="pt-4 border-t border-tactical-border space-y-2">
+                        <div class="text-[10px] font-bold uppercase tracking-widest text-tactical-muted">Importer</div>
+                        <textarea id="bk-txt" rows="3" placeholder="Colle ici un code AR2SAVE-…, AR2CFG-…, AR2X-… ou le contenu d'un fichier .json" class="w-full bg-tactical-bg border border-tactical-border rounded-lg px-3 py-2 text-xs text-white font-mono"></textarea>
+                        <div class="flex flex-wrap items-center gap-3 text-xs text-white">
+                            <label class="px-3 py-2 rounded-lg border border-tactical-border font-bold cursor-pointer hover:border-tactical-accent">Ouvrir un fichier…<input type="file" id="bk-file" accept=".json,.txt,application/json" class="hidden"></label>
+                            <label class="flex items-center gap-1.5"><input type="radio" name="bk-m" value="merge" checked> Ajouter à mes données</label>
+                            <label class="flex items-center gap-1.5"><input type="radio" name="bk-m" value="replace"> Tout remplacer</label>
+                        </div>
+                        <button id="bk-go" class="px-3 py-2 rounded-lg bg-tactical-accent text-black text-xs font-bold">Importer</button>
+                        <p id="bk-out" class="text-xs"></p>
+                    </div>
+                </div></div>`;
+            document.body.appendChild(m);
+            const cnt = {}; keys().forEach(k => { const g = groupOf(k); cnt[g] = (cnt[g] || 0) + 1; });
+            document.getElementById('bk-g').innerHTML = GROUPS.map(([id, l]) => `<label class="flex items-center gap-2 text-xs ${cnt[id] ? 'text-white' : 'text-tactical-muted'}"><input type="checkbox" data-bkg="${id}" ${sel.includes(id) ? 'checked' : ''} style="accent-color:#00ff88"> ${l} ${cnt[id] ? '' : '<span class="text-[10px]">(vide)</span>'}</label>`).join('');
+            const out = (t, ok = true) => { const o = document.getElementById('bk-out'); o.textContent = t; o.className = 'text-xs ' + (ok ? 'text-green-300' : 'text-tactical-red'); };
+            const close = () => m.remove();
+            m.addEventListener('click', e => { if (e.target === m) close(); });
+            document.getElementById('bk-x').onclick = close;
+            document.getElementById('bk-g').onchange = e => { const g = e.target.dataset.bkg; if (g) sel = e.target.checked ? [...new Set(sel.concat(g))] : sel.filter(x => x !== g); };
+            document.getElementById('bk-dl').onclick = () => {
+                const o = build(), n = Object.keys(o.data).length; if (!n) return out('Rien à exporter pour les parties cochées.', false);
+                const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(o, null, 2)], { type: 'application/json' }));
+                a.download = 'ar2-armory-sauvegarde-' + new Date().toISOString().slice(0, 10) + '.json'; document.body.appendChild(a); a.click(); a.remove();
+                out(`Fichier téléchargé (${n} élément${n > 1 ? 's' : ''}).`);
+            };
+            document.getElementById('bk-cp').onclick = () => {
+                const o = build(), n = Object.keys(o.data).length; if (!n) return out('Rien à exporter pour les parties cochées.', false);
+                const code = toCode(o), ta = document.getElementById('bk-txt');
+                toolCopy(code, null).then(ok => { if (!ok) { ta.value = code; ta.select(); } out(ok ? `Code copié (${Math.round(code.length / 102.4) / 10} Ko).` : 'Copie bloquée : le code est dans la case, copie-le à la main.', ok); });
+            };
+            document.getElementById('bk-file').onchange = e => { const f = e.target.files[0]; if (!f) return; f.text().then(t => { document.getElementById('bk-txt').value = t; try { const o = parse(t); out(`Fichier reconnu : ${Object.keys(o.data).length} élément(s). Clique sur Importer.`); } catch (er) { out('Fichier non reconnu : ' + er.message, false); } }); };
+            document.getElementById('bk-go').onclick = () => {
+                let o; try { o = parse(document.getElementById('bk-txt').value); } catch (e) { return out('Code ou fichier non reconnu' + (e && e.message ? ' : ' + e.message : '.'), false); }
+                const mode = m.querySelector('input[name=bk-m]:checked').value;
+                const ks = Object.keys(o.data).filter(k => k.startsWith('ar2_') && sel.includes(groupOf(k)));
+                if (!ks.length) return out('Rien à importer pour les parties cochées.', false);
+                if (mode === 'replace' && !confirm('Remplacer tes données actuelles par celles de la sauvegarde (parties cochées) ?')) return;
+                ks.forEach(k => { const v = typeof o.data[k] === 'string' ? o.data[k] : JSON.stringify(o.data[k]); const old = localStorage.getItem(k); localStorage.setItem(k, mode === 'merge' && old != null ? mergeVal(old, v) : v); });
+                out(`${o.note ? o.note + ' : ' : ''}${ks.length} élément(s) importé(s). Rechargement…`);
+                setTimeout(() => location.reload(), 900);
+            };
+        }
+        const b = document.getElementById('bk-btn'); if (b) b.addEventListener('click', open);
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') { const m = document.getElementById('bk-modal'); if (m) m.remove(); } });
+        window.ar2BackupOpen = open;
+    })();
     </script>
 </body>
 </html>

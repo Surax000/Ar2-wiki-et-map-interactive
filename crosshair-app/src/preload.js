@@ -9,5 +9,18 @@ contextBridge.exposeInMainWorld('xh', {
     installUpdate: () => ipcRenderer.invoke('update-install'),
     openUrl: (u) => ipcRenderer.invoke('open-url', u),
     onState: (cb) => ipcRenderer.on('state', (e, s) => cb(s)),
-    onSettings: (cb) => ipcRenderer.on('settings', (e, s) => cb(s))
+    onSettings: (cb) => ipcRenderer.on('settings', (e, s) => cb(s)),
+    setExtras: (p) => ipcRenderer.invoke('set-extras', p),
+    checklistPreset: (k) => ipcRenderer.invoke('checklist-preset', k),
+    wlCapture: (delay) => ipcRenderer.invoke('wl-capture', delay),
+    backupExport: (o) => ipcRenderer.invoke('backup-export', o),
+    backupSave: (o) => ipcRenderer.invoke('backup-save', o),
+    backupOpen: () => ipcRenderer.invoke('backup-open'),
+    backupInspect: (t) => ipcRenderer.invoke('backup-inspect', t),
+    backupImport: (o) => ipcRenderer.invoke('backup-import', o),
+    onChecklist: (cb) => ipcRenderer.on('checklist', (e, c) => cb(c)),
+    onSamplerConfig: (cb) => ipcRenderer.on('sampler-config', (e, c) => cb(c)),
+    onSamplerGeom: (cb) => ipcRenderer.on('sampler-geom', (e, g) => cb(g)),
+    samplerSample: (a) => ipcRenderer.send('sampler-sample', a),
+    samplerError: (m) => ipcRenderer.send('sampler-error', m)
 });
