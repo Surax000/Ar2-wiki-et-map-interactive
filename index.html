@@ -609,6 +609,7 @@
                         <div id="lr-summary"></div>
                     </div>
                     <div class="bg-tactical-card border border-tactical-border rounded-2xl p-4" id="lr-loot"></div>
+                    <div class="bg-tactical-card border border-tactical-border rounded-2xl p-4" id="lr-veh"></div>
                     <div class="bg-tactical-card border border-tactical-border rounded-2xl p-4">
                         <div class="text-[10px] font-bold uppercase tracking-widest text-tactical-muted mb-2">Mes itinéraires enregistrés</div>
                         <div id="lr-saved" class="space-y-1.5"></div>
@@ -616,7 +617,61 @@
                 </div>
             </div>
         </section>
+
+        <!-- ===== BALISTIQUE & CHUTE DE BALLE ===== -->
+        <section id="balistique-section" class="hidden pb-10">
+            <div class="mb-4">
+                <h2 class="text-2xl font-extrabold text-white tracking-tight">Balistique &amp; chute de balle</h2>
+                <p class="text-xs text-tactical-muted mt-1 max-w-3xl">Choisis une arme, une lunette et la distance de ta cible : le simulateur montre où viser au-dessus de la tête dans le réticule, le temps de vol de la balle et l'avance à prendre sur une cible qui court. Les calculs utilisent la vitesse de balle du wiki ; la gravité et la conversion studs ↔ mètres sont des estimations (modifiables).</p>
+            </div>
+            <div class="grid grid-cols-1 xl:grid-cols-[360px_1fr] gap-5">
+                <div class="space-y-4">
+                    <div class="bg-tactical-card border border-tactical-border rounded-2xl p-4 space-y-3">
+                        <label class="cr-field"><span>Arme</span><select id="bal-weapon"></select></label>
+                        <label class="cr-field"><span>Lunette / viseur</span><select id="bal-scope"></select></label>
+                        <label class="cr-field"><span>Distance de la cible (<b id="bal-dist-lbl" class="text-white">250 m</b>)</span><input id="bal-dist" type="range" min="10" max="1000" step="5" value="250"></label>
+                        <div class="grid grid-cols-2 gap-2">
+                            <label class="cr-field"><span>Distance (m)</span><input id="bal-dist-n" type="number" min="5" max="1500" step="5" value="250"></label>
+                            <label class="cr-field"><span>Cible en mouvement</span><select id="bal-move"><option value="0">Immobile</option><option value="16">Marche (16 studs/s)</option><option value="24">Sprint (24 studs/s)</option></select></label>
+                        </div>
+                        <div id="bal-quick" class="flex flex-wrap gap-1.5"></div>
+                        <details class="text-xs text-tactical-muted">
+                            <summary class="cursor-pointer font-bold uppercase tracking-wider text-[10px]">Réglages avancés (estimations)</summary>
+                            <div class="grid grid-cols-2 gap-2 mt-2">
+                                <label class="cr-field"><span>Gravité (studs/s²)</span><input id="bal-g" type="number" min="10" max="400" step="0.1" value="196.2"></label>
+                                <label class="cr-field"><span>1 stud = (m)</span><input id="bal-stud" type="number" min="0.1" max="1" step="0.01" value="0.28"></label>
+                            </div>
+                            <p class="mt-2">196,2 studs/s² est la gravité par défaut de Roblox ; AR2 ne publie pas la sienne. 0,28 m/stud est la conversion utilisée par le planificateur de Loot Run.</p>
+                        </details>
+                    </div>
+                    <div class="bg-tactical-card border border-tactical-border rounded-2xl p-4" id="bal-stats"></div>
+                </div>
+                <div class="space-y-4 min-w-0">
+                    <div class="bg-tactical-card border border-tactical-border rounded-2xl p-3 grid grid-cols-1 lg:grid-cols-[1fr_1fr] gap-3">
+                        <div><div class="text-[10px] font-bold uppercase tracking-widest text-tactical-muted mb-2">Vue dans la lunette</div><div id="bal-scope-view" class="aspect-square w-full max-w-[460px] mx-auto"></div></div>
+                        <div class="min-w-0"><div class="text-[10px] font-bold uppercase tracking-widest text-tactical-muted mb-2">Trajectoire (vue de côté)</div><div id="bal-traj"></div><div id="bal-table" class="mt-3 overflow-x-auto"></div></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== BOSS & INFECTÉS SPÉCIAUX ===== -->
+        <section id="boss-section" class="hidden pb-10">
+            <div class="mb-4">
+                <h2 class="text-2xl font-extrabold text-white tracking-tight">Guide des infectés spéciaux &amp; boss</h2>
+                <p class="text-xs text-tactical-muted mt-1 max-w-3xl">Points de vie, tenue pour les repérer de loin, lieu d'apparition exact et butin (armes rares et cosmétiques) de chaque infecté unique d'AR2. Clique sur « Voir sur la carte » pour ouvrir son point, ou sur l'épingle d'un objet pour l'ajouter à ta liste de loot. Données : wiki Apocalypse Rising (Fandom).</p>
+            </div>
+            <div class="flex flex-col md:flex-row gap-2 mb-4">
+                <input id="boss-search" type="search" placeholder="Rechercher un boss, une arme, un lieu…" class="flex-1 bg-tactical-card border border-tactical-border rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-tactical-muted focus:outline-none focus:border-tactical-accent">
+                <div id="boss-filters" class="flex flex-wrap gap-1.5"></div>
+            </div>
+            <div id="boss-note" class="mb-4 text-[11px] text-tactical-muted bg-tactical-card border border-tactical-border rounded-xl px-3 py-2"></div>
+            <div id="boss-grid" class="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-4"></div>
+        </section>
     </main>
+
+    <!-- ===== LISTE DE LOOT (wishlist) ===== -->
+    <div id="wish-bar" class="hidden fixed z-[45] right-3 bottom-24 w-[250px] max-w-[calc(100vw-1.5rem)] bg-tactical-card/95 backdrop-blur-xl border border-tactical-border rounded-2xl shadow-2xl"></div>
 
     <!-- Sticky Comparison Floating Bar -->
     <div id="compare-bar" class="fixed bottom-0 inset-x-0 bg-tactical-card/95 backdrop-blur-xl border-t border-tactical-border py-4 px-4 sm:px-8 z-40 transition-transform duration-300 translate-y-full shadow-2xl">
@@ -1181,6 +1236,8 @@
             { id: 'build',       label: 'Build / Sac à dos',      icon: 'bag',  color: '#fbbf24', subs: [] },
             { id: 'carte',       label: 'Carte',                  icon: 'map',  color: '#a78bfa', subs: [] },
             { id: 'lootrun',     label: 'Loot Run',               icon: 'route', color: '#f97316', subs: [] },
+            { id: 'balistique',  label: 'Balistique',             icon: 'scope', color: '#4ade80', subs: [] },
+            { id: 'boss',        label: 'Boss & Infectés',        icon: 'skull', color: '#f87171', subs: [] },
             { id: 'finditem',    label: 'Find Item',              icon: 'search', color: '#38bdf8', subs: [] },
             { id: 'createur',    label: 'Créer une arme / explosif', icon: 'plus', color: '#e5c07b', subs: [] },
             { id: 'lieux',       label: 'Ajouter un lieu',        icon: 'pin', color: '#f472b6', subs: [] },
@@ -1566,6 +1623,8 @@
                 case 'plus': return `<svg ${st}><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M12 8v8M8 12h8"/></svg>`;
                 case 'bag':  return `<svg ${st}><path d="M8 7V5a4 4 0 0 1 8 0v2"/><rect x="4" y="7" width="16" height="14" rx="3"/><path d="M9 14h6"/></svg>`;
                 case 'route': return `<svg ${st}><circle cx="6" cy="19" r="2"/><circle cx="18" cy="5" r="2"/><path d="M8 19h7a3.5 3.5 0 0 0 0-7H9a3.5 3.5 0 0 1 0-7h7"/></svg>`;
+                case 'scope': return `<svg ${st}><circle cx="12" cy="12" r="9"/><path d="M12 3v6M12 15v6M3 12h6M15 12h6"/><circle cx="12" cy="12" r="1"/></svg>`;
+                case 'skull': return `<svg ${st}><path d="M12 3a8 8 0 0 0-5 14.2V20h10v-2.8A8 8 0 0 0 12 3z"/><circle cx="9" cy="11" r="1.6"/><circle cx="15" cy="11" r="1.6"/><path d="M10 20v-2M14 20v-2"/></svg>`;
                 case 'box':  return `<svg ${st}><path d="M21 8l-9-5-9 5v8l9 5 9-5V8z"/><path d="M3 8l9 5 9-5M12 13v8"/></svg>`;
                 default:     return `<svg ${st}><path d="M10.3 3.9L1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg>`;
             }
@@ -1575,7 +1634,7 @@
         function renderMainTabs() {
             document.getElementById('main-tabs').innerHTML = GROUPS.map(g => {
                 const active = g.id === currentGroup;
-                const count = g.id === 'build' ? BACKPACKS_DATA.length : g.id === 'lootrun' ? (typeof LOOT_ROUTES !== 'undefined' ? LOOT_ROUTES.length : 0) : g.id === 'carte' ? (typeof MAP_COUNT !== 'undefined' ? MAP_COUNT : 0) + MAP_DATA.locations.filter(l => l.custom).length : g.id === 'lieux' ? MAP_DATA.locations.filter(l => l.custom).length : g.id === 'createur' ? ALL_ITEMS.filter(i => i.custom).length : g.id === 'finditem' ? ALL_ITEMS.length : g.id === 'crosshair' ? (window.AR2Crosshair ? Object.keys(window.AR2Crosshair.STYLES).length : 11) : ALL_ITEMS.filter(i => i.group === g.id).length;
+                const count = g.id === 'balistique' ? (typeof balWeapons === 'function' ? balWeapons().length : 0) : g.id === 'boss' ? (typeof BOSS_DATA !== 'undefined' ? BOSS_DATA.length : 0) : g.id === 'build' ? BACKPACKS_DATA.length : g.id === 'lootrun' ? (typeof LOOT_ROUTES !== 'undefined' ? LOOT_ROUTES.length : 0) : g.id === 'carte' ? (typeof MAP_COUNT !== 'undefined' ? MAP_COUNT : 0) + MAP_DATA.locations.filter(l => l.custom).length : g.id === 'lieux' ? MAP_DATA.locations.filter(l => l.custom).length : g.id === 'createur' ? ALL_ITEMS.filter(i => i.custom).length : g.id === 'finditem' ? ALL_ITEMS.length : g.id === 'crosshair' ? (window.AR2Crosshair ? Object.keys(window.AR2Crosshair.STYLES).length : 11) : ALL_ITEMS.filter(i => i.group === g.id).length;
                 return `
                     <button data-group="${g.id}" class="flex items-center gap-2.5 px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider border transition-all ${
                         active ? 'bg-tactical-accent text-tactical-bg border-tactical-accent shadow-lg shadow-tactical-accent/10'
@@ -2630,7 +2689,7 @@
             }
             const pts = MAP_POINTS.filter(pointVisible);
             // ordre : événements sous les lieux
-            const order = { aleatoire: 0, infecte: 1, poi: 2, cache: 3, sovietique: 4, militaire: 5, ville: 6, saison: 7, perso: 8 };
+            const order = { aleatoire: 0, infecte: 1, poi: 2, cache: 3, sovietique: 4, militaire: 5, ville: 6, saison: 7, perso: 8, vehicule: 1.5 };
             pts.sort((a, b) => order[a.cat] - order[b.cat]);
             const ms = Math.max(k, 0.28) * 1.05;
             const showMinor = k < 0.55;
@@ -2638,7 +2697,7 @@
                 const c = pointColor(p);
                 const sel = mapSelected && mapSelected.uid === p.uid;
                 const onRoute = typeof routeUidsShown === 'function' && routeUidsShown().has(p.uid);
-                const label = !onRoute && (p.cat === 'ville' || p.cat === 'saison' || (p.kind === 'infected' && p.mode !== 'normal') || (showMinor && p.kind !== 'event' && p.kind !== 'infected') || (k < 0.3 && p.kind === 'infected') || sel)
+                const label = !onRoute && (p.cat === 'ville' || p.cat === 'saison' || (p.kind === 'infected' && p.mode !== 'normal') || (showMinor && p.kind !== 'event' && p.kind !== 'infected' && p.kind !== 'veh') || (k < 0.3 && p.kind === 'infected') || sel)
                     ? `<text y="${p.cat === 'ville' ? -14 : (p.kind === 'infected' ? 19 : -11)}" text-anchor="middle" class="map-label ${p.cat === 'ville' ? 'map-label-town' : ''}" fill="${p.cat === 'ville' ? '#ffffff' : c}">${p.short || p.name}</text>` : '';
                 return `<g class="map-marker${sel ? ' selected' : ''}" data-uid="${p.uid}" transform="translate(${p.x},${p.y}) scale(${ms})">
                     ${sel ? `<circle r="16" fill="none" stroke="${c}" stroke-width="2" class="map-pulse"/>` : ''}
@@ -2873,7 +2932,12 @@
         function onGroupChange() {
             const isMap = currentGroup === 'carte', isCreator = currentGroup === 'createur', isFind = currentGroup === 'finditem', isXh = currentGroup === 'crosshair', isLieux = currentGroup === 'lieux';
             const isBuild = currentGroup === 'build', isRun = currentGroup === 'lootrun';
-            const special = isMap || isCreator || isFind || isXh || isLieux || isBuild || isRun;
+            const isBal = currentGroup === 'balistique', isBoss = currentGroup === 'boss';
+            const special = isMap || isCreator || isFind || isXh || isLieux || isBuild || isRun || isBal || isBoss;
+            document.getElementById('balistique-section').classList.toggle('hidden', !isBal);
+            document.getElementById('boss-section').classList.toggle('hidden', !isBoss);
+            if (isBal && typeof balRender === 'function') balRender();
+            if (isBoss && typeof bossRender === 'function') bossRender();
             document.getElementById('build-section').classList.toggle('hidden', !isBuild);
             document.getElementById('lootrun-section').classList.toggle('hidden', !isRun);
             if (isBuild && typeof bdRender === 'function') bdRender();
@@ -4585,6 +4649,578 @@
             bdDefault(); bdSetup(); lrSetup(); sqSetup();
             toolsHash();
             window.addEventListener('hashchange', toolsHash);
+        });
+    </script>
+    <style>
+        .wish-pin { position:absolute; top:-9px; right:-9px; z-index:5; width:24px; height:24px; border-radius:9999px; display:flex; align-items:center; justify-content:center; background:#1b1f27; border:1px solid #30363d; color:#8b949e; opacity:.8; transition:all .15s; }
+        .wish-pin:hover { color:#facc15; border-color:#facc15; opacity:1; }
+        .wish-pin.on, .wish-mini.on { color:#0b0f14; background:#facc15; border-color:#facc15; opacity:1; }
+        .wish-mini { display:inline-flex; align-items:center; justify-content:center; width:16px; height:16px; border-radius:4px; color:#8b949e; border:1px solid transparent; }
+        .wish-mini:hover { color:#facc15; border-color:#facc1588; }
+        @media (max-width: 767px) { #wish-bar { bottom:12px; right:12px; left:12px; width:auto; } }
+    </style>
+    <script>
+        // ============================================================
+        // GUIDE DES INFECTÉS SPÉCIAUX & BOSS
+        // Source : wiki Apocalypse Rising (Fandom) — page « The Infected (Apocalypse Rising 2) »
+        // + pages individuelles « Infected <Nom> ». hp : 100 = indiqué sur la page,
+        // hpNote = précision. buffed = icône « PV augmentés » du wiki. noFlinch = ne peut pas être étourdi.
+        // drops : g = garanti, r = rare / chance, c = cosmétiques (tenue portée = tenue lâchée).
+        // ============================================================
+        const BOSS_WIKI = 'https://roblox-apocalypse-rising.fandom.com/wiki/';
+        const BOSS_DATA = [
+            { id: 'legendary-soldier', name: 'Legendary Soldier', fr: 'Soldat légendaire', type: 'Légendaire', hp: 100, hpDoc: true, dmg: 25, speed: 'Très rapide', noFlinch: true, page: 'Infected_Legendary_Soldier',
+              look: "Combinaison « sneaking suit » noire, bandeau bleu « Big Boss » sur le front, harnais tactique. Référence à Big Boss (Metal Gear).",
+              spawn: "Military Prison (dans l'enceinte) et une variante dans le Destroyer Shipwreck.", map: ['i5', 'i19'],
+              g: ['XM177', '2-3 chargeurs 30 coups', '5.56mm NATO Battle Pack'], r: ['Padded Soles (Military Prison)', 'Combat Knife (occasionnel)'],
+              c: ['Black Sneaking Suit (haut + bas)', '"Big Boss" Blue Headband', 'Drab Tactical Harness', 'Drab Tactical Belt Rig', 'Legendary Soldier Uniform (variante Destroyer)'] },
+            { id: 'legendary-veteran', name: 'Legendary Veteran', fr: 'Vétéran légendaire', type: 'Légendaire', hp: 100, noFlinch: true, page: null,
+              look: "Combinaison « sneaking suit » blanche, très reconnaissable dans la grotte sombre.",
+              spawn: "Grotte soviétique (Vietnam Cave), au nord-ouest de l'archipel.", map: ['i15'],
+              g: ['Patriot', 'Chargeur tambour 100 coups', '5.56mm NATO Battle Pack'], r: [], c: ['White Sneaking Suit (haut + bas)'] },
+            { id: 'legendary-mercenary', name: 'Legendary Mercenary', fr: 'Mercenaire légendaire', type: 'Légendaire', hp: 100, noFlinch: true, page: null,
+              look: "Treillis vert « Legendary Mercenary » (version blindée à la NAS), harnais vert et casque radio tactique.",
+              spawn: "Permanent Helicopter (Magnolia) et Naval Air Station.", map: ['i16', 'i25'],
+              g: ['SOCOM MK23', '2-3 chargeurs', 'Boîte de .45 ACP'], r: ['Combat Knife'],
+              c: ['Legendary Mercenary Fatigues (haut + bas)', 'Armored Legendary Mercenary Top (NAS)', 'Green Tactical Harness', 'Green Tactical Belt Rig', 'Tactical Radio Headset'] },
+            { id: 'snake', name: '"Snake"', fr: '« Snake »', type: 'Prison', hp: 100, hpDoc: true, dmg: 20, speed: 'Rapide', noFlinch: true, page: 'Infected_%22Snake%22',
+              look: "Cheveux longs, t-shirt de compression et pantalon camo, holsters à la ceinture.",
+              spawn: "Military Prison : ring de boxe du « Cube » ou les douches.", map: ['i22'],
+              g: ['MAC-10', '2 chargeurs', 'US Military Ration (MRE)', 'Water Bottle'], r: ["Snake's MAC-10 (100 % dans les douches)", 'Rifle Scope', 'Combat Knife (Cube)'],
+              c: ["Snake's Compression Shirt", "Snake's Camo Pants", "Snake's Belt Holsters"] },
+            { id: 'gang-leader', name: 'Gang Leader', fr: 'Chef de gang', type: 'Prison', hp: 100, noFlinch: true, page: null,
+              look: "Du-rag blanc sur la tête, tenue de détenu.",
+              spawn: "Military Prison (zone du Cube).", map: ['i22'],
+              g: ['AK-47 ou RPK', 'Chargeurs'], r: ['Stunted AK-47', 'Chargeur 40 coups'], c: ['White Du-Rag'] },
+            { id: 'prison-warden', name: 'Prison Warden', fr: 'Directeur de la prison', type: 'Prison', hp: 100, noFlinch: true, page: null,
+              look: "Costume bleu de directeur, pendentif saphir bleu.",
+              spawn: "Military Prison (bâtiment administratif).", map: ['i5'],
+              g: ['Desert Eagle', '2-3 chargeurs', 'Boîte de .44'], r: ['Laser Sight (rouge)'], c: ['Blue Sapphire Gemstone Pendant', 'Blue Business Suit'] },
+            { id: 'trapper', name: 'Trapper (Jeremiah)', fr: 'Trappeur', type: 'Civil unique', hp: 100, hpDoc: true, noFlinch: true, page: 'Infected_Trapper',
+              look: "Grosse barbe brune, chemise et pantalon de trappeur, sac Rucksack sur le dos.",
+              spawn: "Trapper's Shack, dans la forêt entre Beaufort et le Fishing Camp.", map: ['i60'],
+              g: ['Model 94', '2 boîtes de .44 Magnum', 'Rucksack', 'Canned Ham'], r: ["Trapper's Model 94 (remplace le Model 94)"],
+              c: ["Trapper's Shirt", "Trapper's Pants", 'Rich Brown Beard'] },
+            { id: 'hitman', name: 'Hitman', fr: 'Tueur à gages', type: 'Civil unique', hp: 100, noFlinch: true, page: null,
+              look: "Costume gris deux pièces + chemise blanche (référence à l'Agent 47), crâne rasé.",
+              spawn: "Maisons de luxe de Fairview, Obsidian Room (Salem) et Casino.", map: ['i14', 'i28', 'i54'],
+              g: ['M1911', 'Chargeurs', 'Standard Suppressor'], r: ['M1911 F/A', '"Silent Partner" M1911', 'Professional Suppressor'],
+              c: ['Gray Two Piece Suit', 'White Formal Button-Up Shirt'] },
+            { id: 'rogue', name: '"Rogue" Operator', fr: 'Opérateur « Rogue »', type: 'Militaire', hp: 100, noFlinch: true, page: null,
+              look: "Pull tactique noir, pantalon camo urbain, masque à gaz M17A1 (rouge, vert ou noir).",
+              spawn: "Dôme de la Naval Air Station et Prison Cave.", map: ['i59', 'i62'],
+              g: ['Rogue UZI (ou UZI)', 'Chargeur 32 coups'], r: ['Military Suppressor'],
+              c: ['Black Tactical Sweater', 'Black Urban Camo Pants', 'Jet Black Military Webbing', 'M17A1 Gas Mask'] },
+            { id: 'club-owner', name: 'Club Owner', fr: 'Patron de boîte', type: 'Civil unique', hp: 100, noFlinch: true, page: null,
+              look: "Costume rose évasé, lunettes de sport roses, pendentif rubis rouge.",
+              spawn: "Obsidian Room (boîte de nuit de Salem).", map: ['i28'],
+              g: ['UZI', '2 chargeurs'], r: ['Pink Laser Sight', 'Energy Drink', 'Health Booster', 'Stamina Booster'],
+              c: ['Pink Sport Shades', 'Pink Flared Suit (haut + bas)', 'Red Ruby Gemstone Pendant'] },
+            { id: 'casino-boss', name: 'Casino Boss', fr: 'Patron du casino', type: 'Civil unique', hp: 100, noFlinch: true, page: null,
+              look: "Costume bolo kaki et ceinture ranch dorée.",
+              spawn: "Casino (au nord, près de la Military Prison).", map: ['i54'],
+              g: ['SPAS-12', '2-3 boîtes de 12GA'], r: [], c: ['Gold Ranch Belt', 'Khaki Bolo Suit Top'] },
+            { id: 'hobo-king', name: 'Hobo King', fr: 'Roi des clochards', type: 'Civil unique', hp: 100, hpDoc: true, dmg: 20, noFlinch: true, page: 'Infected_Hobo_King',
+              look: "Chapeau de paille à bandeau rouge, vêtements de vagabond.",
+              spawn: "Cliff Cave près de Faris (entre le Casino et la Prison).", map: ['i69'],
+              g: ['Maverick 88, Maverick 88 Tactical ou SPAS-12'], r: ['Red Banded Straw Hat'], c: ['Red Banded Straw Hat'] },
+            { id: 'exorcist', name: 'Exorcist', fr: 'Exorciste', type: 'Civil unique', hp: 100, noFlinch: true, page: null,
+              look: "Veste en jean bleue et gilet-harnais en cuir marron (référence à Ash, Evil Dead).",
+              spawn: "Près de la Geothermal Power Plant.", map: ['i64'],
+              g: ['Boomstick Coach Gun', '2 boîtes de 12GA'], r: [], c: ['Blue Denim Jacket', 'Brown Leather Harness Vest'] },
+            { id: 'caveman', name: 'Caveman', fr: 'Homme des cavernes', type: 'Civil unique', hp: 100, noFlinch: true, page: null,
+              look: "Masque Kabuki et pagne en herbe séchée.",
+              spawn: "Dans les Mines (sud-est).", map: ['i70'],
+              g: ['Military Flashlight', 'Stamina Booster'], r: ['"Resolved" NCO Katana'], c: ['Kabuki Mask', 'Dried Grass Skirt (exclusif)'] },
+            { id: 'shaggy', name: 'Shaggy', fr: 'Shaggy', type: 'Civil unique', hp: 100, hpDoc: true, dmg: 15, noFlinch: true, page: 'Infected_Shaggy',
+              look: "T-shirt col V vert citron et jean auburn (référence à Scooby-Doo).",
+              spawn: "Shaggy's Shack, près de Crater Lake.", map: ['i56'],
+              g: ['Salty Chips, crackers, gâteau, Soda'], r: ['NCO Katana'], c: ['Lime V-Neck T-shirt', 'Auburn Jeans'] },
+            { id: 'madman', name: 'Madman', fr: 'Le fou (Jason)', type: 'Civil unique', hp: 100, hpDoc: true, dmg: 15, noFlinch: true, page: 'Infected_Jason',
+              look: "Masque de hockey (référence à Jason, Vendredi 13).",
+              spawn: "Près de l'Observatory.", map: ['i0'],
+              g: ['Hatchet'], r: ['Stamina Booster'], c: ['Hockey Mask'] },
+            { id: 'kidnapper', name: 'Kidnapper', fr: 'Kidnappeur', type: 'Civil unique', hp: 100, hpDoc: true, noFlinch: true, page: 'Infected_Kidnapper',
+              look: "Tenue sombre de kidnappeur, apparaît dans la cabane isolée.",
+              spawn: "Killer's Cabin (au nord-ouest de la Prison).", map: ['l37'],
+              g: ['Pocket Knife ou Combat Knife'], r: [], c: ['Tenue du Kidnappeur'] },
+            { id: 'admiral', name: 'Admiral', fr: 'Amiral', type: 'Militaire', hp: 100, hpDoc: true, noFlinch: true, page: 'Infected_Admiral',
+              look: "Uniforme blanc d'amiral de l'US Navy avec casquette.",
+              spawn: "Naval Air Station : hélicoptère du hangar ou 3e étage de la tour.", map: ['i12'],
+              g: ['Water Bottle'], r: ['"Admiral\'s" M9'], c: ['USN Admiral Uniform (set complet)'] },
+            { id: 'vip', name: 'VIP', fr: 'VIP', type: 'Civil unique', hp: 100, hpDoc: true, noFlinch: true, page: 'Infected_VIP',
+              look: "Costume blanc, très rare sur le yacht.",
+              spawn: "Yacht (apparition rare).", map: ['i88'],
+              g: ['Binoculars'], r: ['White Diamond Gemstone Pendant'], c: ['White Suit'] },
+            { id: 'poker-host', name: 'Poker Host', fr: 'Croupier', type: 'Civil unique', hp: 100, hpDoc: true, noFlinch: true, page: 'Infected_Poker_Host',
+              look: "Tenue de croupier (gilet, chemise).",
+              spawn: "Gambling Den à Halsey (pas de point sur la carte du site).", map: [],
+              g: ['M1 Thompson'], r: ['Chargeur tambour 50 coups'], c: [] },
+            { id: 'mohawk-operator', name: 'British NATO Operator (Mohawk)', fr: 'Opérateur britannique', type: 'Militaire', hp: 100, noFlinch: true, page: null,
+              look: "Crête iroquoise, treillis DPM britannique, brêlage ALICE vert olive.",
+              spawn: "Magnolia (zone portuaire / police).", map: ['i67'],
+              g: ['XM177 ou L96A1', 'Rangefinder'], r: [], c: ['British DPM (haut + bas)', 'Drab ALICE Webbing'] },
+            { id: 'seal-pistol', name: 'Navy SEAL Pistol Operator', fr: 'SEAL (pistolet)', type: 'Militaire', hp: 100, noFlinch: true, page: null,
+              look: "Tenue SEAL avec casque radio tactique.",
+              spawn: "Permanent Helicopter (Magnolia).", map: ['i16'],
+              g: ['P220', 'Chargeurs'], r: ['Green Laser Sight'], c: ['Tactical Radio Headset'] },
+            { id: 'nato-operator-m4', name: 'NATO Operator (Operator M4A1)', fr: 'Opérateur OTAN', type: 'Événement', hp: 100, noFlinch: true, page: null,
+              look: "Équipement OTAN complet, autour d'une collision de véhicules OTAN.",
+              spawn: "Événement aléatoire « NATO Operator Collision ».", map: ['e36', 'e56', 'e65', 'e100'],
+              g: ['Operator M4A1', 'Chargeurs', 'NATO Operator Suppressor'], r: ['US Military Ration (MRE)', 'Water Bottle'], c: [] },
+            { id: 'soviet-commander', name: 'Soviet Commander', fr: 'Commandant soviétique', type: 'Soviétique', hp: 100, noFlinch: true, page: null,
+              look: "Gilet de munitions soviétique, telnyashka noire (rayée) et pantalon Berezka blanc. Variante VDV : béret bleu + telnyashka bleue.",
+              spawn: "\"Tango\" (sous-marin), Old Chapel et Water Treatment Plant.", map: ['i42', 'i44', 'i48'],
+              g: ['AO-46 (Chapel / Tango / station d\'épuration)', 'VSS Vintorez, AS Val ou OTs-14 Groza (VDV)', '9x39mm Subsonic Ammo Can (VDV)'], r: ['Soviet Spetsnaz Suppressor (VDV)'],
+              c: ['Drab Soviet Ammo Vest', 'Black Telnyashka Shirt', 'White Berezka Pants', 'VDV Beret (VDV)'] },
+            { id: 'soviet-spetsnaz', name: 'Soviet Spetsnaz', fr: 'Spetsnaz', type: 'Soviétique', hp: 100, noFlinch: true, page: null,
+              look: "Gilet balistique soviétique, camo Butan ou Gorka noir. Variante tireur d'élite : camo Barvikha.",
+              spawn: "Relais radio soviétique, Mansion et \"Tango\" (sous-marin).", map: ['i39', 'i40', 'i46'],
+              g: ['RPK-74M', 'AKM (variante Gorka noir)', 'Dragunov (variante Marksman)'], r: [], c: ['Soviet Ballistic Vest', 'Butan Camo (haut + bas)'] },
+            { id: 'soviet-officer', name: 'Soviet Officer', fr: 'Officier soviétique', type: 'Soviétique', hp: 100, hpDoc: true, dmg: 25, noFlinch: true, page: 'Infected_Soviet_Officer',
+              look: "Uniforme d'officier et béret des forces spéciales soviétiques.",
+              spawn: "Mansion : chambre du 2e étage ou rez-de-chaussée.", map: ['i40'],
+              g: ['Makarov', 'Canned Tuna'], r: ['AKM (variante Naval Officer)', 'AO-46 ou PP-19 Bizon (variante Stowaway)'], c: ['Soviet Special Forces Beret'] },
+            { id: 'soviet-renegade', name: 'Soviet Renegade', fr: 'Renégat soviétique', type: 'Soviétique', hp: 100, hpDoc: true, dmg: 20, noFlinch: true, page: 'Infected_Soviet_Renegade',
+              look: "Tenue soviétique avec sac à dos vintage vert.",
+              spawn: "Événements de crash de quad (ATV) et Coastal Bunkers.", map: ['i31'],
+              g: ['PP-19 Bizon', 'Green Soviet Vintage Backpack'], r: [], c: [] },
+            { id: 'smuggler-enforcer', name: 'Smuggler Enforcer', fr: 'Homme de main contrebandier', type: 'Contrebandier', hp: 100, noFlinch: true, page: null,
+              look: "Tout en bordeaux : chemise, pantalon camo, brêlage + lunettes rondes teintées rose.",
+              spawn: "Cargo Shipwreck et Mortar.", map: ['i35', 'i36'],
+              g: ['M16A1', 'Chargeurs', 'Maroon Vintage Duffel Bag'], r: [], c: ['Rose Tinted Glasses', 'Maroon Vagrant Shirt', 'Maroon Stripe Urban Camo Pants', 'Maroon Vintage Webbing'] },
+            { id: 'veteran-ranger', name: 'Veteran Ranger (WWII)', fr: 'Vétéran Ranger', type: 'Vétéran', hp: 100, page: null,
+              look: "Uniforme de Ranger US de la Seconde Guerre mondiale.",
+              spawn: "Truck Stop.", map: ['i7'],
+              g: ['M1 Thompson'], r: ['Chargeur tambour 50 coups'], c: ['WWII Ranger Uniform'] },
+            { id: 'veteran-m60', name: 'Veteran Operator (M60)', fr: 'Vétéran M60', type: 'Vétéran', hp: 100, page: null,
+              look: "Treillis ERDL, casque camo « Mitchell », lunettes rondes.",
+              spawn: "M60 House (Salem).", map: ['i73'],
+              g: ['M60', 'Chargeur 100 coups', 'Munitions 7.62 NATO'], r: [], c: ['ERDL Uniform', 'Mitchell Camo Helmet', 'Drab Surplus Ammo Webbing', 'Round Shades'] },
+            { id: 'veteran-sniper', name: 'Veteran Sniper (WWII)', fr: 'Vétéran sniper', type: 'Vétéran', hp: 100, page: null,
+              look: "Tenue d'infanterie US de 1944.",
+              spawn: "Non précisé sur le wiki (maisons de vétérans).", map: [],
+              g: ['M1903 Springfield', 'Rifle Scope'], r: [], c: ['WW2 Infantry Uniform'] },
+            { id: 'lonesome-veteran', name: 'Lonesome Veteran (MACV-SOG)', fr: 'Vétéran solitaire', type: 'Vétéran', hp: 100, page: null,
+              look: "Tenue MACV-SOG du Vietnam, sac duffel en toile.",
+              spawn: "Hidden Militia Cave.", map: ['i26'],
+              g: ['M16A1 ou XM177', 'Canvas Duffel Bag', 'US Military Ration (MRE)', 'Water Bottle'], r: [], c: [] },
+            { id: 'pirate', name: 'Pirate', fr: 'Pirate', type: 'Événement', hp: 100, noFlinch: true, page: null,
+              look: "Tenue complète de pirate (tricorne, manteau).",
+              spawn: "Événement « épave de bateau pirate » sur la côte.", map: ['e18', 'e27', 'e86'],
+              g: ['Broadside Lupara', '2 boîtes de 12GA', 'Fresh Orange'], r: [], c: ['Pirate Outfit (set complet)'] },
+            { id: 'techno-lord', name: 'Techno Lord', fr: 'Seigneur techno', type: 'Événement', hp: 100, noFlinch: true, page: null,
+              look: "Lunettes « Hustler », ceinture dorée, pendentif topaze.",
+              spawn: "Événement « Party Bus » techno.", map: ['e24'],
+              g: ['Desert Eagle'], r: ['Sweeper Desert Eagle'], c: ['Hustler Glasses', 'Gold Ranch Belt', 'Gold Topaz Gemstone Pendant'] },
+            { id: 'hearse-bodyguard', name: 'Hearse Bodyguard', fr: 'Garde du corbillard', type: 'Événement', hp: 100, noFlinch: true, page: null,
+              look: "Chapeau melon et lunettes rondes noires.",
+              spawn: "Événement « convoi funéraire » (corbillard).", map: ['e20'],
+              g: ['M1 Thompson'], r: ['Chargeur tambour 50 coups'], c: ['Bowler Hat', 'Black Round Glasses'] },
+            // ---- Saisonniers ----
+            { id: 'abomination', name: 'Abomination', fr: 'Abomination', type: 'Halloween', hp: 300, buffed: true, noFlinch: true, page: null,
+              look: "Énorme infecté difforme, impossible à rater.", spawn: "Carte d'Halloween (lac de lave).", map: ['ih1'],
+              g: ['Abomination Heart'], r: ['Abomination Skull'], c: [] },
+            { id: 'lord-of-flesh', name: 'Lord of Flesh', fr: 'Seigneur de la chair', type: 'Halloween', hp: null, buffed: true, noFlinch: true, page: null,
+              look: "Masque à œil géant.", spawn: "Carte d'Halloween.", map: ['ih2'], g: [], r: [], c: ['Eyeball Mask'] },
+            { id: 'warden', name: 'Warden', fr: 'Gardien', type: 'Halloween', hp: null, buffed: true, noFlinch: true, page: null,
+              look: "Gardien d'Halloween.", spawn: "Carte d'Halloween.", map: ['ih3'], g: ['Warden Blood Vial'], r: [], c: [] },
+            { id: 'santa', name: 'Santa', fr: 'Père Noël infecté', type: 'Noël', hp: 100, noFlinch: true, page: null,
+              look: "Tenue de Père Noël.", spawn: "Carte de Noël.", map: ['in1'], g: ['Eggnog'], r: ["\"Santa's Pig\""], c: ['Santa Outfit'] },
+            { id: 'frost-king', name: 'Frost King', fr: 'Roi du givre', type: 'Noël', hp: null, buffed: true, noFlinch: true, page: null,
+              look: "Couronne et masque d'acier bleu.", spawn: "Carte de Noël.", map: ['in2'], g: ['Frost Longsword'], r: [], c: ['Frost Crown', 'Blue Forged Steel Mask'] },
+            { id: 'militia-eliminator', name: 'Desert Militia Eliminator', fr: 'Éliminateur de la milice', type: 'The Drying', hp: 100, noFlinch: true, page: null,
+              look: "Tenue de milicien du désert en lin.", spawn: "Carte « The Drying ».", map: ['id1'],
+              g: ['M1918 Tankgewehr', 'Munitions 13.2mm'], r: ['Rangefinder'], c: ['Linen Militia Outfit'] },
+            { id: 'militia-marauder', name: 'Desert Militia Marauder', fr: 'Maraudeur de la milice', type: 'The Drying', hp: 100, noFlinch: true, page: null,
+              look: "Milicien du désert.", spawn: "Carte « The Drying ».", map: ['id2'], g: ['Trooper M1919A6'], r: [], c: [] },
+        ];
+
+        // ============================================================
+        // VÉHICULES & RÉPARATION (calque de la carte)
+        // Source : wiki AR2 « Vehicles (Apocalypse Rising 2) » + pages des lieux.
+        // v = véhicules qui y apparaissent, parts = pièces de réparation, fuel = pompe à essence (carburant illimité)
+        // ============================================================
+        const VEH_SPOTS = [
+            { loc: 'l9',  v: ['Humvee', 'Army Truck', 'Army Pickup', 'Delivery Van (zone industrielle arrière)'], parts: 'Garage avec infectés mécaniciens + kits de réparation fréquents dans le hangar', fuel: false },
+            { loc: 'l27', v: ['Box Truck', 'Delivery Van'], parts: "Garage : « l'un des meilleurs endroits pour trouver des pièces »", fuel: false },
+            { loc: 'l26', v: ['Muscle Car (garage)', 'Box Truck (pont-bascule)'], parts: 'Garage de fourrière + box de stockage pleins de pièces', fuel: false },
+            { loc: 'l31', v: ['Utility Truck', 'Cargo Van'], parts: 'Garage industriel, salle de maintenance et bâtiments des turbines', fuel: false },
+            { loc: 'l32', v: ['Véhicules terrestres (cour à camions)'], parts: 'Garage de chargement + étagères du 2e étage', fuel: false },
+            { loc: 'l6',  v: ['Box Truck (parking)'], parts: '« Rempli de pièces de voiture »', fuel: false },
+            { loc: 'l0',  v: ['Firetruck (occasionnel)', 'Police Car (commissariat)', 'Sedan / Station Wagon'], parts: 'Station-service + garage du commissariat', fuel: true },
+            { loc: 'l3',  v: ['ATV (près du garage)', 'Bateaux (docks)'], parts: 'Garage avec beaucoup de pièces', fuel: false },
+            { loc: 'l16', v: ['Bateaux (Fishing Boat, Aluminum Boat)'], parts: 'Pièces de voiture dans les cabanes', fuel: false },
+            { loc: 'l70', v: ['Bateaux', 'Infecté mécanicien'], parts: 'Stockage de pièces sur le quai', fuel: true },
+            { loc: 'l71', v: ['Bateaux'], parts: 'Pièces dans les entrepôts', fuel: true },
+            { loc: 'l34', v: ['Véhicules des hangars'], parts: 'Plusieurs garages avec pièces + bidons', fuel: true },
+            { loc: 'l10', v: ['Bateaux (quai)'], parts: 'Deux garages avec pièces', fuel: true },
+            { loc: 'l25', v: ['Sports Car (parking)'], parts: 'Garage à l\'arrière du casino', fuel: false },
+            { loc: 'l28', v: ['Sports Car (côté droit)', 'ATV'], parts: 'Petit garage avec pièces', fuel: false },
+            { loc: 'l4',  v: ['Police Car (commissariat)', 'Muscle Car', 'Sports Car (quai)', 'Arctic Humvee (Noël, jetée)'], parts: 'Garage du commissariat', fuel: false },
+            { loc: 'l2',  v: ['Muscle Car'], parts: null, fuel: false },
+            { loc: 'l21', v: ['Muscle Car', 'Police Car'], parts: null, fuel: false },
+            { loc: 'l13', v: ['Luxury Sedan (parking)', 'Police Car (terminal)', 'Véhicules des hangars'], parts: 'Placard du personnel', fuel: false },
+            { loc: 'l18', v: ['Firetruck'], parts: 'Garage avec pièces', fuel: false },
+            { loc: 'l7',  v: ['Tractor (fermes)'], parts: null, fuel: false },
+            { loc: 'l33', v: [], parts: 'Tunnel latéral : pièces abondantes', fuel: false },
+            { loc: 'l12', v: [], parts: 'Hangar Quonset rempli de pièces', fuel: false },
+            { loc: 'l17', v: [], parts: 'Garage (infectés mécaniciens)', fuel: false },
+            { loc: 'l20', v: [], parts: 'Camionnette garée devant (pièces)', fuel: false },
+            { loc: 'l22', v: [], parts: 'Grand garage', fuel: false },
+            { loc: 'l59', v: ['Sedan / Station Wagon (parking)'], parts: null, fuel: false },
+            { loc: 'l30', v: ['Lifeboat (rare)'], parts: null, fuel: false },
+            { loc: 'l38', v: ['Bateaux (Speed Boat / Motor Boat)'], parts: null, fuel: false },
+        ];
+        const VEH_PARTS = [
+            ['Tire Repair Kit', '+100 % sur un pneu', '3x2'], ['Engine Kit', '+40 % moteur', '3x3'], ['Quality Engine', 'Moteur à 100 %', '3x3'],
+            ['Fuel Tank Kit', '+40 % réservoir', '3x3'], ['Quality Fuel Tank', 'Réservoir à 100 %', '4x3'], ['Glass Kit', 'Vitres à 100 %', '3x3'],
+            ['Body Kit', '+40 % carrosserie', '3x3'], ['Quality Body', 'Carrosserie à 100 %', '4x3'],
+            ['Small Gas Can', '4 gallons', '3x3'], ['Large Gas Can', '10 gallons', '3x4'],
+            ['Mechanic\'s Tools Set', '+20 % par réparation, 50 % de chances de ne pas consommer le kit', '—'], ['Fuel Syphon Pump', 'Siphonne l\'essence d\'un véhicule', '—'],
+        ];
+
+        // ------------------------------------------------------------
+        // Utilitaires communs
+        // ------------------------------------------------------------
+        const nx = s => String(s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]/g, '');
+        const hx = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+        let _itemIdx = null;
+        function itemByName(name) {
+            if (!_itemIdx) { _itemIdx = new Map(); ALL_ITEMS.forEach(i => { _itemIdx.set(nx(i.name), i); _itemIdx.set(nx(i.id), i); }); }
+            return _itemIdx.get(nx(name)) || null;
+        }
+        function goMapPoint(uid) {
+            const p = MAP_POINTS.find(q => q.uid === uid); if (!p) return;
+            if (p.mode && p.mode !== 'normal') mapMode = p.mode;
+            mapFilters[p.cat] = true;
+            if (p.family && typeof famFilters !== 'undefined') famFilters[p.family] = true;
+            mapSearch = ''; const ms = document.getElementById('map-search'); if (ms) ms.value = '';
+            currentGroup = 'carte'; renderMainTabs(); onGroupChange();
+            setTimeout(() => { if (typeof refreshMap === 'function') refreshMap(); selectPoint(uid); }, 60);
+        }
+        function goFindItem(id) { toolGoTab('finditem'); setTimeout(() => fiSelect(id), 50); }
+
+        // ============================================================
+        // 1) BALISTIQUE & CHUTE DE BALLE
+        // ============================================================
+        const BAL_HEAD = 1.2;     // hauteur d'une tête (studs, estimation)
+        const BAL_BODY = 5.2;     // hauteur d'un personnage debout (studs)
+        const BAL_FOV = 70;       // champ de vision Roblox par défaut (°)
+        // Armes sans emplacement « Viseur » mais avec lunette fixe (grossissement estimé)
+        const BAL_BUILTIN = { 'l96a1': 6, 'm40a1': 6, 'psg-1': 6, 'model-788': 4, 'model-788-carbine': 4, 'mosin-nagant': 3.5 };
+        const balWeapons = () => WEAPONS_DATA.filter(w => +w.velocity > 0).slice().sort((a, b) => {
+            const lr = w => /Snipers|Précision/.test(w.category) ? 0 : /Combat|Mitrailleuses|Assaut|Fusils$/.test(w.category) ? 1 : 2;
+            return lr(a) - lr(b) || a.name.localeCompare(b.name);
+        });
+        const bal = { w: 'l96a1', scope: 'builtin', m: 250, move: 0, g: 196.2, stud: 0.28 };
+        function balScopes(w) {
+            const out = [];
+            if (BAL_BUILTIN[w.id]) out.push({ id: 'builtin', name: `Lunette intégrée (≈${BAL_BUILTIN[w.id]}x, estimation)`, z: BAL_BUILTIN[w.id] });
+            if (/Viseur/.test(w.attach || '')) ATTACHMENTS_DATA.filter(a => a.slot === 'Optique').forEach(a => out.push({ id: a.id, name: `${a.name} (${a.zoom})`, z: parseFloat(a.zoom) || 1 }));
+            out.push({ id: 'iron', name: 'Visée mécanique / sans lunette (1x)', z: 1 });
+            return out;
+        }
+        function balCalc(w, m) {
+            const d = m / bal.stud, v = +w.velocity, t = d / v;
+            const drop = 0.5 * bal.g * t * t;               // studs
+            const lead = bal.move * t;                       // studs
+            const f = ttkFalloff(w, d);
+            return { d, t, drop, lead, mrad: drop / d * 1000, heads: drop / BAL_HEAD, head: Math.round(w.headDamage * f), body: Math.round(w.bodyDamage * f), f };
+        }
+        const balFmt = (x, n = 1) => (Math.round(x * 10 ** n) / 10 ** n).toLocaleString('fr-FR');
+        function balRender() {
+            const sec = document.getElementById('balistique-section'); if (!sec) return;
+            if (!sec.dataset.ready) balSetup();
+            const w = WEAPONS_DATA.find(x => x.id === bal.w) || balWeapons()[0];
+            const scopes = balScopes(w);
+            if (!scopes.find(s => s.id === bal.scope)) bal.scope = scopes[0].id;
+            const sSel = document.getElementById('bal-scope');
+            sSel.innerHTML = scopes.map(s => `<option value="${s.id}" ${s.id === bal.scope ? 'selected' : ''}>${hx(s.name)}</option>`).join('');
+            const sc = scopes.find(s => s.id === bal.scope);
+            const r = balCalc(w, bal.m);
+            document.getElementById('bal-dist-lbl').textContent = `${bal.m} m (${Math.round(r.d)} studs)`;
+            document.getElementById('bal-dist').value = Math.min(1000, bal.m); document.getElementById('bal-dist-n').value = bal.m;
+            const holdTxt = r.heads < 0.35 ? 'Vise directement la tête' : `Vise ≈ ${balFmt(r.heads)} tête${r.heads >= 2 ? 's' : ''} au-dessus de la tête`;
+            const leadTxt = bal.move ? ` • avance ≈ ${balFmt(r.lead)} studs (${balFmt(r.lead / 1.9)} largeurs de corps) devant la cible` : '';
+            document.getElementById('bal-stats').innerHTML = `
+                <div class="text-[10px] font-bold uppercase tracking-widest text-tactical-muted mb-2">Résultat à ${bal.m} m</div>
+                <div class="text-lg font-extrabold text-tactical-accent leading-tight">${holdTxt}</div>
+                <div class="text-xs text-tactical-muted mt-1">${leadTxt ? leadTxt.slice(3) : 'Cible immobile : pas d\'avance à prendre.'}</div>
+                <div class="grid grid-cols-2 gap-2 mt-3 text-xs">
+                    ${[['Temps de vol', balFmt(r.t, 3) + ' s'], ['Chute de balle', `${balFmt(r.drop, 2)} studs (${balFmt(r.drop * bal.stud, 2)} m)`], ['Correction', balFmt(r.mrad, 2) + ' mrad'], ['Vitesse balle', `${w.velocity} studs/s (${Math.round(w.velocity * bal.stud)} m/s)`],
+                       ['Dégâts tête', `${r.head} (${Math.round(r.f * 100)} %)`], ['Dégâts corps', `${r.body}`], ['Pleins dégâts jusqu\'à', `${w.range} studs (${Math.round(w.range * bal.stud)} m)`], ['Dégâts mini dès', `${w.minRange} studs (${Math.round(w.minRange * bal.stud)} m)`]]
+                        .map(([k, v]) => `<div class="bg-tactical-bg border border-tactical-border rounded-lg px-2.5 py-1.5"><div class="text-[9px] uppercase text-tactical-muted">${k}</div><div class="font-mono font-bold text-white">${v}</div></div>`).join('')}
+                </div>
+                <p class="text-[10px] text-tactical-muted mt-3">Estimation : lunette sans réglage de hausse (zéro), trajectoire sans frottement de l'air, gravité ${bal.g} studs/s², 1 stud = ${bal.stud} m. ${w.estimated ? 'Statistiques de cette arme partiellement estimées.' : 'Vitesse et portées : wiki AR2.'}</p>`;
+            document.getElementById('bal-scope-view').innerHTML = balScopeSVG(w, sc, r);
+            document.getElementById('bal-traj').innerHTML = balTrajSVG(w);
+            const dists = [50, 100, 150, 200, 250, 300, 400, 500, 600, 800];
+            document.getElementById('bal-table').innerHTML = `<table class="w-full text-[11px] font-mono"><thead><tr class="text-tactical-muted text-left"><th class="py-1 pr-2">Dist.</th><th class="pr-2">Vol</th><th class="pr-2">Chute</th><th class="pr-2">Têtes</th><th>Dégâts tête</th></tr></thead><tbody>${dists.map(m => { const q = balCalc(w, m); return `<tr data-bal-m="${m}" class="border-t border-tactical-border/50 cursor-pointer hover:bg-white/5 ${m === bal.m ? 'text-tactical-accent' : 'text-white'}"><td class="py-1 pr-2">${m} m</td><td class="pr-2">${balFmt(q.t, 2)} s</td><td class="pr-2">${balFmt(q.drop, 1)} st</td><td class="pr-2">${balFmt(q.heads)}</td><td>${q.head}</td></tr>`; }).join('')}</tbody></table>`;
+        }
+        function balScopeSVG(w, sc, r) {
+            const R = 200, half = Math.tan((BAL_FOV / sc.z) / 2 * Math.PI / 180);
+            const ppsRaw = R / (r.d * half);                          // pixels par stud à la distance de la cible
+            const fit = (R - 40) / Math.max(0.01, (r.drop + BAL_BODY * 0.8) * ppsRaw, Math.abs(r.lead) * ppsRaw * 1.3);
+            const loupe = Math.max(1, Math.min(14, Math.ceil(6 / ppsRaw), Math.floor(fit)));   // loupe numérique pour la lisibilité
+            const pps = ppsRaw * loupe;
+            const cx = R, cy = R;
+            const headY = cy + r.drop * pps, headX = cx - r.lead * pps;   // la tête est sous le centre (et derrière si elle bouge)
+            const hh = BAL_HEAD * pps, bw = 1.9 * pps;
+            const body = `<g fill="#1a1d22" stroke="#e5e7eb" stroke-width="${Math.max(0.6, pps * 0.06)}" opacity=".95">
+                <rect x="${headX - hh * 0.42}" y="${headY - hh / 2}" width="${hh * 0.84}" height="${hh}" rx="${hh * 0.2}"/>
+                <rect x="${headX - bw / 2}" y="${headY + hh / 2 + pps * 0.05}" width="${bw}" height="${2 * pps}" rx="${pps * 0.15}"/>
+                <rect x="${headX - bw / 2}" y="${headY + hh / 2 + 2.1 * pps}" width="${bw * 0.47}" height="${2 * pps}"/>
+                <rect x="${headX + bw * 0.03}" y="${headY + hh / 2 + 2.1 * pps}" width="${bw * 0.47}" height="${2 * pps}"/>
+                <rect x="${headX - bw / 2 - pps * 0.95}" y="${headY + hh / 2 + pps * 0.05}" width="${pps * 0.9}" height="${2 * pps}"/>
+                <rect x="${headX + bw / 2 + pps * 0.05}" y="${headY + hh / 2 + pps * 0.05}" width="${pps * 0.9}" height="${2 * pps}"/></g>`;
+            // graduations « têtes » sous le centre
+            const ticks = [];
+            const nT = Math.min(40, Math.floor((R - 14) / Math.max(hh, 1)));
+            for (let i = 1; i <= nT; i++) { const y = cy + i * hh; const big = i % 5 === 0; ticks.push(`<line x1="${cx - (big ? 9 : 5)}" y1="${y}" x2="${cx + (big ? 9 : 5)}" y2="${y}" stroke="#4ade80" stroke-width="1" opacity=".8"/>${big ? `<text x="${cx + 13}" y="${y + 3}" fill="#4ade80" font-size="9" font-family="monospace">${i}</text>` : ''}`); }
+            const ret = sc.z >= 3
+                ? `<line x1="0" y1="${cy}" x2="${2 * R}" y2="${cy}" stroke="#0b0f14" stroke-width="1.4"/><line x1="${cx}" y1="0" x2="${cx}" y2="${2 * R}" stroke="#0b0f14" stroke-width="1.4"/>
+                   <line x1="0" y1="${cy}" x2="${cx - 60}" y2="${cy}" stroke="#0b0f14" stroke-width="5"/><line x1="${cx + 60}" y1="${cy}" x2="${2 * R}" y2="${cy}" stroke="#0b0f14" stroke-width="5"/><line x1="${cx}" y1="${cy + 60}" x2="${cx}" y2="${2 * R}" stroke="#0b0f14" stroke-width="5"/><line x1="${cx}" y1="0" x2="${cx}" y2="${cy - 60}" stroke="#0b0f14" stroke-width="5"/>`
+                : `<circle cx="${cx}" cy="${cy}" r="14" fill="none" stroke="#ef4444" stroke-width="1.5"/>`;
+            const hit = `<circle cx="${headX}" cy="${headY}" r="${Math.max(2.2, hh * 0.18)}" fill="#ef4444" stroke="#fff" stroke-width=".8"/>`;
+            const offscreen = r.drop * pps > R - 6;
+            return `<svg viewBox="0 0 ${2 * R} ${2 * R}" class="w-full h-full">
+                <defs><clipPath id="bal-clip"><circle cx="${cx}" cy="${cy}" r="${R - 4}"/></clipPath>
+                <linearGradient id="bal-sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6b8196"/><stop offset=".5" stop-color="#4a5d6e"/><stop offset=".5" stop-color="#3d4c2e"/><stop offset="1" stop-color="#252e1b"/></linearGradient></defs>
+                <rect width="${2 * R}" height="${2 * R}" fill="#05070a"/>
+                <g clip-path="url(#bal-clip)"><rect width="${2 * R}" height="${2 * R}" fill="url(#bal-sky)"/>
+                ${body}${ticks.join('')}${ret}
+                <line x1="${headX}" y1="${headY}" x2="${cx}" y2="${cy}" stroke="#facc15" stroke-width="1" stroke-dasharray="3 3" opacity=".9"/>
+                ${hit}<circle cx="${cx}" cy="${cy}" r="2.2" fill="#facc15"/></g>
+                <circle cx="${cx}" cy="${cy}" r="${R - 4}" fill="none" stroke="#0b0f14" stroke-width="8"/>
+                <text x="12" y="20" fill="#e5e7eb" font-size="11" font-family="monospace">${hx(sc.name.split(' (')[0])} • ${sc.z}x${loupe > 1 ? ` • loupe x${loupe}` : ''}</text>
+                <text x="12" y="${2 * R - 12}" fill="#facc15" font-size="11" font-family="monospace">● point visé</text>
+                <text x="${2 * R - 12}" y="${2 * R - 12}" text-anchor="end" fill="#ef4444" font-size="11" font-family="monospace">● impact (tête)</text>
+                ${offscreen ? `<text x="${cx}" y="${2 * R - 30}" text-anchor="middle" fill="#fca5a5" font-size="11" font-family="monospace">Cible sous le champ de la lunette : distance trop grande</text>` : ''}
+            </svg>`;
+        }
+        function balTrajSVG(w) {
+            const W = 460, H = 190, maxM = Math.max(300, Math.ceil(bal.m / 100) * 100 + 100);
+            const pts = []; let maxDrop = 0;
+            for (let m = 0; m <= maxM; m += maxM / 60) { const q = balCalc(w, m); pts.push([m, q.drop]); maxDrop = Math.max(maxDrop, q.drop); }
+            const sy = (H - 40) / Math.max(maxDrop, 2), sx = (W - 50) / maxM;
+            const path = pts.map(([m, dr], i) => `${i ? 'L' : 'M'}${40 + m * sx},${20 + dr * sy}`).join('');
+            const cur = balCalc(w, bal.m);
+            const fdr = w.range * bal.stud, mdr = w.minRange * bal.stud;
+            const grid = [0, .25, .5, .75, 1].map(f => { const m = Math.round(maxM * f); return `<line x1="${40 + m * sx}" y1="16" x2="${40 + m * sx}" y2="${H - 16}" stroke="#2a2f38"/><text x="${40 + m * sx}" y="${H - 4}" text-anchor="middle" fill="#8b949e" font-size="10" font-family="monospace">${m} m</text>`; }).join('');
+            return `<svg viewBox="0 0 ${W} ${H}" class="w-full">
+                <rect x="40" y="16" width="${Math.min(fdr, maxM) * sx}" height="${H - 32}" fill="#4ade80" opacity=".07"/>
+                <rect x="${40 + Math.min(fdr, maxM) * sx}" y="16" width="${Math.max(0, Math.min(mdr, maxM) - fdr) * sx}" height="${H - 32}" fill="#facc15" opacity=".06"/>
+                ${grid}
+                <line x1="40" y1="20" x2="${W - 10}" y2="20" stroke="#8b949e" stroke-dasharray="4 4"/>
+                <text x="44" y="13" fill="#8b949e" font-size="10" font-family="monospace">ligne de visée</text>
+                <path d="${path}" fill="none" stroke="#4ade80" stroke-width="2"/>
+                <circle cx="${40 + bal.m * sx}" cy="${20 + cur.drop * sy}" r="4.5" fill="#ef4444" stroke="#fff"/>
+                <text x="${Math.min(W - 70, 46 + bal.m * sx)}" y="${Math.min(H - 22, 34 + cur.drop * sy)}" fill="#fca5a5" font-size="10" font-family="monospace">-${balFmt(cur.drop, 1)} st</text>
+                <text x="${W - 10}" y="${H - 20}" text-anchor="end" fill="#8b949e" font-size="9" font-family="monospace">vert : pleins dégâts • jaune : baisse</text>
+            </svg>`;
+        }
+        function balSetup() {
+            const sec = document.getElementById('balistique-section'); sec.dataset.ready = '1';
+            const ws = balWeapons(), wSel = document.getElementById('bal-weapon');
+            const groups = {}; ws.forEach(w => (groups[w.category] = groups[w.category] || []).push(w));
+            wSel.innerHTML = Object.entries(groups).map(([c, arr]) => `<optgroup label="${hx(c)}">${arr.map(w => `<option value="${w.id}" ${w.id === bal.w ? 'selected' : ''}>${hx(w.name)} — ${w.velocity} studs/s</option>`).join('')}</optgroup>`).join('');
+            document.getElementById('bal-quick').innerHTML = ['l96a1', 'mosin-nagant', 'm40a1', 'm21', 'dragunov', 'm1903'].map(id => { const w = ws.find(x => x.id === id); return w ? `<button type="button" data-bal-w="${id}" class="xh-btn !py-1 !px-2 !text-[10px]">${hx(w.name)}</button>` : ''; }).join('');
+            wSel.onchange = () => { bal.w = wSel.value; bal.scope = ''; balRender(); };
+            document.getElementById('bal-scope').onchange = e => { bal.scope = e.target.value; balRender(); };
+            const setM = v => { bal.m = Math.max(5, Math.min(1500, Math.round(+v || 0))); balRender(); };
+            document.getElementById('bal-dist').oninput = e => setM(e.target.value);
+            document.getElementById('bal-dist-n').onchange = e => setM(e.target.value);
+            document.getElementById('bal-move').onchange = e => { bal.move = +e.target.value; balRender(); };
+            document.getElementById('bal-g').onchange = e => { bal.g = Math.max(10, +e.target.value || 196.2); balRender(); };
+            document.getElementById('bal-stud').onchange = e => { bal.stud = Math.max(0.1, +e.target.value || 0.28); balRender(); };
+            sec.addEventListener('click', e => {
+                const q = e.target.closest('[data-bal-w]'); if (q) { bal.w = q.dataset.balW; bal.scope = ''; wSel.value = bal.w; balRender(); return; }
+                const tr = e.target.closest('[data-bal-m]'); if (tr) setM(tr.dataset.balM);
+            });
+        }
+
+        // ============================================================
+        // 2) GUIDE DES BOSS
+        // ============================================================
+        let bossQ = '', bossType = 'Tous';
+        function bossChips(list, cls) {
+            return list.map(raw => {
+                const m = itemByName(raw) ? [raw, raw, ''] : raw.match(/^(.*?)\s*(\([^)]*\))?$/); const main = m[1], note = m[2] || '';
+                const parts = main.split(/,\s*| ou /).map(s => s.trim()).filter(Boolean);
+                const chips = parts.map(p => {
+                    const it = itemByName(p.replace(/^["«]|["»]$/g, ''));
+                    const pin = `<button type="button" data-wish-add="${hx(p)}" data-wish-iid="${it ? it.id : ''}" title="Ajouter à ma liste de loot" class="wish-mini">${WISH_PIN_SVG}</button>`;
+                    return `<span class="inline-flex items-center gap-1 ${cls} rounded-md border px-1.5 py-0.5">${it ? `<button type="button" data-fi="${it.id}" class="hover:underline text-left" title="Voir dans Find Item">${hx(p)}</button>` : `<span>${hx(p)}</span>`}${pin}</span>`;
+                }).join(parts.length > 1 && / ou /.test(main) ? '<span class="text-tactical-muted text-[10px]">ou</span>' : '');
+                return `<span class="inline-flex flex-wrap items-center gap-1">${chips}${note ? `<span class="text-[10px] text-tactical-muted">${hx(note)}</span>` : ''}</span>`;
+            }).join('');
+        }
+        function bossRender() {
+            const sec = document.getElementById('boss-section'); if (!sec) return;
+            if (!sec.dataset.ready) {
+                sec.dataset.ready = '1';
+                document.getElementById('boss-search').oninput = e => { bossQ = e.target.value.trim(); bossRender(); };
+                sec.addEventListener('click', e => {
+                    const f = e.target.closest('[data-boss-type]'); if (f) { bossType = f.dataset.bossType; bossRender(); return; }
+                    const mp = e.target.closest('[data-boss-map]'); if (mp) { goMapPoint(mp.dataset.bossMap); return; }
+                    const fi = e.target.closest('[data-fi]'); if (fi) { goFindItem(fi.dataset.fi); }
+                });
+                document.getElementById('boss-note').innerHTML = `PV : <b class="text-white">100</b> pour la plupart des infectés uniques (valeur écrite sur leur page wiki quand c'est marqué « doc. »). Les boss avec <b class="text-red-300">PV augmentés</b> ont l'icône « Buffed Health » sur le wiki (valeur exacte souvent non publiée). « Inarrêtable » = ne peut pas être étourdi (No Flinch). Remarque : <b class="text-white">Patient Zero n'existe pas dans AR2</b> (c'est un infecté d'autres jeux) ; les boss équivalents sont les Légendaires, les Spetsnaz/Commandants soviétiques et les boss saisonniers.`;
+            }
+            const types = ['Tous', ...new Set(BOSS_DATA.map(b => b.type))];
+            document.getElementById('boss-filters').innerHTML = types.map(t => `<button type="button" data-boss-type="${hx(t)}" class="px-2.5 py-1.5 rounded-lg text-[11px] font-bold border ${t === bossType ? 'bg-tactical-accent text-tactical-bg border-tactical-accent' : 'bg-tactical-card text-tactical-muted border-tactical-border hover:text-white'}">${hx(t)}</button>`).join('');
+            const q = nx(bossQ);
+            const list = BOSS_DATA.filter(b => (bossType === 'Tous' || b.type === bossType) && (!q || nx([b.name, b.fr, b.spawn, b.look, ...b.g, ...b.r, ...b.c].join(' ')).includes(q)));
+            const typeColor = { 'Légendaire': '#fbbf24', 'Prison': '#fb923c', 'Soviétique': '#f87171', 'Militaire': '#4ade80', 'Vétéran': '#a3e635', 'Contrebandier': '#c084fc', 'Civil unique': '#38bdf8', 'Événement': '#f472b6', 'Halloween': '#f97316', 'Noël': '#93c5fd', 'The Drying': '#eab308' };
+            document.getElementById('boss-grid').innerHTML = list.length ? list.map(b => {
+                const col = typeColor[b.type] || '#8b949e';
+                const hp = b.hp ? `${b.hp}${b.buffed ? ' (augmentés)' : ''}` : (b.buffed ? 'Augmentés (non publiés)' : '100 ?');
+                const pts = b.map.filter(u => MAP_POINTS.some(p => p.uid === u));
+                const stat = (k, v, c = 'text-white') => `<div class="bg-tactical-bg border border-tactical-border rounded-lg px-2 py-1"><div class="text-[9px] uppercase text-tactical-muted">${k}</div><div class="text-xs font-bold ${c}">${v}</div></div>`;
+                const sect = (t, l, cls) => l.length ? `<div><div class="text-[9px] font-bold uppercase tracking-widest text-tactical-muted mb-1">${t}</div><div class="flex flex-wrap gap-1 text-[11px]">${bossChips(l, cls)}</div></div>` : '';
+                const wiki = b.page ? BOSS_WIKI + b.page : BOSS_WIKI + 'The_Infected_(Apocalypse_Rising_2)';
+                return `<article class="bg-tactical-card border border-tactical-border rounded-2xl p-4 flex flex-col gap-3" style="border-top:3px solid ${col}">
+                    <div class="flex items-start justify-between gap-2">
+                        <div><h3 class="text-base font-extrabold text-white leading-tight">${hx(b.name)}</h3><div class="text-[11px] text-tactical-muted">${hx(b.fr)}</div></div>
+                        <span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded border shrink-0" style="color:${col};border-color:${col}55">${hx(b.type)}</span>
+                    </div>
+                    <div class="grid grid-cols-3 gap-1.5">
+                        ${stat('Points de vie', hx(hp) + (b.hpDoc ? ' <span class="text-[9px] text-tactical-accent">doc.</span>' : ''), b.buffed ? 'text-red-300' : 'text-white')}
+                        ${stat('Dégâts / coup', b.dmg ? b.dmg : '—')}
+                        ${stat('Étourdissable', b.noFlinch ? 'Non (inarrêtable)' : 'Oui', b.noFlinch ? 'text-amber-300' : 'text-white')}
+                    </div>
+                    <div class="text-xs"><span class="text-[9px] font-bold uppercase tracking-widest text-tactical-muted">Tenue (repérage de loin)</span><p class="text-white/90 mt-0.5">${hx(b.look)}</p></div>
+                    <div class="text-xs"><span class="text-[9px] font-bold uppercase tracking-widest text-tactical-muted">Apparition</span><p class="text-white/90 mt-0.5">${hx(b.spawn)}</p></div>
+                    ${sect('Butin garanti', b.g, 'bg-emerald-500/10 border-emerald-500/30 text-emerald-200')}
+                    ${sect('Butin rare', b.r, 'bg-amber-500/10 border-amber-500/30 text-amber-200')}
+                    ${sect('Cosmétiques', b.c, 'bg-fuchsia-500/10 border-fuchsia-500/30 text-fuchsia-200')}
+                    <div class="flex flex-wrap gap-1.5 mt-auto pt-1">
+                        ${pts.map((u, i) => `<button type="button" data-boss-map="${u}" class="xh-btn !py-1 !px-2 !text-[10px]">Voir sur la carte${pts.length > 1 ? ' ' + (i + 1) : ''}</button>`).join('') || '<span class="text-[10px] text-tactical-muted">Pas de point sur la carte</span>'}
+                        <a href="${wiki}" target="_blank" rel="noopener" class="xh-btn !py-1 !px-2 !text-[10px]">Wiki</a>
+                    </div>
+                </article>`;
+            }).join('') : '<p class="text-sm text-tactical-muted">Aucun infecté ne correspond.</p>';
+        }
+
+        // ============================================================
+        // 3) CALQUE VÉHICULES & RÉPARATION
+        // ============================================================
+        function vhInit() {
+            if (typeof MAP_CATS === 'undefined' || MAP_CATS.vehicule) return;
+            MAP_CATS.vehicule = { label: 'Véhicules & réparation', color: '#facc15', desc: 'Apparitions de véhicules, garages avec pièces et pompes à essence (wiki AR2)' };
+            mapFilters.vehicule = true;
+            VEH_SPOTS.forEach(s => {
+                const l = MAP_DATA.locations.find(q => q.uid === s.loc); if (!l) return;
+                const bits = [];
+                if (s.v.length) bits.push(`<b>Véhicules :</b> ${s.v.map(hx).join(', ')}`);
+                if (s.parts) bits.push(`<b>Pièces :</b> ${hx(s.parts)}`);
+                if (s.fuel) bits.push('<b>Carburant :</b> pompe à essence (carburant illimité)');
+                bits.push(`<a href="https://roblox-apocalypse-rising.fandom.com/wiki/Vehicles_(Apocalypse_Rising_2)" target="_blank" rel="noopener" class="underline">Source : wiki AR2</a>`);
+                const kind = s.fuel ? 'Pompe + pièces' : s.parts ? (s.v.length ? 'Garage + véhicules' : 'Pièces') : 'Véhicules';
+                MAP_POINTS.push({ uid: 'v-' + s.loc, kind: 'veh', cat: 'vehicule', x: l.x + 10, y: l.y + 9, island: l.island, name: `${kind} — ${l.name}`, short: kind, desc: bits.join('<br>'), vfuel: s.fuel, vparts: !!s.parts, vveh: s.v.length > 0, loc: s.loc });
+            });
+            const _ms = markerShape;
+            markerShape = function (p, c) {
+                if (p.kind !== 'veh') return _ms(p, c);
+                const ring = p.vfuel ? '#f87171' : '#0b0f14';
+                return `<rect x="-6.5" y="-6.5" width="13" height="13" rx="3" fill="${c}" stroke="${ring}" stroke-width="1.8"/>
+                    <path d="M-4 1.2h8M-3.2 1.2l1-3h4.4l1 3M-2.6 3.2v.01M2.6 3.2v.01" stroke="#0b0f14" stroke-width="1.3" fill="none" stroke-linecap="round"/>`;
+            };
+        }
+        // Panneau Loot Run : garages / pompes proches de l'itinéraire
+        function vhNearRoute(pts, maxD = 45) {
+            if (pts.length < 1) return [];
+            const segD = (p, a, b) => { const dx = b.x - a.x, dy = b.y - a.y, L = dx * dx + dy * dy; let t = L ? ((p.x - a.x) * dx + (p.y - a.y) * dy) / L : 0; t = Math.max(0, Math.min(1, t)); return Math.hypot(p.x - (a.x + t * dx), p.y - (a.y + t * dy)); };
+            return MAP_POINTS.filter(p => p.kind === 'veh').map(p => {
+                let d = Infinity; for (let i = 0; i < pts.length; i++) d = Math.min(d, pts.length === 1 ? Math.hypot(p.x - pts[0].x, p.y - pts[0].y) : (i < pts.length - 1 ? segD(p, pts[i], pts[i + 1]) : d));
+                return { p, d };
+            }).filter(o => o.d <= maxD).sort((a, b) => a.d - b.d);
+        }
+        function vhRenderLr() {
+            const box = document.getElementById('lr-veh'); if (!box || typeof lrPts === 'undefined') return;
+            vhInit();
+            const near = vhNearRoute(lrPts);
+            const m = d => Math.round(d * LR_STUDS_PER_UNIT * LR_M_PER_STUD);
+            box.innerHTML = `<div class="flex items-center justify-between mb-2"><div class="text-[10px] font-bold uppercase tracking-widest text-tactical-muted">Véhicules & réparation sur le trajet</div><label class="text-[10px] text-tactical-muted flex items-center gap-1"><input type="checkbox" id="lr-veh-show" ${vhLrShow ? 'checked' : ''}> sur la carte</label></div>
+                ${lrPts.length < 2 ? '<p class="text-xs text-tactical-muted">Trace un itinéraire : les garages, pompes à essence et apparitions de véhicules à moins de ~' + m(45) + ' m du trajet s\'afficheront ici.</p>'
+                : near.length ? `<div class="space-y-1.5">${near.map(({ p, d }) => `<button type="button" data-vh-go="${p.uid}" class="w-full text-left bg-tactical-bg border border-tactical-border hover:border-yellow-400/60 rounded-lg px-2.5 py-1.5 text-xs"><div class="flex justify-between gap-2"><b class="text-white">${hx(p.name)}</b><span class="text-tactical-muted shrink-0">${m(d)} m</span></div><div class="text-[10px] text-tactical-muted">${p.vfuel ? '<span class="text-red-300">essence</span> • ' : ''}${p.vparts ? 'pièces • ' : ''}${p.vveh ? 'véhicules' : ''}</div></button>`).join('')}</div>`
+                : '<p class="text-xs text-tactical-muted">Aucun garage ni pompe près de ce trajet.</p>'}
+                <details class="mt-2 text-[11px] text-tactical-muted"><summary class="cursor-pointer font-bold">Pièces de réparation (taille dans l'inventaire)</summary>
+                <table class="w-full mt-1 font-mono text-[10px]">${VEH_PARTS.map(([n, e, s]) => `<tr class="border-t border-tactical-border/40"><td class="py-0.5 pr-1 text-white">${n}</td><td class="pr-1">${e}</td><td>${s}</td></tr>`).join('')}</table>
+                <p class="mt-1">Pas de batterie dans AR2 : on répare pneus, moteur, réservoir, vitres et carrosserie. Le moteur ne s'abîme qu'une fois la carrosserie à 0 %.</p></details>`;
+            const cb = document.getElementById('lr-veh-show'); if (cb) cb.onchange = () => { vhLrShow = cb.checked; lrRender(); };
+            box.querySelectorAll('[data-vh-go]').forEach(b => b.onclick = () => goMapPoint(b.dataset.vhGo));
+            const svg = document.getElementById('lr-svg');
+            if (svg && vhLrShow) {
+                const g = document.createElementNS('http://www.w3.org/2000/svg', 'g'); g.setAttribute('pointer-events', 'none');
+                g.innerHTML = MAP_POINTS.filter(p => p.kind === 'veh').map(p => `<g transform="translate(${p.x},${p.y})"><rect x="-5" y="-5" width="10" height="10" rx="2.5" fill="#facc15" stroke="${p.vfuel ? '#f87171' : '#0b0f14'}" stroke-width="1.6" opacity="${near.some(o => o.p === p) ? 1 : .45}"/></g>`).join('');
+                svg.appendChild(g);
+            }
+        }
+        let vhLrShow = true;
+
+        // ============================================================
+        // 4) LISTE DE LOOT (wishlist) en overlay
+        // ============================================================
+        const WISH_KEY = 'ar2_wishlist_v1', WISH_MAX = 6;
+        const WISH_PIN_SVG = '<svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17v5M5 17h14l-1.8-2.4V5.5a1 1 0 0 0-1-1H7.8a1 1 0 0 0-1 1v9.1z"/></svg>';
+        let wish = (() => { try { const a = JSON.parse(localStorage.getItem(WISH_KEY) || '[]'); return Array.isArray(a) ? a.filter(x => x && x.n).slice(0, WISH_MAX) : []; } catch (e) { return []; } })();
+        let wishOpen = localStorage.getItem(WISH_KEY + '_open') !== '0';
+        const wishSave = () => { try { localStorage.setItem(WISH_KEY, JSON.stringify(wish)); } catch (e) { } };
+        function wishToggle(name, id) {
+            const k = nx(id || name), i = wish.findIndex(w => nx(w.id || w.n) === k);
+            if (i >= 0) { wish.splice(i, 1); wishSave(); wishRender(); return; }
+            if (wish.length >= WISH_MAX) { wishRender(`Liste pleine (${WISH_MAX} max) : coche ou retire un objet.`); return; }
+            wish.push({ n: name, id: id || null, d: false }); wishOpen = true; wishSave(); wishRender();
+        }
+        const wishHas = (name, id) => wish.some(w => nx(w.id || w.n) === nx(id || name));
+        function wishRender(msg) {
+            const bar = document.getElementById('wish-bar'); if (!bar) return;
+            bar.classList.toggle('hidden', !wish.length && !msg);
+            const done = wish.filter(w => w.d).length;
+            bar.innerHTML = `<div class="flex items-center gap-2 px-3 py-2 cursor-pointer select-none" data-wish-head>
+                    <span class="text-yellow-300">${WISH_PIN_SVG}</span>
+                    <span class="text-[10px] font-bold uppercase tracking-widest text-white flex-1">Liste de loot <span class="text-tactical-muted">${done}/${wish.length}</span></span>
+                    <span class="text-tactical-muted text-xs">${wishOpen ? '▾' : '▸'}</span></div>
+                ${wishOpen ? `<div class="px-2 pb-2 space-y-1">${wish.map((w, i) => `<div class="flex items-center gap-2 bg-tactical-bg border border-tactical-border rounded-lg px-2 py-1.5">
+                        <input type="checkbox" data-wish-done="${i}" ${w.d ? 'checked' : ''} class="accent-[#00ff88] shrink-0" title="Trouvé en jeu">
+                        <button type="button" data-wish-open="${i}" class="flex-1 min-w-0 text-left text-xs truncate ${w.d ? 'line-through text-tactical-muted' : 'text-white'}" title="${w.id ? 'Où le trouver (Find Item)' : hx(w.n)}">${hx(w.n)}</button>
+                        <button type="button" data-wish-rm="${i}" class="text-tactical-muted hover:text-red-300 text-xs shrink-0" title="Retirer">✕</button></div>`).join('')}
+                    ${msg ? `<p class="text-[10px] text-amber-300 px-1">${hx(msg)}</p>` : ''}
+                    <div class="flex justify-between px-1 pt-0.5 text-[10px]"><span class="text-tactical-muted">Épingle un objet (${WISH_PIN_SVG.replace('w-3 h-3', 'w-2.5 h-2.5 inline')}) sur sa carte</span>${done ? '<button type="button" data-wish-clear class="text-tactical-muted hover:text-white">Vider cochés</button>' : ''}</div></div>` : ''}`;
+            document.querySelectorAll('[data-wish-id]').forEach(b => b.classList.toggle('on', wishHas(null, b.dataset.wishId)));
+            document.querySelectorAll('[data-wish-add]').forEach(b => b.classList.toggle('on', wishHas(b.dataset.wishAdd, b.dataset.wishIid)));
+        }
+        const _rwc = renderWeaponCard, _ric = renderItemCard;
+        const wishPinBtn = it => `<button type="button" data-wish-id="${it.id}" title="Épingler dans ma liste de loot" class="wish-pin${wishHas(null, it.id) ? ' on' : ''}">${WISH_PIN_SVG}</button>`;
+        const wishInject = (html, it) => html.replace(/relative">/, 'relative">' + wishPinBtn(it));
+        renderWeaponCard = w => wishInject(_rwc(w), w);
+        renderItemCard = i => wishInject(_ric(i), i);
+        document.addEventListener('click', e => {
+            const pin = e.target.closest('[data-wish-id]');
+            if (pin) { e.preventDefault(); e.stopPropagation(); const it = ALL_ITEMS.find(x => x.id === pin.dataset.wishId); if (it) wishToggle(it.name, it.id); return; }
+            const add = e.target.closest('[data-wish-add]');
+            if (add) { e.preventDefault(); e.stopPropagation(); wishToggle(add.dataset.wishAdd, add.dataset.wishIid || null); return; }
+            const bar = e.target.closest('#wish-bar'); if (!bar) return;
+            if (e.target.closest('[data-wish-head]')) { wishOpen = !wishOpen; localStorage.setItem(WISH_KEY + '_open', wishOpen ? '1' : '0'); wishRender(); return; }
+            const rm = e.target.closest('[data-wish-rm]'); if (rm) { wish.splice(+rm.dataset.wishRm, 1); wishSave(); wishRender(); return; }
+            const op = e.target.closest('[data-wish-open]'); if (op) { const w = wish[+op.dataset.wishOpen]; if (w && w.id) goFindItem(w.id); else if (w) { currentGroup = 'boss'; renderMainTabs(); onGroupChange(); bossQ = w.n; document.getElementById('boss-search').value = w.n; bossRender(); } return; }
+            if (e.target.closest('[data-wish-clear]')) { wish = wish.filter(w => !w.d); wishSave(); wishRender(); }
+        }, true);
+        document.addEventListener('change', e => { const c = e.target.closest('[data-wish-done]'); if (c) { wish[+c.dataset.wishDone].d = c.checked; wishSave(); wishRender(); } });
+
+        // Pack squad : inclut aussi la liste de loot
+        const _sqPack = sqPack, _sqApply = sqApply;
+        sqPack = () => Object.assign(_sqPack(), { wishlist: wish });
+        sqApply = data => { const r = _sqApply(data); if (data && Array.isArray(data.wishlist)) { data.wishlist.forEach(w => { if (w && w.n && !wishHas(w.n, w.id) && wish.length < WISH_MAX) wish.push({ n: String(w.n), id: w.id || null, d: !!w.d }); }); wishSave(); wishRender(); } return r; };
+
+        // Loot Run : panneau véhicules
+        const _lrRender = lrRender;
+        lrRender = function () { _lrRender(); vhRenderLr(); };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            vhInit(); wishRender();
         });
     </script>
 </body>
