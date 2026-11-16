@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'unsafe-inline'">
+<style>
+html,body{margin:0;padding:0;background:transparent;overflow:hidden;font-family:"Segoe UI",Inter,system-ui,sans-serif}
+#box{width:250px;box-sizing:border-box;padding:6px 8px;border-radius:12px;background:rgba(10,13,18,.72);border:1px solid rgba(255,255,255,.12);color:#e6edf3;transform-origin:top left}
+.r{height:40px;display:flex;flex-direction:column;justify-content:center}
+.l{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.n{font-size:11px;font-weight:700;color:#9aa4ae;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.t{font:800 20px/1 ui-monospace,Consolas,monospace;color:#e6edf3;letter-spacing:.02em}
+.b{height:3px;border-radius:2px;background:rgba(255,255,255,.12);margin-top:4px;overflow:hidden}
+.b i{display:block;height:100%;background:#00ff88}
+.w .t{color:#fb923c}.w .b i{background:#fb923c}
+.d .t{color:#ff4757}.d .b i{background:#ff4757}
+.d.blink .t{animation:bl .5s steps(2) infinite}
+@keyframes bl{50%{opacity:.25}}
+.idle{height:34px;display:flex;align-items:center;gap:8px;font-size:11px;color:#9aa4ae;white-space:nowrap;overflow:hidden}
+.idle b{color:#00ff88;font-weight:800;letter-spacing:.1em;text-transform:uppercase}
+</style></head><body><div id="box"></div>
+<script src="timer.js"></script>
+</body></html>

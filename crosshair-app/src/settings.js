@@ -2,7 +2,7 @@
 const C = window.AR2Crosshair;
 // Mode démo (ouverture dans un navigateur, sans Electron)
 if (!window.xh) {
-    const st = { cfg: { active: 0, profiles: C.PRESETS.map((p, i) => ({ id: 'p' + i, name: p.name, settings: C.withDefaults(p.s) })), display: 0, autoUpdate: true, autoSwitch: { enabled: true, onlyRoblox: true, holsterHide: true, adsHide: false, adsMode: 'hold', slots: {}, labels: {} }, hotkeys: { toggle: 'Control+Alt+X', settings: 'Control+Alt+S', nextProfile: 'Control+Alt+P', center: 'Control+Alt+C', autoColor: 'Control+Alt+A', checklist: 'Control+Alt+O', checkNext: 'Control+Alt+N', up: 'Control+Alt+Up', down: 'Control+Alt+Down', left: 'Control+Alt+Left', right: 'Control+Alt+Right' }, startHidden: false, launchAtStartup: false, moveStep: 1, autoColor: JSON.parse(JSON.stringify(window.AR2AutoColor.DEFAULTS)), whitelist: { enabled: false, apps: [{ id: 'roblox', name: 'Roblox', match: 'Roblox', on: true }, { id: 'minecraft', name: 'Minecraft', match: 'Minecraft', on: false }] }, checklist: { title: 'Objectifs', overlay: false, corner: 'tr', scale: 1, opacity: 0.85, hideDone: false, items: [{ id: 'a', text: 'Trouver un sac à dos', done: true }, { id: 'b', text: 'Une arme à feu + 2 chargeurs', done: false }] } }, autoColor: { samples: 0 }, fgTitle: null, presets: { debut: 'Début de partie', militaire: 'Run militaire', boss: 'Chasse au boss' }, visible: true, displays: [{ i: 0, label: 'Écran 1 – 1920×1080 (principal)' }], version: '1.2.0', update: { state: 'none', mode: 'auto', version: '1.2.0' }, hook: { started: true }, installed: true };
+    const st = { cfg: { active: 0, profiles: C.PRESETS.map((p, i) => ({ id: 'p' + i, name: p.name, settings: C.withDefaults(p.s) })), display: 0, autoUpdate: true, autoSwitch: { enabled: true, onlyRoblox: true, holsterHide: true, adsHide: false, adsMode: 'hold', slots: {}, labels: {} }, hotkeys: { toggle: 'Control+Alt+X', settings: 'Control+Alt+S', nextProfile: 'Control+Alt+P', center: 'Control+Alt+C', autoColor: 'Control+Alt+A', checklist: 'Control+Alt+O', checkNext: 'Control+Alt+N', timer: 'Control+Alt+T', timer1: 'Control+Alt+F1', timer2: 'Control+Alt+F2', timer3: 'Control+Alt+F3', timerStop: 'Control+Alt+R', up: 'Control+Alt+Up', down: 'Control+Alt+Down', left: 'Control+Alt+Left', right: 'Control+Alt+Right' }, startHidden: false, launchAtStartup: false, moveStep: 1, autoColor: JSON.parse(JSON.stringify(window.AR2AutoColor.DEFAULTS)), whitelist: { enabled: false, apps: [{ id: 'roblox', name: 'Roblox', match: 'Roblox', on: true }, { id: 'minecraft', name: 'Minecraft', match: 'Minecraft', on: false }] }, checklist: { title: 'Objectifs', overlay: false, corner: 'tr', scale: 1, opacity: 0.85, hideDone: false, items: [{ id: 'a', text: 'Trouver un sac à dos', done: true }, { id: 'b', text: 'Une arme à feu + 2 chargeurs', done: false }] }, timer: { overlay: true, corner: 'tl', scale: 1, opacity: 0.9, sound: true, volume: 0.5, warn: 30, warnBeep: false, keepDone: 45, presets: [{ id: 'caisses', name: 'Caisses militaires', min: 15 }, { id: 'helico', name: 'Hélico crashé', min: 10 }, { id: 'boost', name: 'Boost', min: 5 }], running: [] } }, autoColor: { samples: 0 }, fgTitle: null, presets: { debut: 'Début de partie', militaire: 'Run militaire', boss: 'Chasse au boss' }, visible: true, displays: [{ i: 0, label: 'Écran 1 – 1920×1080 (principal)' }], version: '1.3.0', update: { state: 'none', mode: 'auto', version: '1.3.0' }, hook: { started: true }, installed: true };
     const cur = () => st.cfg.profiles[st.cfg.active].settings;
     window.xh = {
         getState: async () => st, update: async p => { Object.assign(cur(), p); return st; },
@@ -18,9 +18,13 @@ if (!window.xh) {
         setExtras: async p => { ['autoColor', 'whitelist', 'checklist'].forEach(k => { if (p[k]) st.cfg[k] = Object.assign({}, st.cfg[k], p[k]); }); return st; },
         checklistPreset: async k => { st.cfg.checklist.items = ['Objectif A', 'Objectif B', 'Objectif C'].map((t, i) => ({ id: k + i, text: t, done: false })); st.cfg.checklist.title = st.presets[k]; return st; },
         wlCapture: async () => ({ ok: true, title: 'Roblox' }),
+        timerStart: async w => { const t = st.cfg.timer, p = typeof w === 'number' ? t.presets[w] : { id: null, name: w.name, min: w.sec ? w.sec / 60 : w.min }; const ex = p.id && t.running.find(r => r.preset === p.id); const dur = p.min * 60; if (ex) { ex.end = Date.now() + dur * 1000; ex.doneAt = null; } else t.running.push({ id: Math.random().toString(36).slice(2), preset: p.id, name: p.name, dur, end: Date.now() + dur * 1000, doneAt: null }); st.now = Date.now(); return st; },
+        timerStop: async id => { st.cfg.timer.running = id === 'all' ? [] : st.cfg.timer.running.filter(r => r.id !== id); return st; },
+        timerAdd: async ({ id, sec }) => { const r = st.cfg.timer.running.find(x => x.id === id); if (r) { r.end += sec * 1000; r.doneAt = null; } return st; },
+        aimOpen: async () => { window.open('aim.html'); return true; },
         backupExport: async o => { const b = { app: 'ar2-crosshair', format: 1, version: st.version, data: { profiles: st.cfg.profiles, autoColor: st.cfg.autoColor, whitelist: st.cfg.whitelist, checklist: st.cfg.checklist, hotkeys: st.cfg.hotkeys } }; return o && o.as === 'code' ? 'AR2CFG-' + btoa(unescape(encodeURIComponent(JSON.stringify(b)))) : JSON.stringify(b, null, 2); },
         backupSave: async () => ({ ok: true, file: 'ar2-crosshair-sauvegarde.json' }), backupOpen: async () => null,
-        backupInspect: async t => { let x = String(t).trim(); if (/^AR2CFG-/.test(x)) x = decodeURIComponent(escape(atob(x.slice(7)))); if (/^AR2X-/.test(x)) return { sections: ['profiles'] }; const o = JSON.parse(x); if (o.app === 'ar2-armory') return { sections: ['profiles'] }; if (o.app !== 'ar2-crosshair') throw new Error('format inconnu'); return { sections: Object.keys(o.data) }; },
+        backupInspect: async t => { let x = String(t).trim(); if (/^AR2(CFG|SAVE)-/.test(x)) x = decodeURIComponent(escape(atob(x.replace(/^AR2(CFG|SAVE)-/, '')))); if (/^AR2X-/.test(x)) return { sections: ['profiles'] }; const o = JSON.parse(x); if (o.app === 'ar2-armory') return { sections: ['profiles'] }; if (o.app !== 'ar2-crosshair') throw new Error('format inconnu'); return { sections: Object.keys(o.data) }; },
         backupImport: async ({ text }) => { const r = await window.xh.backupInspect(text); return { ...st, done: r.sections, fails: [] }; }, openUrl: async () => {}, checkUpdate: async () => st, installUpdate: async () => false, onState: () => {}, onSettings: () => {}
     };
 }
@@ -29,7 +33,7 @@ let S = null, bg = 'game', zoom = 1, pvColor = null, pvPick = null;
 const $ = s => document.querySelector(s);
 const cur = () => S.cfg.profiles[S.cfg.active].settings;
 const SW = ['#00ff88', '#ff2d55', '#ffffff', '#22d3ee', '#facc15', '#fb923c', '#e879f9', '#a3e635', '#3b82f6', '#000000'];
-const HK_LABELS = { toggle: 'Afficher / masquer', settings: 'Ouvrir les réglages', nextProfile: 'Profil suivant', center: 'Recentrer', autoColor: 'Couleur auto on / off', checklist: 'Objectifs à l\'écran', checkNext: 'Cocher l\'objectif suivant', up: 'Monter', down: 'Descendre', left: 'Gauche', right: 'Droite' };
+const HK_LABELS = { toggle: 'Afficher / masquer', settings: 'Ouvrir les réglages', nextProfile: 'Profil suivant', center: 'Recentrer', timer: 'Minuteur : afficher / masquer', timer1: 'Minuteur 1 (lancer / relancer)', timer2: 'Minuteur 2 (lancer / relancer)', timer3: 'Minuteur 3 (lancer / relancer)', timerStop: 'Arrêter les minuteurs', autoColor: 'Couleur auto on / off', checklist: 'Objectifs à l\'écran', checkNext: 'Cocher l\'objectif suivant', up: 'Monter', down: 'Descendre', left: 'Gauche', right: 'Droite' };
 
 function drawBg(ctx, w, h) {
     if (bg === 'dark') { ctx.fillStyle = '#14171c'; ctx.fillRect(0, 0, w, h); return; }
@@ -130,7 +134,7 @@ function renderUpdate() {
     b.classList.toggle('hidden', !show);
     if (show) { $('#upd-text').textContent = txt + (u.state === 'ready' ? " Elle s'installera aussi toute seule à la fermeture de l'appli." : u.mode === 'manual' ? ' (version portable : télécharge la nouvelle version)' : ''); $('#upd-btn').textContent = u.state === 'ready' ? 'Redémarrer et installer' : 'Télécharger'; }
 }
-function renderAll() { renderProfiles(); renderStyles(); renderControls(); renderHotkeys(); renderAuto(); renderUpdate(); renderPreview(); renderAC(); renderWL(); renderCK(); renderBK(); }
+function renderAll() { renderProfiles(); renderStyles(); renderControls(); renderHotkeys(); renderAuto(); renderUpdate(); renderPreview(); renderAC(); renderWL(); renderCK(); renderTM(); renderBK(); }
 
 async function upd(partial) {
     Object.assign(cur(), partial);
@@ -356,7 +360,7 @@ $('#ck-hidedone').onchange = e => ckSet({ hideDone: e.target.checked });
 });
 
 // ================= Sauvegarde =================
-const BK = { profiles: 'Profils', autoSwitch: "Changement d'arme", autoColor: 'Couleur auto', whitelist: 'Liste blanche', checklist: 'Objectifs', hotkeys: 'Raccourcis', general: 'Réglages généraux' };
+const BK = { profiles: 'Profils', autoSwitch: "Changement d'arme", autoColor: 'Couleur auto', whitelist: 'Liste blanche', checklist: 'Objectifs', timer: 'Minuteur', hotkeys: 'Raccourcis', general: 'Réglages généraux' };
 let bkSel = Object.keys(BK);
 function renderBK() {
     $('#bk-sections').innerHTML = Object.entries(BK).map(([k, l]) => `<label class="tog small"><input type="checkbox" data-bks="${k}" ${bkSel.includes(k) ? 'checked' : ''}> ${l}</label>`).join('');
@@ -388,3 +392,58 @@ $('#bk-import').onclick = async () => {
         $('#bk-in').value = '';
     } catch (e) { bkMsg('Import impossible : ' + String(e.message || e), false); }
 };
+
+// ================= Minuteur tactique =================
+const hkTxt = a => (a || '—').replace('Control', 'Ctrl');
+const tmFmt = ms => { const x = Math.max(0, Math.ceil(ms / 1000)), h = Math.floor(x / 3600), m = Math.floor(x % 3600 / 60), sc = x % 60; return (h ? h + ':' + String(m).padStart(2, '0') : m) + ':' + String(sc).padStart(2, '0'); };
+let tmSkew = 0;
+function renderTM() {
+    const t = S.cfg.timer; if (!t) return;
+    if (S.now) tmSkew = Date.now() - S.now;
+    const h = S.cfg.hotkeys;
+    $('#tm-keys').innerHTML = `<b>${hkTxt(h.timer)}</b> afficher / masquer • <b>${hkTxt(h.timer1)}</b>, <b>${hkTxt(h.timer2)}</b>, <b>${hkTxt(h.timer3)}</b> lancer (rappuie pour relancer) • <b>${hkTxt(h.timerStop)}</b> tout arrêter`;
+    const box = $('#tm-presets');
+    if (!(document.activeElement && box.contains(document.activeElement))) {
+        box.innerHTML = t.presets.map((p, i) => `<div class="tmrow"><span class="k">${hkTxt(h['timer' + (i + 1)]).replace('Ctrl+Alt+', 'C+A+')}</span><input type="text" data-tmname="${i}" value="${esc(p.name)}" maxlength="30"><input type="number" data-tmmin="${i}" value="${p.min}" min="0.1" max="240" step="0.5" title="minutes"><button class="btn sm" data-tmgo="${i}">Lancer</button></div>`).join('');
+    }
+    $('#tm-overlay').checked = !!t.overlay; $('#tm-corner').value = t.corner; $('#tm-sound').checked = !!t.sound; $('#tm-warnbeep').checked = !!t.warnBeep;
+    [['tm-vol', 'volume', v => Math.round(v * 100) + ' %'], ['tm-warn', 'warn', v => v ? v + ' s' : 'jamais'], ['tm-keep', 'keepDone', v => v + ' s'], ['tm-scale', 'scale', v => 'x' + (+v).toFixed(1)], ['tm-op', 'opacity', v => Math.round(v * 100) + ' %']].forEach(([id, k, f]) => { if (!focused(id)) $('#' + id).value = t[k]; $('#' + id + '-v').textContent = f(t[k]); });
+    renderTMRun();
+}
+function renderTMRun() {
+    const t = S.cfg.timer, box = $('#tm-run'); if (!t || !box) return;
+    const now = Date.now() - tmSkew;
+    box.innerHTML = t.running.length ? t.running.map(r => { const left = r.end - now, done = !!r.doneAt || left <= 0, warn = !done && t.warn && left <= t.warn * 1000; return `<div class="tmrun ${done ? 'd' : warn ? 'w' : ''}"><span>${esc(r.name)}</span><b>${done ? 'PRÊT' : tmFmt(left)}</b><button class="ib" data-tmadd="${r.id}" title="+1 minute">+1</button><button class="ib" data-tmstop="${r.id}" title="Arrêter">×</button></div>`; }).join('') + '<button class="btn sm ghost" data-tmstop="all">Tout arrêter</button>' : '<p class="muted small">Aucun minuteur en cours.</p>';
+}
+setInterval(() => { if (S && S.cfg.timer && S.cfg.timer.running.length) renderTMRun(); }, 250);
+const tmSet = async p => { await setX({ timer: p }); renderTM(); };
+$('#tm-presets').addEventListener('change', e => {
+    const t = e.target, P = JSON.parse(JSON.stringify(S.cfg.timer.presets));
+    if (t.dataset.tmname !== undefined) P[+t.dataset.tmname].name = t.value.trim() || P[+t.dataset.tmname].name;
+    else if (t.dataset.tmmin !== undefined) P[+t.dataset.tmmin].min = Math.max(0.1, Math.min(240, +t.value || 5));
+    else return;
+    t.blur(); tmSet({ presets: P });
+});
+$('#tm-presets').addEventListener('click', async e => { const b = e.target.closest('[data-tmgo]'); if (!b) return; S = await xh.timerStart(+b.dataset.tmgo); renderTM(); });
+$('#tm-run').addEventListener('click', async e => {
+    const a = e.target.closest('[data-tmadd]'), b = e.target.closest('[data-tmstop]');
+    if (a) S = await xh.timerAdd({ id: a.dataset.tmadd, sec: 60 }); else if (b) S = await xh.timerStop(b.dataset.tmstop); else return;
+    renderTM();
+});
+$('#tm-cgo').onclick = async () => { const n = $('#tm-cname').value.trim() || 'Minuteur', m = Math.max(0.1, Math.min(240, +$('#tm-cmin').value || 3)); S = await xh.timerStart({ name: n, min: m }); $('#tm-cname').value = ''; renderTM(); };
+$('#tm-overlay').onchange = e => tmSet({ overlay: e.target.checked });
+$('#tm-corner').onchange = e => tmSet({ corner: e.target.value });
+$('#tm-sound').onchange = e => tmSet({ sound: e.target.checked });
+$('#tm-warnbeep').onchange = e => tmSet({ warnBeep: e.target.checked });
+[['tm-vol', 'volume'], ['tm-warn', 'warn'], ['tm-keep', 'keepDone'], ['tm-scale', 'scale'], ['tm-op', 'opacity']].forEach(([id, k]) => {
+    $('#' + id).addEventListener('input', e => { S.cfg.timer[k] = +e.target.value; renderTM(); });
+    $('#' + id).addEventListener('change', e => tmSet({ [k]: +e.target.value }));
+});
+let tmCtx = null;
+$('#tm-test').onclick = () => {
+    try {
+        tmCtx = tmCtx || new AudioContext(); const v = S.cfg.timer.volume;
+        [[880, 0, 0.14], [880, 0.22, 0.14], [1175, 0.44, 0.22]].forEach(([f, at, d]) => { const o = tmCtx.createOscillator(), g = tmCtx.createGain(), t0 = tmCtx.currentTime + at; o.frequency.value = f; g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(Math.max(0.0002, v * 0.5), t0 + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, t0 + d); o.connect(g); g.connect(tmCtx.destination); o.start(t0); o.stop(t0 + d + 0.05); });
+    } catch (e) {}
+};
+$('#aim-open').onclick = () => xh.aimOpen();

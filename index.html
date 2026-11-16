@@ -161,6 +161,11 @@
                         <span class="text-tactical-gold font-bold" id="stier-count">…</span>
                     </button>
                 </div>
+                <!-- Objectifs (liste à cocher) -->
+                <button id="ck-btn" title="Ma liste d'objectifs" class="relative flex items-center gap-2 px-3.5 py-2 text-xs font-bold uppercase tracking-wider text-tactical-muted border border-tactical-border rounded-xl hover:text-tactical-accent hover:border-tactical-accent/60 transition-all">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 11l3 3 8-8M20 12v6a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h9"/></svg>
+                    <span class="hidden sm:inline">Objectifs</span><span id="ck-badge" class="hidden text-[10px] font-mono text-tactical-accent"></span>
+                </button>
                 <!-- Sauvegarde globale (import / export) -->
                 <button id="bk-btn" title="Exporter / importer toutes tes données" class="flex items-center gap-2 px-3.5 py-2 text-xs font-bold uppercase tracking-wider text-tactical-muted border border-tactical-border rounded-xl hover:text-tactical-accent hover:border-tactical-accent/60 transition-all">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M8 12l4 4 4-4M12 4v12"/></svg>
@@ -333,6 +338,10 @@
                     <div class="bg-tactical-card border border-tactical-border rounded-2xl p-4">
                         <div class="xh-h">Style</div>
                         <div id="xh-styles" class="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-2"></div>
+                    </div>
+                    <div class="bg-tactical-card border border-tactical-border rounded-2xl p-4" id="aim-card">
+                        <div class="flex flex-wrap items-baseline justify-between gap-2 mb-2"><div class="xh-h !mb-0">Mini entraînement de visée</div><span class="text-[11px] text-tactical-muted">Teste ton crosshair : réflexes, précision, suivi et visibilité sur chaque fond.</span></div>
+                        <div id="aim-root"></div>
                     </div>
                     <div class="bg-tactical-card border border-tactical-border rounded-2xl p-5">
                         <div class="xh-h">Installer et utiliser l'appli</div>
@@ -694,6 +703,7 @@
     </main>
 
     <!-- ===== LISTE DE LOOT (wishlist) ===== -->
+    <div id="ck-bar" class="hidden fixed z-[46] left-3 bottom-24 w-[320px] max-w-[calc(100vw-1.5rem)] max-h-[70vh] flex flex-col bg-tactical-card/95 backdrop-blur-xl border border-tactical-border rounded-2xl shadow-2xl"></div>
     <div id="wish-bar" class="hidden fixed z-[45] right-3 bottom-24 w-[250px] max-w-[calc(100vw-1.5rem)] bg-tactical-card/95 backdrop-blur-xl border border-tactical-border rounded-2xl shadow-2xl"></div>
 
     <!-- Sticky Comparison Floating Bar -->
@@ -3923,7 +3933,8 @@
         let bg = 'game', zoom = 1, built = false;
         const SW = ['#00ff88', '#ff2d55', '#ffffff', '#22d3ee', '#facc15', '#fb923c', '#e879f9', '#a3e635', '#3b82f6', '#000000'];
         const $ = id => document.getElementById(id);
-        const save = () => { try { localStorage.setItem(LS, JSON.stringify(S)); } catch (e) {} };
+        const save = () => { try { localStorage.setItem(LS, JSON.stringify(S)); } catch (e) {} if (window.ar2AimRefresh) window.ar2AimRefresh(); };
+        window.xhWebSettings = () => S;
 
         function drawBg(ctx, w, h) {
             if (bg === 'dark') { ctx.fillStyle = '#14171c'; ctx.fillRect(0, 0, w, h); return; }
@@ -5708,6 +5719,7 @@
                             <button type="button" id="df-copy" class="xh-btn">Copier pour Discord</button>
                             <button type="button" id="df-link" class="xh-btn">Copier le lien</button>
                             <button type="button" id="df-png" class="xh-btn">Télécharger l'image</button>
+                            <button type="button" id="df-ck" class="xh-btn">Ajouter à mes objectifs</button>
                             <span id="df-msg" class="text-xs text-tactical-accent self-center">${msg || ''}</span>
                         </div>
                         <textarea id="df-txt" readonly rows="7" class="w-full bg-tactical-bg border border-tactical-border rounded-xl p-3 text-[11px] font-mono text-gray-300">${hx(dfText(c))}</textarea>
@@ -5739,6 +5751,7 @@
             if (e.target.closest('#df-copy')) { toolCopy(dfText(dfGen(df)), document.getElementById('df-txt')).then(ok => { document.getElementById('df-msg').textContent = ok ? 'Copié : colle-le dans Discord.' : 'Sélectionne le texte et copie-le.'; }); return; }
             if (e.target.closest('#df-link')) { toolCopy(dfLink()).then(ok => { document.getElementById('df-msg').textContent = ok ? 'Lien copié.' : dfLink(); }); return; }
             if (e.target.closest('#df-png')) dfPng();
+            if (e.target.closest('#df-ck') && window.ar2Checklist) { const c = dfGen(df); window.ar2Checklist.setList(`Défi #${df.seed}`, [`Spawn : ${c.spawn.name}`, `Arme imposée : ${c.weapon.name}`, `Objectif : ${c.obj}`].concat(c.rules.map(x => x.t))); document.getElementById('df-msg').textContent = 'Ajouté à tes objectifs (bouton Objectifs en haut).'; }
         });
         const _th = toolsHash;
         toolsHash = function () {
@@ -5747,6 +5760,121 @@
         };
         window.addEventListener('hashchange', () => { if (location.hash.startsWith('#defi=')) toolsHash(); });
 
+    </script>
+    <script>
+    /* ===== Objectifs : liste à cocher (comme dans l'appli AR2 Crosshair) ===== */
+    (function () {
+        const KEY = 'ar2_checklist_v1';
+        const PRESETS = {
+            debut: { name: 'Début de partie', items: ['Trouver une arme de mêlée', 'Trouver un sac à dos', "Avoir 100 d'énergie et 100 d'hydratation en réserve", '3 bandages ou plus', 'Une arme à feu + 2 chargeurs', 'Repérer la zone de loot la plus proche'] },
+            militaire: { name: 'Run militaire', items: ['Rejoindre une base militaire', 'Ouvrir les caisses vertes', 'Récupérer un Military MedKit', 'Trouver un viseur', 'Repartir sans se faire repérer', 'Mettre le loot en sécurité'] },
+            boss: { name: 'Chasse au boss', items: ['Prendre 2 chargeurs de rechange', 'Booster de PV dans la barre rapide', "Rejoindre l'endroit du boss", 'Nettoyer les infectés autour', 'Tuer le boss', 'Fouiller le butin'] }
+        };
+        const uid = () => Math.random().toString(36).slice(2, 10);
+        const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+        let ck = { title: 'Objectifs', open: false, hideDone: false, items: PRESETS.debut.items.map(t => ({ id: uid(), text: t, done: false })) };
+        try { const o = JSON.parse(localStorage.getItem(KEY)); if (o && Array.isArray(o.items)) ck = Object.assign(ck, o); } catch (e) {}
+        ck.items = ck.items.filter(i => i && i.text).map(i => ({ id: i.id || uid(), text: String(i.text).slice(0, 120), done: !!i.done }));
+        let paste = false, msg = '';
+        const save = () => { try { localStorage.setItem(KEY, JSON.stringify(ck)); } catch (e) {} };
+        const parseLines = txt => String(txt || '').split(/\r?\n/).map(l => l.replace(/\*\*/g, '').replace(/^\s*(>|-|\*|•|\d+[.)]|\[[ xX]?\])\s*/, '').trim())
+            .filter(l => l && !/^(lien|link)\s*:/i.test(l) && !/^https?:\/\//.test(l) && !/^DÉFI AR2/i.test(l))
+            .map(l => l.replace(/^Contrainte\s*:\s*/i, '').slice(0, 120));
+        function render() {
+            const bar = document.getElementById('ck-bar'), badge = document.getElementById('ck-badge');
+            const done = ck.items.filter(i => i.done).length;
+            if (badge) { badge.textContent = ck.items.length ? `${done}/${ck.items.length}` : ''; badge.classList.toggle('hidden', !ck.items.length); }
+            if (!bar) return;
+            bar.classList.toggle('hidden', !ck.open);
+            if (!ck.open) return;
+            const act = document.activeElement;
+            if (act && bar.contains(act) && act.dataset.ckText !== undefined) return; // ne pas casser la saisie en cours
+            const items = ck.items.map((it, i) => [it, i]).filter(([it]) => !(ck.hideDone && it.done));
+            bar.innerHTML = `
+                <div class="flex items-center gap-2 px-3 py-2.5 border-b border-tactical-border">
+                    <input id="ck-title" value="${esc(ck.title)}" maxlength="40" class="flex-1 min-w-0 bg-transparent text-xs font-extrabold uppercase tracking-widest text-tactical-accent outline-none">
+                    <span class="text-[11px] font-mono text-tactical-muted">${done}/${ck.items.length}</span>
+                    <button type="button" data-ck="close" class="text-tactical-muted hover:text-white px-1" aria-label="Fermer">✕</button>
+                </div>
+                <div class="h-1 bg-tactical-border/50"><div class="h-full bg-tactical-accent transition-all" style="width:${ck.items.length ? done / ck.items.length * 100 : 0}%"></div></div>
+                <div class="overflow-y-auto flex-1 p-2 space-y-1">
+                    ${items.length ? items.map(([it, i]) => `<div class="group flex items-start gap-1.5 rounded-lg px-1.5 py-1 hover:bg-white/5">
+                        <input type="checkbox" data-ck-done="${i}" ${it.done ? 'checked' : ''} style="accent-color:#00ff88" class="shrink-0 mt-0.5">
+                        <textarea data-ck-text="${i}" rows="1" maxlength="120" title="${esc(it.text)}" style="field-sizing:content;resize:none;overflow:hidden" class="flex-1 min-w-0 bg-transparent text-xs leading-snug outline-none ${it.done ? 'line-through text-tactical-muted' : 'text-white'}">${esc(it.text)}</textarea>
+                        <button type="button" data-ck-up="${i}" class="opacity-0 group-hover:opacity-100 text-[11px] text-tactical-muted hover:text-white" title="Monter">↑</button>
+                        <button type="button" data-ck-down="${i}" class="opacity-0 group-hover:opacity-100 text-[11px] text-tactical-muted hover:text-white" title="Descendre">↓</button>
+                        <button type="button" data-ck-del="${i}" class="opacity-0 group-hover:opacity-100 text-[11px] text-tactical-muted hover:text-tactical-red" title="Supprimer">✕</button></div>`).join('') : `<p class="text-[11px] text-tactical-muted px-1.5 py-2">${ck.items.length ? 'Tout est fait.' : 'Aucun objectif. Ajoute-en un ou prends une liste prête.'}</p>`}
+                </div>
+                <div class="p-2 border-t border-tactical-border space-y-2">
+                    <div class="flex gap-1.5"><input id="ck-new" placeholder="Nouvel objectif…" maxlength="120" class="flex-1 min-w-0 bg-tactical-bg border border-tactical-border rounded-lg px-2 py-1.5 text-xs text-white"><button type="button" data-ck="add" class="px-2.5 rounded-lg bg-tactical-accent text-black text-xs font-bold">+</button></div>
+                    ${paste ? `<textarea id="ck-paste" rows="4" placeholder="Une ligne = un objectif (la fiche du Défi random marche aussi)" class="w-full bg-tactical-bg border border-tactical-border rounded-lg px-2 py-1.5 text-[11px] text-white"></textarea><div class="flex gap-1.5"><button type="button" data-ck="paste-go" class="xh-btn">Ajouter les lignes</button><button type="button" data-ck="paste" class="xh-btn">Annuler</button></div>` : ''}
+                    <div class="flex flex-wrap gap-1">${Object.entries(PRESETS).map(([k, p]) => `<button type="button" data-ck-preset="${k}" class="text-[10px] font-bold px-2 py-1 rounded-md border border-tactical-border text-tactical-muted hover:text-white">${p.name}</button>`).join('')}</div>
+                    <div class="flex flex-wrap gap-x-3 gap-y-1 text-[10px] font-bold uppercase text-tactical-muted">
+                        <button type="button" data-ck="paste" class="hover:text-white">Coller une liste</button>
+                        <button type="button" data-ck="uncheck" class="hover:text-white">Tout décocher</button>
+                        <button type="button" data-ck="clean" class="hover:text-white">Retirer les cochés</button>
+                        <button type="button" data-ck="hide" class="hover:text-white">${ck.hideDone ? 'Montrer' : 'Cacher'} les cochés</button>
+                        <button type="button" data-ck="copy" class="hover:text-white">Copier</button>
+                        <button type="button" data-ck="app" class="hover:text-white" title="Code à coller dans l'appli AR2 Crosshair (Sauvegarde > Importer)">Envoyer à l'appli</button>
+                    </div>
+                    ${msg ? `<p class="text-[11px] text-green-300">${esc(msg)}</p>` : ''}
+                </div>`;
+            msg = '';
+        }
+        const set = (fn, keepMsg) => { fn(); save(); render(); };
+        document.addEventListener('click', e => {
+            if (e.target.closest('#ck-btn')) { ck.open = !ck.open; save(); render(); return; }
+            const bar = e.target.closest('#ck-bar'); if (!bar) return;
+            const b = e.target.closest('[data-ck],[data-ck-up],[data-ck-down],[data-ck-del],[data-ck-preset]'); if (!b) return;
+            const d = b.dataset;
+            if (d.ckDel !== undefined) return set(() => ck.items.splice(+d.ckDel, 1));
+            if (d.ckUp !== undefined || d.ckDown !== undefined) { const i = +(d.ckUp ?? d.ckDown), j = d.ckUp !== undefined ? i - 1 : i + 1; if (j < 0 || j >= ck.items.length) return; return set(() => { [ck.items[i], ck.items[j]] = [ck.items[j], ck.items[i]]; }); }
+            if (d.ckPreset) { const p = PRESETS[d.ckPreset]; if (ck.items.length && !confirm(`Remplacer ta liste par « ${p.name} » ?`)) return; return set(() => { ck.title = p.name; ck.items = p.items.map(t => ({ id: uid(), text: t, done: false })); }); }
+            const a = d.ck;
+            if (a === 'close') return set(() => { ck.open = false; });
+            if (a === 'add') { const v = document.getElementById('ck-new').value.trim(); if (!v) return; set(() => ck.items.push({ id: uid(), text: v.slice(0, 120), done: false })); const n = document.getElementById('ck-new'); if (n) n.focus(); return; }
+            if (a === 'paste') { paste = !paste; render(); if (paste) document.getElementById('ck-paste').focus(); return; }
+            if (a === 'paste-go') { const L = parseLines(document.getElementById('ck-paste').value); paste = false; return set(() => { L.forEach(t => ck.items.push({ id: uid(), text: t, done: false })); msg = L.length + ' objectif(s) ajouté(s).'; }); }
+            if (a === 'uncheck') return set(() => ck.items.forEach(i => { i.done = false; }));
+            if (a === 'clean') return set(() => { ck.items = ck.items.filter(i => !i.done); });
+            if (a === 'hide') return set(() => { ck.hideDone = !ck.hideDone; });
+            if (a === 'copy') { toolCopy(`**${ck.title}**\n` + ck.items.map(i => `${i.done ? '[x]' : '[ ]'} ${i.text}`).join('\n')).then(ok => { msg = ok ? 'Liste copiée.' : 'Copie bloquée par le navigateur.'; render(); }); return; }
+            if (a === 'app') { const o = { app: 'ar2-armory', format: 1, exported: new Date().toISOString(), data: { [KEY]: JSON.stringify(ck) } }; toolCopy('AR2SAVE-' + btoa(unescape(encodeURIComponent(JSON.stringify(o))))).then(ok => { msg = ok ? "Code copié : colle-le dans l'appli (Sauvegarde > Importer)." : 'Copie bloquée par le navigateur.'; render(); }); }
+        });
+        document.addEventListener('change', e => {
+            const t = e.target; if (!t.closest || !t.closest('#ck-bar')) return;
+            if (t.dataset.ckDone !== undefined) return set(() => { ck.items[+t.dataset.ckDone].done = t.checked; });
+            if (t.dataset.ckText !== undefined) { const v = t.value.trim(), i = +t.dataset.ckText; t.blur(); return set(() => { if (v) ck.items[i].text = v.slice(0, 120); else ck.items.splice(i, 1); }); }
+            if (t.id === 'ck-title') return set(() => { ck.title = t.value.trim() || 'Objectifs'; });
+        });
+        document.addEventListener('keydown', e => {
+            if (e.key !== 'Enter') return;
+            if (e.target.id === 'ck-new') { e.preventDefault(); document.querySelector('#ck-bar [data-ck="add"]').click(); }
+            else if (e.target.dataset && e.target.dataset.ckText !== undefined) e.target.blur();
+        });
+        window.ar2Checklist = {
+            get: () => ck,
+            setList(title, lines) { if (ck.items.some(i => !i.done) && !confirm('Remplacer ta liste d\'objectifs actuelle ?')) { lines.forEach(t => ck.items.push({ id: uid(), text: String(t).slice(0, 120), done: false })); } else { ck.title = String(title).slice(0, 40); ck.items = lines.map(t => ({ id: uid(), text: String(t).slice(0, 120), done: false })); } ck.open = true; save(); render(); },
+            render
+        };
+        render();
+    })();
+    </script>
+    <script src="crosshair-app/src/autocolor.js"></script>
+    <script src="crosshair-app/src/aimtrainer.js"></script>
+    <script>
+    /* ===== Mini entraînement de visée (onglet Crosshair) ===== */
+    (function () {
+        const el = document.getElementById('aim-root'); if (!el || !window.AR2Aim) return;
+        let aim = null, t = 0;
+        const mountIt = () => { if (aim) return; aim = AR2Aim.mount(el, { getSettings: () => (window.xhWebSettings ? window.xhWebSettings() : {}), storeKey: 'ar2_aim_v1' }); window.ar2Aim = aim; };
+        window.ar2AimRefresh = () => { clearTimeout(t); t = setTimeout(() => aim && aim.refresh(), 60); };
+        // monté quand l'onglet Crosshair est visible (la taille du canvas dépend de la largeur)
+        const sec = document.getElementById('crosshair-section');
+        const check = () => { if (sec && !sec.classList.contains('hidden')) { mountIt(); aim && aim.refresh(); } else if (aim && aim.running) aim.stop(); };
+        if (sec) new MutationObserver(check).observe(sec, { attributes: true, attributeFilter: ['class'] });
+        check();
+    })();
     </script>
     <script>
     /* ===== Calculateur du sac (onglet Build) ===== */
@@ -5847,6 +5975,8 @@
             ['weapons', 'Armes personnalisées', k => k.startsWith('ar2_custom_weapons')],
             ['wishlist', 'Liste de loot (wishlist)', k => k.startsWith('ar2_wishlist')],
             ['survie', 'Survie, soins et calculateur du sac', k => k.startsWith('ar2_survie') || k.startsWith('ar2_bagcalc')],
+            ['checklist', 'Objectifs (liste à cocher)', k => k.startsWith('ar2_checklist')],
+            ['aim', "Records d'entraînement de visée", k => k.startsWith('ar2_aim')],
             ['other', 'Autres réglages', () => true],
         ];
         const groupOf = k => GROUPS.find(g => g[2](k))[0];
@@ -5869,9 +5999,12 @@
             const o = JSON.parse(t);
             if (o && o.app === 'ar2-crosshair' && o.data) {
                 // sauvegarde de l'appli : on prend le profil actif comme crosshair du site
-                const P = o.data.profiles || []; const p = P[o.data.active || 0] || P[0];
-                if (!p) throw new Error("pas de profil de crosshair dans cette sauvegarde de l'appli");
-                return { app: 'ar2-armory', format: 1, data: { ar2_crosshair_web: JSON.stringify(p.settings) }, note: `Appli AR2 Crosshair (profil « ${p.name} »)` };
+                const P = o.data.profiles || []; const p = P[o.data.active || 0] || P[0], c = o.data.checklist;
+                if (!p && !c) throw new Error("rien d'utilisable pour le site dans cette sauvegarde de l'appli");
+                const data = {};
+                if (p) data.ar2_crosshair_web = JSON.stringify(p.settings);
+                if (c && Array.isArray(c.items)) data.ar2_checklist_v1 = JSON.stringify({ title: c.title || 'Objectifs', open: true, hideDone: !!c.hideDone, items: c.items });
+                return { app: 'ar2-armory', format: 1, data, note: 'Appli AR2 Crosshair' + (p ? ` (profil « ${p.name} »${c ? ' + objectifs' : ''})` : ' (objectifs)') };
             }
             if (!o || o.app !== 'ar2-armory' || typeof o.data !== 'object') throw new Error("ce n'est pas une sauvegarde AR2 Armory");
             return o;
@@ -5880,6 +6013,7 @@
             try {
                 const a = JSON.parse(oldV), b = JSON.parse(newV);
                 if (Array.isArray(a) && Array.isArray(b)) { const seen = new Set(a.map(x => JSON.stringify(x))); return JSON.stringify(a.concat(b.filter(x => !seen.has(JSON.stringify(x))))); }
+                if (a && b && typeof a === 'object' && typeof b === 'object' && Array.isArray(a.items) && Array.isArray(b.items)) { const t = new Set(a.items.map(i => i && i.text)); return JSON.stringify(Object.assign({}, a, { items: a.items.concat(b.items.filter(i => i && !t.has(i.text))) })); }
                 if (a && b && typeof a === 'object' && typeof b === 'object' && !Array.isArray(a) && !Array.isArray(b)) return JSON.stringify(Object.assign({}, a, b));
             } catch (e) {}
             return newV;

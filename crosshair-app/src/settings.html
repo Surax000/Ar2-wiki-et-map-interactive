@@ -8,10 +8,10 @@
 </head>
 <body>
 <header class="top">
-    <div class="brand"><img src="assets/icon.png" alt=""><div><b>AR2 Crosshair</b><span id="ver">v1.2.0</span></div></div>
+    <div class="brand"><img src="assets/icon.png" alt=""><div><b>AR2 Crosshair</b><span id="ver">v1.3.0</span></div></div>
     <div class="top-actions">
         <button id="vis-btn" class="btn primary">Crosshair affiché</button>
-        <span class="hint">Ctrl+Alt+X afficher / masquer • Ctrl+Alt+A couleur auto • Ctrl+Alt+O objectifs • Ctrl+Alt+flèches déplacer</span>
+        <span class="hint">Ctrl+Alt+X afficher / masquer • Ctrl+Alt+A couleur auto • Ctrl+Alt+T minuteur • Ctrl+Alt+F1/F2/F3 lancer • Ctrl+Alt+O objectifs</span>
     </div>
 </header>
 <div id="upd-banner" class="banner hidden"><span id="upd-text"></span><button id="upd-btn" class="btn sm primary">Redémarrer et installer</button></div>
@@ -137,11 +137,30 @@
             <div class="field"><label>Taille <b id="ck-scale-v"></b></label><input type="range" id="ck-scale" min="0.6" max="2" step="0.1"></div>
             <div class="field"><label>Opacité <b id="ck-op-v"></b></label><input type="range" id="ck-op" min="0.2" max="1" step="0.05"></div>
         </details>
+        <details open id="tm-box"><summary>Minuteur tactique</summary>
+            <p class="muted small">Un petit compte à rebours dans un coin de l'écran pour savoir quand revenir looter (caisses militaires, hélico crashé, boss) ou quand ton boost se termine. Tout se pilote au clavier sans quitter Roblox.</p>
+            <div id="tm-keys" class="small muted"></div>
+            <div id="tm-presets" class="mt-s"></div>
+            <div class="row gap wrap mt-s"><input id="tm-cname" placeholder="Autre minuteur…" class="grow" maxlength="30"><input id="tm-cmin" type="number" min="0.1" max="240" step="0.5" value="3" style="width:70px"><span class="muted small">min</span><button id="tm-cgo" class="btn sm">Lancer</button></div>
+            <div id="tm-run" class="mt-s"></div>
+            <div class="field mt"><label class="tog"><input type="checkbox" id="tm-overlay"> Afficher le minuteur par-dessus le jeu (Ctrl+Alt+T)</label></div>
+            <div class="field row gap"><label class="muted small">Coin</label><select id="tm-corner"><option value="tl">Haut gauche</option><option value="tr">Haut droite</option><option value="bl">Bas gauche</option><option value="br">Bas droite</option></select></div>
+            <div class="field row gap wrap"><label class="tog"><input type="checkbox" id="tm-sound"> Bip quand c'est fini</label><label class="tog"><input type="checkbox" id="tm-warnbeep"> Petit bip d'alerte avant la fin</label><button id="tm-test" class="btn sm ghost">Tester le bip</button></div>
+            <div class="field"><label>Volume <b id="tm-vol-v"></b></label><input type="range" id="tm-vol" min="0" max="1" step="0.05"></div>
+            <div class="field"><label>Alerte orange avant la fin <b id="tm-warn-v"></b></label><input type="range" id="tm-warn" min="0" max="120" step="5"></div>
+            <div class="field"><label>Garder « PRÊT » affiché <b id="tm-keep-v"></b></label><input type="range" id="tm-keep" min="5" max="300" step="5"></div>
+            <div class="field"><label>Taille <b id="tm-scale-v"></b></label><input type="range" id="tm-scale" min="0.6" max="2" step="0.1"></div>
+            <div class="field"><label>Opacité <b id="tm-op-v"></b></label><input type="range" id="tm-op" min="0.2" max="1" step="0.05"></div>
+        </details>
+        <details open id="aim-box"><summary>Entraînement de visée</summary>
+            <p class="muted small">Un mini test pour voir si ton crosshair te convient : réflexes, précision, suivi d'une cible et visibilité sur les fonds du jeu (plaine, forêt, neige, ciel, nuit, ville, sable).</p>
+            <button id="aim-open" class="btn sm primary">Ouvrir l'entraînement</button>
+        </details>
         <details id="bk-box"><summary>Sauvegarde (import / export)</summary>
-            <p class="muted small">Exporte tout (profils, couleur auto, liste blanche, objectifs, changement d'arme, raccourcis, réglages) dans un fichier ou un code à coller. L'import accepte aussi un code AR2X- et la sauvegarde du site AR2 Armory.</p>
+            <p class="muted small">Exporte tout (profils, couleur auto, liste blanche, objectifs, minuteur, changement d'arme, raccourcis, réglages) dans un fichier ou un code à coller. L'import accepte aussi un code AR2X- et la sauvegarde du site AR2 Armory.</p>
             <div class="row gap wrap" id="bk-sections"></div>
             <div class="row gap wrap mt-s"><button id="bk-save" class="btn sm primary">Exporter dans un fichier</button><button id="bk-copy" class="btn sm">Copier le code</button></div>
-            <textarea id="bk-in" rows="4" class="w100 mt-s mono" placeholder="Colle ici un code AR2CFG-…, un JSON de sauvegarde ou un code AR2X-…"></textarea>
+            <textarea id="bk-in" rows="4" class="w100 mt-s mono" placeholder="Colle ici un code AR2CFG-…, un code AR2SAVE- du site, un JSON de sauvegarde ou un code AR2X-…"></textarea>
             <div class="row gap wrap mt-s"><button id="bk-open" class="btn sm">Ouvrir un fichier…</button>
                 <label class="tog small"><input type="radio" name="bk-mode" value="merge" checked> Ajouter à mes réglages</label>
                 <label class="tog small"><input type="radio" name="bk-mode" value="replace"> Tout remplacer</label>

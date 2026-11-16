@@ -22,5 +22,12 @@ contextBridge.exposeInMainWorld('xh', {
     onSamplerConfig: (cb) => ipcRenderer.on('sampler-config', (e, c) => cb(c)),
     onSamplerGeom: (cb) => ipcRenderer.on('sampler-geom', (e, g) => cb(g)),
     samplerSample: (a) => ipcRenderer.send('sampler-sample', a),
-    samplerError: (m) => ipcRenderer.send('sampler-error', m)
+    samplerError: (m) => ipcRenderer.send('sampler-error', m),
+    timerStart: (w) => ipcRenderer.invoke('timer-start', w),
+    timerStop: (id) => ipcRenderer.invoke('timer-stop', id),
+    timerAdd: (o) => ipcRenderer.invoke('timer-add', o),
+    onTimer: (cb) => ipcRenderer.on('timer', (e, t) => cb(t)),
+    onTimerAlarm: (cb) => ipcRenderer.on('timer-alarm', (e, a) => cb(a)),
+    timerBeeped: () => ipcRenderer.send('timer-beeped'),
+    aimOpen: () => ipcRenderer.invoke('aim-open')
 });

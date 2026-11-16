@@ -20,7 +20,8 @@ const DEFAULT_HOTKEYS = {
     nextProfile: 'Control+Alt+P',
     center: 'Control+Alt+C',
     up: 'Control+Alt+Up', down: 'Control+Alt+Down', left: 'Control+Alt+Left', right: 'Control+Alt+Right',
-    autoColor: 'Control+Alt+A', checklist: 'Control+Alt+O', checkNext: 'Control+Alt+N'
+    autoColor: 'Control+Alt+A', checklist: 'Control+Alt+O', checkNext: 'Control+Alt+N',
+    timer: 'Control+Alt+T', timer1: 'Control+Alt+F1', timer2: 'Control+Alt+F2', timer3: 'Control+Alt+F3', timerStop: 'Control+Alt+R'
 };
 
 let cfgPath, cfg, overlay = null, settingsWin = null, tray = null, visible = true;
@@ -42,6 +43,9 @@ const CHECK_PRESETS = {
 };
 const DEFAULT_CHECK = () => ({ title: 'Objectifs', overlay: false, corner: 'tr', scale: 1, opacity: 0.85, hideDone: false, items: CHECK_PRESETS.debut.items.map(t => ({ id: uid(), text: t, done: false })) });
 
+const DEFAULT_TIMER = () => ({ overlay: true, corner: 'tl', scale: 1, opacity: 0.9, sound: true, volume: 0.5, warn: 30, warnBeep: false, keepDone: 45,
+    presets: [{ id: 'caisses', name: 'Caisses militaires', min: 15 }, { id: 'helico', name: 'Hélico crashé', min: 10 }, { id: 'boost', name: 'Boost', min: 5 }], running: [] });
+
 function defaultConfig() {
     return {
         version: 1,
@@ -52,6 +56,7 @@ function defaultConfig() {
         autoColor: JSON.parse(JSON.stringify(ac.DEFAULTS)),
         whitelist: DEFAULT_WL(),
         checklist: DEFAULT_CHECK(),
+        timer: DEFAULT_TIMER(),
         display: 0,
         hotkeys: { ...DEFAULT_HOTKEYS },
         startHidden: false,
@@ -87,6 +92,19 @@ function normalizeExtras(c) {
     cfg.checklist = Object.assign(DEFAULT_CHECK(), c.checklist || {});
     if (!Array.isArray(cfg.checklist.items)) cfg.checklist.items = [];
     cfg.checklist.items = cfg.checklist.items.filter(i => i && i.text).map(i => ({ id: i.id || uid(), text: String(i.text).slice(0, 120), done: !!i.done }));
+    normalizeTimer(c.timer || cfg.timer);
+}
+function normalizeTimer(t) {
+    const d = DEFAULT_TIMER(), o = Object.assign(d, t || {});
+    o.scale = Math.max(0.6, Math.min(2, +o.scale || 1)); o.opacity = Math.max(0.2, Math.min(1, +o.opacity || 0.9));
+    o.volume = Math.max(0, Math.min(1, isFinite(+o.volume) ? +o.volume : 0.5)); o.warn = Math.max(0, Math.min(600, o.warn | 0)); o.keepDone = Math.max(5, Math.min(600, o.keepDone | 0 || 45));
+    if (!['tl', 'tr', 'bl', 'br'].includes(o.corner)) o.corner = 'tl';
+    if (!Array.isArray(o.presets) || !o.presets.length) o.presets = DEFAULT_TIMER().presets;
+    o.presets = o.presets.slice(0, 3).map((p, i) => ({ id: p.id || 'p' + i, name: String(p.name || 'Minuteur ' + (i + 1)).slice(0, 30), min: Math.max(0.1, Math.min(240, +p.min || 5)) }));
+    while (o.presets.length < 3) o.presets.push({ id: 'p' + o.presets.length + uid(), name: 'Minuteur ' + (o.presets.length + 1), min: 5 });
+    o.running = (Array.isArray(o.running) ? o.running : []).filter(r => r && r.end > Date.now() - o.keepDone * 1000).slice(0, 8)
+        .map(r => ({ id: r.id || uid(), preset: r.preset || null, name: String(r.name || 'Minuteur').slice(0, 30), dur: +r.dur || 60, end: +r.end, doneAt: r.doneAt || null, warned: !!r.warned }));
+    cfg.timer = o;
 }
 let saveTimer = null;
 function saveConfig() {
@@ -159,7 +177,7 @@ const shown = () => visible && !autoHidden.holster && !autoHidden.ads && !autoHi
 function applyVisibility() {
     if (!overlay) return;
     if (shown()) { placeOverlay(); overlay.showInactive(); } else overlay.hide();
-    acSync(); placeChecklist();
+    acSync(); placeChecklist(); placeTimer();
 }
 function setVisible(v) {
     visible = v;
@@ -213,15 +231,19 @@ function registerHotkeys() {
     reg(h.autoColor, () => toggleAutoColor());
     reg(h.checklist, () => { cfg.checklist.overlay = !cfg.checklist.overlay; saveConfig(); placeChecklist(); broadcast(); });
     reg(h.checkNext, () => checkNext());
+    reg(h.timer, () => { cfg.timer.overlay = !cfg.timer.overlay; saveConfig(); placeTimer(); broadcast(); refreshTray(); });
+    reg(h.timer1, () => timerStart(0)); reg(h.timer2, () => timerStart(1)); reg(h.timer3, () => timerStart(2));
+    reg(h.timerStop, () => timerStop('all'));
     reg(h.up, () => nudge(0, -1)); reg(h.down, () => nudge(0, 1)); reg(h.left, () => nudge(-1, 0)); reg(h.right, () => nudge(1, 0));
     return fails;
 }
 
 function broadcast() {
     if (settingsWin) settingsWin.webContents.send('state', state());
+    if (aimWin) aimWin.webContents.send('state', state());
 }
 function state() {
-    return { cfg, visible, shown: shown(), autoHidden, lastSlot, hook: { started: ws.state.started, error: ws.state.error }, update: updater.status, installed: updater.isInstalled(), displays: screen.getAllDisplays().map((d, i) => ({ i, label: `Écran ${i + 1} – ${d.size.width}×${d.size.height}${d.id === screen.getPrimaryDisplay().id ? ' (principal)' : ''}` })), version: app.getVersion(), autoColor: acState, fgTitle: wlTitle, presets: Object.fromEntries(Object.entries(CHECK_PRESETS).map(([k, v]) => [k, v.name])) };
+    return { cfg, visible, shown: shown(), autoHidden, lastSlot, hook: { started: ws.state.started, error: ws.state.error }, update: updater.status, installed: updater.isInstalled(), displays: screen.getAllDisplays().map((d, i) => ({ i, label: `Écran ${i + 1} – ${d.size.width}×${d.size.height}${d.id === screen.getPrimaryDisplay().id ? ' (principal)' : ''}` })), version: app.getVersion(), autoColor: acState, fgTitle: wlTitle, now: Date.now(), presets: Object.fromEntries(Object.entries(CHECK_PRESETS).map(([k, v]) => [k, v.name])) };
 }
 
 function trayIcon() {
@@ -241,6 +263,13 @@ function refreshTray() {
         { label: 'Couleur automatique', type: 'checkbox', checked: !!cfg.autoColor.enabled, accelerator: cfg.hotkeys.autoColor, click: m => toggleAutoColor(m.checked) },
         { label: 'Liste blanche des applis', type: 'checkbox', checked: !!cfg.whitelist.enabled, click: m => { cfg.whitelist.enabled = m.checked; wlSchedule(); saveConfig(); broadcast(); } },
         { label: 'Afficher les objectifs', type: 'checkbox', checked: !!cfg.checklist.overlay, accelerator: cfg.hotkeys.checklist, click: m => { cfg.checklist.overlay = m.checked; saveConfig(); placeChecklist(); broadcast(); } },
+        { label: 'Minuteur tactique', submenu: [
+            { label: 'Afficher le minuteur', type: 'checkbox', checked: !!cfg.timer.overlay, accelerator: cfg.hotkeys.timer, click: m => { cfg.timer.overlay = m.checked; saveConfig(); placeTimer(); broadcast(); } },
+            { type: 'separator' },
+            ...cfg.timer.presets.map((p, i) => ({ label: `Lancer : ${p.name} (${fmtMin(p.min)})`, accelerator: cfg.hotkeys['timer' + (i + 1)], click: () => timerStart(i) })),
+            { label: 'Arrêter les minuteurs', accelerator: cfg.hotkeys.timerStop, enabled: cfg.timer.running.length > 0, click: () => timerStop('all') }
+        ] },
+        { label: 'Entraînement de visée…', click: () => openAim() },
         { label: 'Recentrer', click: () => { const s = current(); s.offsetX = 0; s.offsetY = 0; placeOverlay(); saveConfig(); broadcast(); } },
         { type: 'separator' },
         { label: 'Quitter AR2 Crosshair', click: () => app.quit() }
@@ -448,6 +477,7 @@ function placeChecklist() {
     checkWin.webContents.send('checklist', c);
     if (!checkWin.isVisible()) checkWin.showInactive();
     checkWin.setAlwaysOnTop(true, 'screen-saver');
+    if (typeof placeTimer === 'function' && timerWin) placeTimer();
 }
 function checkNext() {
     const it = cfg.checklist.items.find(i => !i.done);
@@ -455,8 +485,96 @@ function checkNext() {
     saveConfig(); placeChecklist(); broadcast();
 }
 
+// ---------- Minuteur tactique (petit compte à rebours dans un coin) ----------
+let timerWin = null, timerTick = null, timerReady = false, timerBeeps = 0;
+const fmtMin = m => m >= 1 ? (Number.isInteger(m) ? m : m.toFixed(1).replace('.', ',')) + ' min' : Math.round(m * 60) + ' s';
+function timerShown() { return !!(cfg.timer && cfg.timer.overlay && visible && !autoHidden.wl); }
+function createTimerWin() {
+    if (timerWin) return;
+    timerReady = false;
+    timerWin = new BrowserWindow({
+        width: 240, height: 60, frame: false, transparent: true, resizable: false, movable: false,
+        alwaysOnTop: true, skipTaskbar: true, focusable: false, hasShadow: false, show: false, backgroundColor: '#00000000',
+        webPreferences: { preload: path.join(__dirname, 'preload.js'), contextIsolation: true, nodeIntegration: false, backgroundThrottling: false, autoplayPolicy: 'no-user-gesture-required' }
+    });
+    timerWin.setIgnoreMouseEvents(true, { forward: false });
+    timerWin.setAlwaysOnTop(true, 'screen-saver');
+    timerWin.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
+    timerWin.loadFile(path.join(__dirname, 'timer.html'));
+    timerWin.webContents.on('did-finish-load', () => { timerReady = true; placeTimer(); });
+    timerWin.on('closed', () => { timerWin = null; timerReady = false; });
+}
+function keyLabel(acc) { return acc ? acc.replace('Control', 'Ctrl').replace(/\+/g, '+') : ''; }
+function placeTimer() {
+    if (!cfg) return;
+    const t = cfg.timer, need = timerShown() || t.running.length > 0;
+    if (!need) { if (timerWin) timerWin.hide(); return; }
+    if (!timerWin) return createTimerWin();
+    if (!timerReady) return;
+    const k = t.scale, rows = Math.max(1, t.running.length);
+    const w = Math.round(250 * k), h = Math.round((t.running.length ? 14 + rows * 40 : 46) * k);
+    const wa = targetDisplay().workArea, m = 16;
+    let x = /l$/.test(t.corner) ? wa.x + m : wa.x + wa.width - w - m;
+    let y = /^b/.test(t.corner) ? wa.y + wa.height - h - m : wa.y + m;
+    // même coin que les objectifs : on se place juste à côté
+    if (checkWin && checkWin.isVisible() && cfg.checklist.corner === t.corner) { const cb = checkWin.getBounds(); y = /^b/.test(t.corner) ? cb.y - h - 8 : cb.y + cb.height + 8; }
+    timerWin.setBounds({ x, y, width: w, height: h });
+    timerWin.webContents.send('timer', { cfg: Object.assign({}, t, { running: undefined }), running: t.running, now: Date.now(), keys: [1, 2, 3].map(i => keyLabel(cfg.hotkeys['timer' + i])), toggleKey: keyLabel(cfg.hotkeys.timer) });
+    if (timerShown()) { if (!timerWin.isVisible()) timerWin.showInactive(); timerWin.setAlwaysOnTop(true, 'screen-saver'); }
+    else timerWin.hide();
+}
+function timerLoop() {
+    const t = cfg.timer, now = Date.now();
+    let changed = false;
+    t.running.forEach(r => {
+        if (!r.doneAt && now >= r.end) { r.doneAt = now; changed = true; if (timerWin && timerReady) timerWin.webContents.send('timer-alarm', { kind: 'done', sound: t.sound, volume: t.volume, name: r.name }); }
+        if (!r.doneAt && !r.warned && t.warn && t.warnBeep && r.end - now <= t.warn * 1000 && r.dur > t.warn * 2) { r.warned = true; if (timerWin && timerReady) timerWin.webContents.send('timer-alarm', { kind: 'warn', sound: t.sound, volume: t.volume * 0.6, name: r.name }); }
+    });
+    const before = t.running.length;
+    t.running = t.running.filter(r => !r.doneAt || now - r.doneAt < t.keepDone * 1000);
+    if (t.running.length !== before) changed = true;
+    if (changed) { saveConfig(); placeTimer(); broadcast(); refreshTray(); }
+    if (!t.running.length) { clearInterval(timerTick); timerTick = null; }
+}
+function timerSchedule() { if (cfg.timer.running.length && !timerTick) timerTick = setInterval(timerLoop, 250); }
+function timerStart(which) {
+    const t = cfg.timer, now = Date.now();
+    let p = typeof which === 'number' ? t.presets[which] : (which && which.preset ? t.presets.find(x => x.id === which.preset) : null);
+    if (!p && which && typeof which === 'object') p = { id: null, name: String(which.name || 'Minuteur').slice(0, 30), min: Math.max(1 / 60, Math.min(240, (+which.sec ? +which.sec / 60 : +which.min) || 5)) };
+    if (!p) return state();
+    const dur = Math.round(p.min * 60 * 10) / 10;
+    const ex = p.id ? t.running.find(r => r.preset === p.id) : null;
+    if (ex) { ex.end = now + dur * 1000; ex.dur = dur; ex.doneAt = null; ex.warned = false; ex.name = p.name; }   // relancer le même minuteur
+    else { t.running.push({ id: uid(), preset: p.id, name: p.name, dur, end: now + dur * 1000, doneAt: null }); if (t.running.length > 8) t.running.shift(); }
+    t.running.sort((a, b) => a.end - b.end);
+    saveConfig(); timerSchedule(); placeTimer(); broadcast(); refreshTray();
+    return state();
+}
+function timerStop(id) {
+    const t = cfg.timer;
+    t.running = id === 'all' ? [] : t.running.filter(r => r.id !== id);
+    saveConfig(); timerLoop(); placeTimer(); broadcast(); refreshTray();
+    return state();
+}
+ipcMain.handle('timer-start', (e, w) => timerStart(w));
+ipcMain.handle('timer-stop', (e, id) => timerStop(id));
+ipcMain.handle('timer-add', (e, { id, sec }) => { const r = cfg.timer.running.find(x => x.id === id); if (r) { r.end = Math.max(Date.now() + 1000, r.end + (sec | 0) * 1000); r.doneAt = null; r.warned = false; r.dur = Math.max(r.dur, (r.end - Date.now()) / 1000); saveConfig(); timerSchedule(); placeTimer(); broadcast(); } return state(); });
+ipcMain.on('timer-beeped', () => { timerBeeps++; });
+
+// ---------- Entraînement de visée ----------
+let aimWin = null;
+function openAim() {
+    if (aimWin) { aimWin.show(); aimWin.focus(); return; }
+    aimWin = new BrowserWindow({ width: 1180, height: 840, minWidth: 720, minHeight: 560, title: 'AR2 Crosshair – Entraînement de visée', backgroundColor: '#0f1115', autoHideMenuBar: true, icon: path.join(__dirname, 'assets', 'icon.png'),
+        webPreferences: { preload: path.join(__dirname, 'preload.js'), contextIsolation: true, nodeIntegration: false } });
+    aimWin.setMenuBarVisibility(false);
+    aimWin.loadFile(path.join(__dirname, 'aim.html'));
+    aimWin.on('closed', () => { aimWin = null; });
+}
+ipcMain.handle('aim-open', () => { openAim(); return true; });
+
 // ---------- Sauvegarde : import / export de TOUT ----------
-const BACKUP_SECTIONS = ['profiles', 'autoSwitch', 'autoColor', 'whitelist', 'checklist', 'hotkeys', 'general'];
+const BACKUP_SECTIONS = ['profiles', 'autoSwitch', 'autoColor', 'whitelist', 'checklist', 'timer', 'hotkeys', 'general'];
 function buildBackup(sections) {
     const sec = (sections && sections.length ? sections : BACKUP_SECTIONS);
     const d = {};
@@ -465,21 +583,24 @@ function buildBackup(sections) {
     if (sec.includes('autoColor')) d.autoColor = cfg.autoColor;
     if (sec.includes('whitelist')) d.whitelist = cfg.whitelist;
     if (sec.includes('checklist')) d.checklist = cfg.checklist;
+    if (sec.includes('timer')) d.timer = Object.assign({}, cfg.timer, { running: [] });
     if (sec.includes('hotkeys')) d.hotkeys = cfg.hotkeys;
     if (sec.includes('general')) d.general = { display: cfg.display, startHidden: cfg.startHidden, launchAtStartup: cfg.launchAtStartup, moveStep: cfg.moveStep, autoUpdate: cfg.autoUpdate };
     return { app: 'ar2-crosshair', format: 1, version: app.getVersion(), exported: new Date().toISOString(), sections: Object.keys(d).filter(k => k !== 'active'), data: JSON.parse(JSON.stringify(d)) };
 }
 function parseBackup(text) {
     let t = String(text || '').trim();
-    if (/^AR2CFG-/.test(t)) t = Buffer.from(t.slice(7), 'base64').toString('utf8');
+    if (/^AR2(CFG|SAVE)-/.test(t)) t = Buffer.from(t.replace(/^AR2(CFG|SAVE)-/, '').replace(/-/g, '+').replace(/_/g, '/'), 'base64').toString('utf8');
     if (/^AR2X-/.test(t)) return { app: 'ar2-crosshair', format: 1, data: { profiles: [{ name: 'Profil importé', settings: core.fromCode(t) }] } };
     const o = JSON.parse(t);
     if (o && o.app === 'ar2-armory') {
-        // sauvegarde du site AR2 Armory : on récupère le crosshair du site
-        const raw = o.data && o.data.ar2_crosshair_web;
-        const s = typeof raw === 'string' ? JSON.parse(raw) : raw;
-        if (!s) throw new Error('aucun crosshair dans cette sauvegarde du site');
-        return { app: 'ar2-crosshair', format: 1, data: { profiles: [{ name: 'Crosshair du site', settings: s }] } };
+        // sauvegarde du site AR2 Armory : on récupère le crosshair et les objectifs du site
+        const get = k => { const raw = o.data && o.data[k]; try { return typeof raw === 'string' ? JSON.parse(raw) : raw; } catch (e) { return null; } };
+        const s = get('ar2_crosshair_web'), c = get('ar2_checklist_v1'), d = {};
+        if (s) d.profiles = [{ name: 'Crosshair du site', settings: s }];
+        if (c && Array.isArray(c.items)) d.checklist = { title: c.title || 'Objectifs', items: c.items };
+        if (!Object.keys(d).length) throw new Error('ni crosshair ni objectifs dans cette sauvegarde du site');
+        return { app: 'ar2-crosshair', format: 1, data: d };
     }
     if (!o || o.app !== 'ar2-crosshair' || !o.data) throw new Error("ce fichier n'est pas une sauvegarde AR2 Crosshair");
     return o;
@@ -512,6 +633,7 @@ function applyBackup(o, mode, sections) {
         else { const c = JSON.parse(JSON.stringify(cfg.checklist)); (d.checklist.items || []).forEach(x => { if (x && x.text && !c.items.some(y => y.text === x.text)) c.items.push({ id: uid(), text: x.text, done: !!x.done }); }); extras.checklist = c; }
         done.push('objectifs');
     }
+    if (sec.includes('timer') && d.timer) { normalizeTimer(Object.assign({}, replace ? {} : cfg.timer, d.timer, { running: cfg.timer.running })); placeTimer(); done.push('minuteur'); }
     if (Object.keys(extras).length) normalizeExtras(Object.assign({ autoColor: cfg.autoColor, whitelist: cfg.whitelist, checklist: cfg.checklist }, extras));
     if (sec.includes('hotkeys') && d.hotkeys) { cfg.hotkeys = Object.assign({ ...DEFAULT_HOTKEYS }, replace ? {} : cfg.hotkeys, d.hotkeys); done.push('raccourcis'); }
     if (sec.includes('general') && d.general) {
@@ -557,7 +679,8 @@ ipcMain.handle('set-extras', (e, p) => {
         acSync(); placeOverlay();
     }
     if (p.whitelist) { normalizeExtras({ autoColor: cfg.autoColor, whitelist: Object.assign({}, cfg.whitelist, p.whitelist), checklist: cfg.checklist }); wlSchedule(); }
-    if (p.checklist) { normalizeExtras({ autoColor: cfg.autoColor, whitelist: cfg.whitelist, checklist: Object.assign({}, cfg.checklist, p.checklist) }); placeChecklist(); }
+    if (p.checklist) { normalizeExtras({ autoColor: cfg.autoColor, whitelist: cfg.whitelist, checklist: Object.assign({}, cfg.checklist, p.checklist) }); placeChecklist(); placeTimer(); }
+    if (p.timer) { normalizeTimer(Object.assign({}, cfg.timer, p.timer, { running: cfg.timer.running })); placeTimer(); }
     saveConfig(); refreshTray();
     return state();
 });
@@ -587,7 +710,7 @@ else {
         registerHotkeys();
         updater.init({ onChange: () => { refreshTray(); broadcast(); } });
         if (ws.loadForeground) ws.loadForeground();
-        wlSchedule(); acSync(); placeChecklist();
+        wlSchedule(); acSync(); placeChecklist(); timerSchedule(); placeTimer();
         ws.start({ config: () => SELFTEST ? Object.assign({}, cfg.autoSwitch, { onlyRoblox: false }) : cfg.autoSwitch, slot: onSlot, holster: onHolster, ads: onAds });
         if (SELFTEST) return runSelftest();
         updater.schedule(cfg.autoUpdate);
@@ -597,7 +720,7 @@ else {
         screen.on('display-removed', () => { cfg.display = 0; placeOverlay(); });
     });
     app.on('window-all-closed', e => { /* reste dans la barre des tâches (zone de notification) */ });
-    app.on('will-quit', () => { globalShortcut.unregisterAll(); ws.stop(); stopThumb(); clearInterval(wlTimer); });
+    app.on('will-quit', () => { globalShortcut.unregisterAll(); ws.stop(); stopThumb(); clearInterval(wlTimer); clearInterval(timerTick); });
 }
 
 // ---------- Auto-test (utilisé par GitHub Actions) ----------
@@ -640,6 +763,23 @@ async function runSelftest() {
         cfg.checklist.overlay = true; placeChecklist(); await wait(1500);
         out.checklist = { created: !!checkWin, visible: checkWin ? checkWin.isVisible() : false, items: cfg.checklist.items.length };
         checkNext(); out.checklist.doneAfterNext = cfg.checklist.items.filter(i => i.done).length;
+        write();
+        // minuteur tactique : un compte à rebours de 1,5 s doit se terminer et biper
+        try {
+            cfg.timer.overlay = true; cfg.timer.sound = true; cfg.timer.volume = 0.05;
+            timerStart({ name: 'Test', sec: 1.5 }); timerStart(0);
+            await wait(1200);
+            out.timer = { created: !!timerWin, visible: timerWin ? timerWin.isVisible() : false, running: cfg.timer.running.length, bounds: timerWin ? timerWin.getBounds() : null };
+            await wait(1500);
+            const tr = cfg.timer.running.find(r => r.name === 'Test');
+            out.timer.done = !!(tr && tr.doneAt); out.timer.beeps = timerBeeps;
+            timerStop('all'); out.timer.afterStop = cfg.timer.running.length;
+            out.timerOk = out.timer.created && out.timer.running === 2 && out.timer.done && out.timer.afterStop === 0;
+            // fenêtre d'entraînement de visée
+            openAim(); await wait(2500);
+            out.aim = { created: !!aimWin, ok: aimWin ? await aimWin.webContents.executeJavaScript('!!(window.AR2Aim && document.querySelector(".aim canvas") && window.__aimReady)') : false };
+            if (aimWin) aimWin.close();
+        } catch (e) { out.timerError = String(e && e.message || e); }
         write();
         // mises à jour
         await updater.check();

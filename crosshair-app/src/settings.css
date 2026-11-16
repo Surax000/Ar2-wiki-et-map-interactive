@@ -89,3 +89,9 @@ textarea:focus { border-color: #00ff88; }
 .ib { background: #0f1115; border: 1px solid #2a3140; color: #8b949e; border-radius: 6px; height: 24px; cursor: pointer; font-size: 12px; padding: 0; }
 .ib:hover { color: #ff4757; border-color: #ff4757; }
 .ib.mv:hover { color: #00ff88; border-color: #00ff88; }
+.tmrow { display: grid; grid-template-columns: 62px 1fr 64px 60px; gap: 6px; align-items: center; margin-bottom: 5px; }
+.tmrow input { min-width: 0; width: 100%; }
+.tmrow .k { font: 700 10px ui-monospace, Consolas, monospace; color: #00ff88; white-space: nowrap; }
+.tmrun { display: grid; grid-template-columns: 1fr auto auto auto; gap: 6px; align-items: center; padding: 5px 8px; border: 1px solid #2a313b; border-radius: 8px; margin-bottom: 5px; }
+.tmrun b { font: 800 16px ui-monospace, Consolas, monospace; }
+.tmrun.w b { color: #fb923c; } .tmrun.d b { color: #ff4757; }
