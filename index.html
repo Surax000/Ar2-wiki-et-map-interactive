@@ -125,6 +125,7 @@
         .radar-poly {
             filter: drop-shadow(0 0 6px currentColor);
         }
+        .stat-active{border-color:#e5c07b !important;background:rgba(229,192,123,.12) !important}
     </style>
 </head>
 <body class="min-h-screen flex flex-col pb-28">
@@ -139,33 +140,33 @@
                     </svg>
                 </div>
                 <div>
-                    <h1 class="text-xl font-extrabold tracking-wider text-white uppercase flex items-center gap-2">
-                        AR2 <span class="text-tactical-accent font-mono text-sm tracking-normal px-2 py-0.5 rounded bg-tactical-accent/10 border border-tactical-accent/30">ARMORY v47</span>
+                    <h1 class="text-xl font-extrabold tracking-wider text-white uppercase flex items-center gap-2 whitespace-nowrap">
+                        AR2 <span class="hidden sm:inline text-tactical-accent font-mono text-sm tracking-normal px-2 py-0.5 rounded bg-tactical-accent/10 border border-tactical-accent/30">ARMORY v47</span>
                     </h1>
-                    <p class="text-xs text-tactical-muted">Apocalypse Rising 2 - Base de Données Tactique & Comparateur</p>
+                    <p class="text-xs text-tactical-muted hidden sm:block">Apocalypse Rising 2 - Base de Données Tactique & Comparateur</p>
                 </div>
             </div>
 
             <!-- Stats rapides + Aide -->
-            <div class="flex items-center space-x-6">
-                <div class="hidden md:flex items-center space-x-6 text-xs font-mono">
-                    <div class="flex items-center gap-2">
+            <div class="flex items-center gap-2 sm:gap-6">
+                <div class="flex items-center gap-2 text-xs font-mono">
+                    <button id="stat-total-btn" type="button" title="Afficher tout le catalogue (réinitialise les filtres)" class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg border border-transparent hover:border-tactical-accent/60 hover:bg-tactical-accent/5 transition-all">
                         <span class="w-2 h-2 rounded-full bg-tactical-accent animate-pulse"></span>
-                        <span class="text-tactical-muted">Total Objets:</span>
-                        <span class="text-white font-bold" id="total-weapons-count">0</span>
-                    </div>
+                        <span class="text-tactical-muted hidden sm:inline">Total Objets:</span>
+                        <span class="text-white font-bold" id="total-weapons-count">…</span>
+                    </button>
                     <div class="border-l border-tactical-border h-4"></div>
-                    <div class="flex items-center gap-2">
-                        <span class="text-tactical-muted">S-Tier:</span>
-                        <span class="text-tactical-gold font-bold" id="stier-count">0</span>
-                    </div>
+                    <button id="stat-stier-btn" type="button" title="Filtrer les meilleures armes du jeu (Tier S)" class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg border border-transparent hover:border-tactical-gold/60 hover:bg-tactical-gold/5 transition-all">
+                        <span class="text-tactical-muted whitespace-nowrap">S-Tier:</span>
+                        <span class="text-tactical-gold font-bold" id="stier-count">…</span>
+                    </button>
                 </div>
                 <!-- Bouton Aide à la compréhension -->
                 <button id="help-btn" class="flex items-center gap-2 px-3.5 py-2 text-xs font-bold uppercase tracking-wider text-tactical-muted border border-tactical-border rounded-xl hover:text-tactical-accent hover:border-tactical-accent/60 transition-all">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
-                    Aide
+                    <span class="hidden sm:inline">Aide</span>
                 </button>
             </div>
         </div>
@@ -214,6 +215,7 @@
                 <span>Catalogue</span>
                 <span class="text-xs font-mono font-normal text-tactical-muted bg-tactical-card px-2.5 py-1 rounded-full border border-tactical-border" id="results-count">0 objet(s) affiché(s)</span>
             </h2>
+            <button id="tier-filter-chip" type="button" class="hidden text-xs font-mono font-bold px-2.5 py-1 rounded-lg border border-tactical-gold/60 text-tactical-gold bg-tactical-gold/10 hover:bg-tactical-gold/20"></button>
             <button id="clear-filters-btn" class="text-xs text-tactical-accent hover:underline hidden">Réinitialiser les filtres</button>
         </div>
 
@@ -521,6 +523,99 @@
                 </aside>
             </div>
         </section>
+        <!-- ============ BUILD / SAC À DOS ============ -->
+        <section id="build-section" class="hidden pb-10">
+            <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-4 mb-4">
+                <div>
+                    <h2 class="text-2xl font-extrabold text-white tracking-tight">Build / Sac à dos</h2>
+                    <p class="text-xs text-tactical-muted mt-1 max-w-3xl">Choisis ton sac et tes armes, puis remplis les cases avec tes chargeurs, soins et nourriture. Glisse un objet pour le déplacer, clique dessus pour le pivoter ou le retirer. Le bouton « Partager mon Build » crée un lien à envoyer à tes potes sur Discord.</p>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    <button type="button" id="bd-share" class="xh-dl primary">Partager mon Build</button>
+                    <button type="button" id="bd-save" class="xh-btn">Enregistrer</button>
+                    <button type="button" id="bd-auto" class="xh-btn">Ranger auto</button>
+                    <button type="button" id="bd-clear" class="xh-btn">Vider le sac</button>
+                </div>
+            </div>
+            <div id="bd-share-box" class="hidden mb-4 bg-tactical-card border border-tactical-accent/50 rounded-xl p-3 flex flex-col sm:flex-row gap-2 sm:items-center">
+                <span class="text-[11px] font-bold uppercase tracking-wider text-tactical-accent shrink-0">Lien du build</span>
+                <input id="bd-share-url" readonly class="flex-1 min-w-0 bg-tactical-bg border border-tactical-border rounded-lg px-3 py-2 text-xs font-mono text-white">
+                <button type="button" id="bd-copy" class="xh-btn shrink-0">Copier</button>
+            </div>
+            <div class="grid grid-cols-1 xl:grid-cols-[320px_1fr_300px] gap-5">
+                <div class="bg-tactical-card border border-tactical-border rounded-2xl p-4 space-y-3 self-start">
+                    <label class="cr-field"><span>Nom du build</span><input id="bd-name" maxlength="40" placeholder="ex : Run militaire Faris"></label>
+                    <label class="cr-field"><span>Sac à dos</span><select id="bd-bag"></select></label>
+                    <div class="grid grid-cols-2 gap-2">
+                        <label class="cr-field"><span>Arme principale</span><select id="bd-primary"></select></label>
+                        <label class="cr-field"><span>Arme secondaire</span><select id="bd-secondary"></select></label>
+                    </div>
+                    <div class="border-t border-tactical-border/60 pt-3">
+                        <div class="text-[10px] font-bold uppercase tracking-widest text-tactical-muted mb-2">Ajouter dans le sac</div>
+                        <div id="bd-pal-tabs" class="flex flex-wrap gap-1.5 mb-2"></div>
+                        <input id="bd-pal-q" placeholder="Rechercher..." class="w-full bg-tactical-bg border border-tactical-border rounded-lg px-3 py-1.5 text-xs text-white mb-2 focus:outline-none focus:border-tactical-accent">
+                        <div id="bd-palette" class="space-y-1 max-h-[360px] overflow-y-auto pr-1"></div>
+                    </div>
+                </div>
+                <div class="bg-tactical-card border border-tactical-border rounded-2xl p-4 min-w-0">
+                    <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+                        <div id="bd-bag-title" class="text-sm font-extrabold text-white"></div>
+                        <div id="bd-sel-tools" class="flex gap-1.5"></div>
+                    </div>
+                    <div class="overflow-x-auto"><div id="bd-grid" class="relative mx-auto select-none touch-none"></div></div>
+                    <div id="bd-msg" class="text-xs h-4 mt-2"></div>
+                    <p class="text-[10px] text-tactical-muted mt-2">Tailles des objets en cases et poids : estimations proches du jeu (AR2 n'affiche pas de poids, l'encombrement réel = les cases occupées).</p>
+                </div>
+                <div class="space-y-4 self-start">
+                    <div class="bg-tactical-card border border-tactical-border rounded-2xl p-4" id="bd-stats"></div>
+                    <div class="bg-tactical-card border border-tactical-border rounded-2xl p-4">
+                        <div class="text-[10px] font-bold uppercase tracking-widest text-tactical-muted mb-2">Mes builds enregistrés</div>
+                        <div id="bd-saved" class="space-y-1.5"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============ LOOT RUN ============ -->
+        <section id="lootrun-section" class="hidden pb-10">
+            <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-4 mb-4">
+                <div>
+                    <h2 class="text-2xl font-extrabold text-white tracking-tight">Planificateur de Loot Run</h2>
+                    <p class="text-xs text-tactical-muted mt-1 max-w-3xl">Clique sur 2 à 8 points de l'archipel pour tracer ton itinéraire (le clic s'aimante au lieu le plus proche). Le site calcule la distance, le temps de marche / sprint et les meilleurs loots probables sur le trajet.</p>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    <select id="lr-preset" class="bg-tactical-card border border-tactical-border rounded-lg px-2 py-1.5 text-xs text-white"></select>
+                    <button type="button" id="lr-undo" class="xh-btn">Annuler le dernier point</button>
+                    <button type="button" id="lr-clear" class="xh-btn">Effacer</button>
+                    <button type="button" id="lr-save" class="xh-btn">Enregistrer</button>
+                    <button type="button" id="lr-share" class="xh-dl primary">Partager l'itinéraire</button>
+                </div>
+            </div>
+            <div id="lr-share-box" class="hidden mb-4 bg-tactical-card border border-tactical-accent/50 rounded-xl p-3 flex flex-col sm:flex-row gap-2 sm:items-center">
+                <span class="text-[11px] font-bold uppercase tracking-wider text-tactical-accent shrink-0">Lien de l'itinéraire</span>
+                <input id="lr-share-url" readonly class="flex-1 min-w-0 bg-tactical-bg border border-tactical-border rounded-lg px-3 py-2 text-xs font-mono text-white">
+                <button type="button" id="lr-copy" class="xh-btn shrink-0">Copier</button>
+            </div>
+            <div class="grid grid-cols-1 xl:grid-cols-[1fr_380px] gap-5">
+                <div class="bg-tactical-card border border-tactical-border rounded-2xl p-2 min-w-0">
+                    <div id="lr-map" class="w-full aspect-[1045/947] rounded-xl overflow-hidden cursor-crosshair"></div>
+                </div>
+                <div class="space-y-4">
+                    <div class="bg-tactical-card border border-tactical-border rounded-2xl p-4">
+                        <div class="grid grid-cols-2 gap-2 mb-3">
+                            <label class="cr-field"><span>Marche (studs/s)</span><input id="lr-walk" type="number" min="4" max="40" step="1" value="16"></label>
+                            <label class="cr-field"><span>Sprint (studs/s)</span><input id="lr-sprint" type="number" min="4" max="60" step="1" value="24"></label>
+                        </div>
+                        <div id="lr-summary"></div>
+                    </div>
+                    <div class="bg-tactical-card border border-tactical-border rounded-2xl p-4" id="lr-loot"></div>
+                    <div class="bg-tactical-card border border-tactical-border rounded-2xl p-4">
+                        <div class="text-[10px] font-bold uppercase tracking-widest text-tactical-muted mb-2">Mes itinéraires enregistrés</div>
+                        <div id="lr-saved" class="space-y-1.5"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
     </main>
 
     <!-- Sticky Comparison Floating Bar -->
@@ -580,6 +675,13 @@
                     </svg>
                     Afficher le graphique
                 </button>
+                <button id="view-ttk-btn" class="px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider border transition-all bg-tactical-card text-tactical-muted border-tactical-border flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="13" r="8" stroke-width="2"/><path stroke-linecap="round" stroke-width="2" d="M12 9v4l2.5 2.5M10 2h4"/></svg>
+                    TTK &amp; portée
+                </button>
+                <label id="cmp-diff-wrap" class="ml-auto flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-white cursor-pointer bg-tactical-card border border-tactical-border rounded-xl px-3 py-2">
+                    <input type="checkbox" id="cmp-diff-toggle" style="accent-color:#00ff88"> Afficher les écarts (+/-)
+                </label>
             </div>
 
             <!-- Modal Body -->
@@ -968,7 +1070,9 @@
               subs: ['Petits sacs (≤ 32)', 'Sacs moyens (40-48)', 'Grands sacs (56)'] },
             { id: 'nourriture',  label: 'Nourriture & Survie',    icon: 'warn', color: '#fb923c',
               subs: ['Nourriture', 'Boissons', 'Items de Soin', 'Survie'] },
+            { id: 'build',       label: 'Build / Sac à dos',      icon: 'bag',  color: '#fbbf24', subs: [] },
             { id: 'carte',       label: 'Carte',                  icon: 'map',  color: '#a78bfa', subs: [] },
+            { id: 'lootrun',     label: 'Loot Run',               icon: 'route', color: '#f97316', subs: [] },
             { id: 'finditem',    label: 'Find Item',              icon: 'search', color: '#38bdf8', subs: [] },
             { id: 'createur',    label: 'Créer une arme / explosif', icon: 'plus', color: '#e5c07b', subs: [] },
             { id: 'lieux',       label: 'Ajouter un lieu',        icon: 'pin', color: '#f472b6', subs: [] },
@@ -1355,6 +1459,8 @@
                 case 'crosshair': return `<svg ${st}><circle cx="12" cy="12" r="7"/><path d="M12 2v5M12 17v5M2 12h5M17 12h5"/></svg>`;
                 case 'pin': return `<svg ${st}><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>`;
                 case 'plus': return `<svg ${st}><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M12 8v8M8 12h8"/></svg>`;
+                case 'bag':  return `<svg ${st}><path d="M8 7V5a4 4 0 0 1 8 0v2"/><rect x="4" y="7" width="16" height="14" rx="3"/><path d="M9 14h6"/></svg>`;
+                case 'route': return `<svg ${st}><circle cx="6" cy="19" r="2"/><circle cx="18" cy="5" r="2"/><path d="M8 19h7a3.5 3.5 0 0 0 0-7H9a3.5 3.5 0 0 1 0-7h7"/></svg>`;
                 case 'box':  return `<svg ${st}><path d="M21 8l-9-5-9 5v8l9 5 9-5V8z"/><path d="M3 8l9 5 9-5M12 13v8"/></svg>`;
                 default:     return `<svg ${st}><path d="M10.3 3.9L1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg>`;
             }
@@ -1364,7 +1470,7 @@
         function renderMainTabs() {
             document.getElementById('main-tabs').innerHTML = GROUPS.map(g => {
                 const active = g.id === currentGroup;
-                const count = g.id === 'carte' ? (typeof MAP_COUNT !== 'undefined' ? MAP_COUNT : 0) + MAP_DATA.locations.filter(l => l.custom).length : g.id === 'lieux' ? MAP_DATA.locations.filter(l => l.custom).length : g.id === 'createur' ? ALL_ITEMS.filter(i => i.custom).length : g.id === 'finditem' ? ALL_ITEMS.length : g.id === 'crosshair' ? (window.AR2Crosshair ? Object.keys(window.AR2Crosshair.STYLES).length : 11) : ALL_ITEMS.filter(i => i.group === g.id).length;
+                const count = g.id === 'build' ? BACKPACKS_DATA.length : g.id === 'lootrun' ? (typeof LOOT_ROUTES !== 'undefined' ? LOOT_ROUTES.length : 0) : g.id === 'carte' ? (typeof MAP_COUNT !== 'undefined' ? MAP_COUNT : 0) + MAP_DATA.locations.filter(l => l.custom).length : g.id === 'lieux' ? MAP_DATA.locations.filter(l => l.custom).length : g.id === 'createur' ? ALL_ITEMS.filter(i => i.custom).length : g.id === 'finditem' ? ALL_ITEMS.length : g.id === 'crosshair' ? (window.AR2Crosshair ? Object.keys(window.AR2Crosshair.STYLES).length : 11) : ALL_ITEMS.filter(i => i.group === g.id).length;
                 return `
                     <button data-group="${g.id}" class="flex items-center gap-2.5 px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider border transition-all ${
                         active ? 'bg-tactical-accent text-tactical-bg border-tactical-accent shadow-lg shadow-tactical-accent/10'
@@ -1417,9 +1523,20 @@
         }
 
         // Update Top Header Stats
+        let tierFilter = null; // filtre rapide (clic sur le compteur S-Tier)
         function updateStatsCounts() {
             document.getElementById('total-weapons-count').textContent = ALL_ITEMS.length;
-            document.getElementById('stier-count').textContent = WEAPONS_DATA.filter(w => w.tier === 'S').length;
+            document.getElementById('stier-count').textContent = ALL_ITEMS.filter(w => w.type === 'weapon' && w.tier === 'S').length;
+            const sb = document.getElementById('stat-stier-btn');
+            if (sb) sb.classList.toggle('stat-active', tierFilter === 'S');
+        }
+        function quickFilter(tier) {
+            currentGroup = 'armes'; currentCategory = 'Tous'; searchQuery = '';
+            const si = document.getElementById('search-input'); if (si) si.value = '';
+            tierFilter = tier;
+            renderMainTabs(); updateSortOptions(); renderCategoryButtons(); renderGrid(); updateStatsCounts();
+            if (typeof onGroupChange === 'function') onGroupChange();
+            const g = document.getElementById('weapons-grid'); if (g) g.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
 
         // ============================================================
@@ -1429,6 +1546,7 @@
             const q = searchQuery.toLowerCase();
             return ALL_ITEMS.filter(item => {
                 if (item.group !== currentGroup) return false;
+                if (tierFilter && item.tier !== tierFilter) return false;
                 const matchesCategory = currentCategory === 'Tous' || item.sub === currentCategory;
                 const hay = [item.name, item.caliber, item.slot, item.kind, item.sub, item.effect, item.loot, item.rarity, item.tier ? 'tier ' + item.tier : ''].filter(Boolean).join(' ').toLowerCase();
                 return matchesCategory && hay.includes(q);
@@ -1455,8 +1573,10 @@
 
             document.getElementById('results-count').textContent = `${filtered.length} objet(s) affiché(s)`;
 
-            const isFiltered = currentCategory !== 'Tous' || searchQuery !== '';
+            const isFiltered = currentCategory !== 'Tous' || searchQuery !== '' || !!tierFilter;
             document.getElementById('clear-filters-btn').classList.toggle('hidden', !isFiltered);
+            const chip = document.getElementById('tier-filter-chip');
+            if (chip) { chip.classList.toggle('hidden', !tierFilter); chip.innerHTML = tierFilter ? `Filtre rapide : Tier ${tierFilter} <span class="opacity-70">✕</span>` : ''; }
 
             if (filtered.length === 0) {
                 grid.innerHTML = '';
@@ -1660,6 +1780,7 @@
                 if (!btn) return;
                 currentGroup = btn.getAttribute('data-group');
                 currentCategory = 'Tous';
+                if (currentGroup !== 'armes') { tierFilter = null; updateStatsCounts(); }
                 renderMainTabs();
                 updateSortOptions();
                 renderCategoryButtons();
@@ -1690,7 +1811,11 @@
             });
 
             // Clear Filters
+            document.getElementById('stat-total-btn').addEventListener('click', () => quickFilter(null));
+            document.getElementById('stat-stier-btn').addEventListener('click', () => quickFilter(tierFilter === 'S' ? null : 'S'));
+            document.getElementById('tier-filter-chip').addEventListener('click', () => { tierFilter = null; renderGrid(); updateStatsCounts(); });
             document.getElementById('clear-filters-btn').addEventListener('click', () => {
+                tierFilter = null; updateStatsCounts();
                 currentCategory = 'Tous';
                 searchQuery = '';
                 document.getElementById('search-input').value = '';
@@ -1710,6 +1835,7 @@
             document.getElementById('close-modal-btn').addEventListener('click', closeModal);
             document.getElementById('view-table-btn').addEventListener('click', () => setModalView('table'));
             document.getElementById('view-chart-btn').addEventListener('click', () => setModalView('chart'));
+            document.getElementById('view-ttk-btn').addEventListener('click', () => setModalView('ttk'));
 
             // Close modals on background click
             document.getElementById('compare-modal').addEventListener('click', (e) => {
@@ -1745,87 +1871,358 @@
             renderModalContent();
         }
 
+        // ============================================================
+        // COMPARATEUR : accessoires, écarts (+/-), simulateur TTK
+        // ============================================================
+        let cmpShowDiff = false;      // afficher les écarts par rapport à la 1re arme
+        let cmpMods = {};             // { weaponId: { Optique: id, Canon: id, 'Sous-canon': id } }
+        let ttkDist = 50;             // distance de la cible (studs)
+        let ttkHelmet = false, ttkVest = false;
+        const TTK_HP = 100;           // points de vie d'un joueur
+        const TTK_MAX_DIST = 800;
+        // Valeurs estimées : le jeu n'affiche pas la réduction exacte des protections
+        const TTK_ARMOR = { helmet: 0.35, vest: 0.30 };
+        const ATT_SLOTS = [
+            { slot: 'Optique', label: 'Viseur', re: /viseur|optique/i },
+            { slot: 'Canon', label: 'Canon / silencieux', re: /silencieux|canon/i },
+            { slot: 'Sous-canon', label: 'Poignée / laser', re: /poignée|laser|sous-canon/i }
+        ];
+
+        // Dégâts minimum (stat cachée du jeu) : estimation selon le calibre et la catégorie
+        function ttkMinFactor(w) {
+            const c = (w.caliber || '').toLowerCase(), cat = w.category || '';
+            if (/précision|sniper/i.test(cat)) return 0.7;
+            if (/\.45|\.44|\.357|7\.62|\.30|\.308|\.300|\.338|\.50|7\.92|12\.7|\.303|8mm/.test(c)) return 0.6;
+            return 0.5;
+        }
+        function ttkFalloff(w, d) {
+            const fdr = Math.max(0, +w.range || 0), mdr = Math.max(fdr + 1, +w.minRange || 0), mf = ttkMinFactor(w);
+            if (d <= fdr) return 1;
+            if (d >= mdr) return mf;
+            return 1 - (1 - mf) * (d - fdr) / (mdr - fdr);
+        }
+        function ttkCalc(w, d = ttkDist) {
+            const f = ttkFalloff(w, d);
+            const head = w.headDamage * f * (ttkHelmet ? 1 - TTK_ARMOR.helmet : 1);
+            const body = w.bodyDamage * f * (ttkVest ? 1 - TTK_ARMOR.vest : 1);
+            const limb = w.limbDamage * f;
+            const stk = dmg => dmg > 0 ? Math.ceil((TTK_HP - 1e-9) / dmg) : Infinity;
+            const time = n => {
+                if (!isFinite(n)) return Infinity;
+                const shot = 60000 / Math.max(1, w.rof);
+                const cap = Math.max(1, +w.capacity || 1);
+                const reloads = Math.floor((n - 1) / cap);
+                return (n - 1) * shot + reloads * (+w.reloadTime || 0) * 1000;
+            };
+            const nHead = stk(head), nBody = stk(body), nLimb = stk(limb);
+            const restBody = head >= TTK_HP ? 0 : stk(body) === Infinity ? Infinity : Math.max(0, Math.ceil((TTK_HP - head - 1e-9) / body));
+            const nMix = head >= TTK_HP ? 1 : 1 + restBody;
+            return {
+                f, head, body, limb, nHead, nBody, nLimb, nMix, restBody,
+                tHead: time(nHead), tBody: time(nBody), tLimb: time(nLimb), tMix: time(nMix)
+            };
+        }
+        const fmtTTK = ms => !isFinite(ms) ? '—' : (ms / 1000).toFixed(2) + ' s';
+        const fmtDmg = v => (Math.round(v * 10) / 10).toString();
+
+        // ---- Accessoires ----
+        function attCompatible(w, slotDef) {
+            const a = (w.attach || '').toLowerCase();
+            if (!a || /aucun/.test(a)) return [];
+            if (!slotDef.re.test(a)) return [];
+            return ATTACHMENTS_DATA.filter(x => x.slot === slotDef.slot && (x.id !== 'pro-sup' || /^m1911/.test(w.id)));
+        }
+        function effWeapon(w) {
+            const mods = cmpMods[w.id] || {};
+            const atts = ATT_SLOTS.map(s => ATTACHMENTS_DATA.find(a => a.id === mods[s.slot])).filter(Boolean);
+            const sum = k => atts.reduce((t, a) => t + (a[k] || 0), 0);
+            const clamp = v => Math.max(0, Math.min(100, Math.round(v)));
+            const out = { ...w, _base: w, _atts: atts };
+            out.accuracy = clamp(w.accuracy + sum('aimAcc') * 1);
+            out.hipfire = clamp(w.hipfire + sum('hipfire') * 4);
+            out.recoil = clamp(w.recoil + sum('recoilCtrl') * 4);
+            out.aimSpeed = sum('aimSpeed');
+            out.silent = atts.some(a => a.silent);
+            if (atts.some(a => a.id === 'oil-filter')) { out.range = Math.round(w.range * 0.8); out.minRange = Math.round(w.minRange * 0.8); }
+            return out;
+        }
+        function attSelectors(w, compact = false) {
+            const slots = ATT_SLOTS.map(s => ({ s, list: attCompatible(w, s) })).filter(x => x.list.length);
+            if (!slots.length) return `<div class="text-[11px] font-mono text-tactical-muted mb-4">Aucun accessoire compatible.</div>`;
+            const mods = cmpMods[w.id] || {};
+            return `<div class="grid ${compact ? 'grid-cols-1 sm:grid-cols-3' : 'grid-cols-1'} gap-2 mb-4">
+                ${slots.map(({ s, list }) => `
+                    <label class="flex flex-col gap-1">
+                        <span class="text-[9px] font-bold uppercase tracking-widest text-cyan-400/80">${s.label}</span>
+                        <select data-att-w="${w.id}" data-att-slot="${s.slot}" class="bg-tactical-card border border-tactical-border rounded-lg px-2 py-1.5 text-xs text-white focus:outline-none focus:border-cyan-400">
+                            <option value="">— Aucun —</option>
+                            ${list.map(a => `<option value="${a.id}" ${mods[s.slot] === a.id ? 'selected' : ''}>${a.name}${a.zoom && a.zoom !== '—' ? ' (' + a.zoom + ')' : ''}</option>`).join('')}
+                        </select>
+                    </label>`).join('')}
+            </div>`;
+        }
+
+        // ---- Couleurs Vert / Orange / Rouge + écarts ----
+        function cmpRank(val, vals, low = false) {
+            if (vals.length < 2) return 'solo';
+            const mx = Math.max(...vals), mn = Math.min(...vals);
+            if (mx === mn) return 'tie';
+            const best = low ? mn : mx, worst = low ? mx : mn;
+            if (val === best) return 'best';
+            if (val === worst) return 'worst';
+            return 'mid';
+        }
+        const RANK_TXT = { best: 'text-tactical-accent', worst: 'text-tactical-red', mid: 'text-orange-400', tie: 'text-orange-400', solo: 'text-white' };
+        const RANK_BAR = { best: 'bg-tactical-accent', worst: 'bg-tactical-red', mid: 'bg-orange-400', tie: 'bg-orange-400', solo: 'bg-white/70' };
+        function cmpDelta(val, ref, low = false, unit = '', dec = 0) {
+            const d = Math.round((val - ref) * Math.pow(10, dec)) / Math.pow(10, dec);
+            if (d === 0) return `<span class="text-orange-400 text-[10px] ml-1">(=)</span>`;
+            const good = low ? d < 0 : d > 0;
+            return `<span class="${good ? 'text-tactical-accent' : 'text-tactical-red'} text-[10px] ml-1">(${d > 0 ? '+' : ''}${d}${unit})</span>`;
+        }
+        function statBarW(label, display, pct, rank, extra = '') {
+            return `
+                <div>
+                    <div class="flex justify-between gap-2 mb-1">
+                        <span class="text-tactical-muted">${label}</span>
+                        <span class="font-bold text-right ${RANK_TXT[rank]}">${display}${extra}</span>
+                    </div>
+                    <div class="w-full bg-tactical-border/50 h-2 rounded-full overflow-hidden">
+                        <div class="${RANK_BAR[rank]} h-full rounded-full transition-all" style="width: ${Math.max(3, Math.min(100, pct))}%"></div>
+                    </div>
+                </div>`;
+        }
+
+        function cmpBtnClass(active) {
+            return 'px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider border transition-all flex items-center gap-2 ' +
+                (active ? 'bg-tactical-accent text-tactical-bg border-tactical-accent' : 'bg-tactical-card text-tactical-muted border-tactical-border hover:border-tactical-accent/60 hover:text-white');
+        }
+
         function renderModalContent() {
             const container = document.getElementById('modal-comparison-content');
-            const itemsToCompare = compareList.map(id => ALL_ITEMS.find(w => w.id === id));
-            const allWeapons = itemsToCompare.every(w => isWeapon(w));
+            const itemsToCompare = compareList.map(id => ALL_ITEMS.find(w => w.id === id)).filter(Boolean);
+            const allWeapons = itemsToCompare.length && itemsToCompare.every(w => isWeapon(w));
+            if (!allWeapons && modalView !== 'table') modalView = 'table';
 
-            // Toggle boutons d'affichage
-            const tableBtn = document.getElementById('view-table-btn');
+            document.getElementById('view-table-btn').className = cmpBtnClass(modalView === 'table');
             const chartBtn = document.getElementById('view-chart-btn');
-            if (modalView === 'table') {
-                tableBtn.className = 'px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider border transition-all bg-tactical-accent text-tactical-bg border-tactical-accent';
-                chartBtn.className = 'px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider border transition-all bg-tactical-card text-tactical-muted border-tactical-border hover:border-tactical-accent/60 hover:text-white flex items-center gap-2';
-            } else {
-                chartBtn.className = 'px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider border transition-all bg-tactical-accent text-tactical-bg border-tactical-accent flex items-center gap-2';
-                tableBtn.className = 'px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider border transition-all bg-tactical-card text-tactical-muted border-tactical-border hover:border-tactical-accent/60 hover:text-white';
-            }
-            // Graphique disponible uniquement pour les armes
+            const ttkBtn = document.getElementById('view-ttk-btn');
+            chartBtn.className = cmpBtnClass(modalView === 'chart');
+            ttkBtn.className = cmpBtnClass(modalView === 'ttk');
             chartBtn.style.display = allWeapons ? 'flex' : 'none';
+            ttkBtn.style.display = allWeapons ? 'flex' : 'none';
+            const diffWrap = document.getElementById('cmp-diff-wrap');
+            if (diffWrap) diffWrap.style.display = allWeapons && itemsToCompare.length > 1 ? 'flex' : 'none';
 
-            if (modalView === 'chart' && allWeapons) {
-                container.innerHTML = buildRadarSection(itemsToCompare);
-            } else if (allWeapons) {
-                container.innerHTML = buildWeaponComparisonTable(itemsToCompare);
-            } else {
-                container.innerHTML = buildItemComparisonTable(itemsToCompare);
-            }
+            const scroll = container.scrollTop;
+            if (modalView === 'chart' && allWeapons) container.innerHTML = buildRadarSection(itemsToCompare);
+            else if (modalView === 'ttk' && allWeapons) container.innerHTML = buildTTKSection(itemsToCompare);
+            else if (allWeapons) container.innerHTML = buildWeaponComparisonTable(itemsToCompare);
+            else container.innerHTML = buildItemComparisonTable(itemsToCompare);
+            container.scrollTop = scroll;
         }
 
         // ---- Tableau de comparaison : armes ----
         function buildWeaponComparisonTable(weaponsToCompare) {
+            const eff = weaponsToCompare.map(effWeapon);
             const cap = (k, lim) => Math.max(...WEAPONS_DATA.map(w => Math.min(w[k], lim)));
             const maxHeadDamage = cap('headDamage', 80), maxBodyDamage = cap('bodyDamage', 60), maxRof = cap('rof', 1100);
             const maxCapacity = cap('capacity', 100), maxVelocity = cap('velocity', 99999), maxRange = cap('range', 9999);
+            const pct = (v, m) => Math.min(100, (v / m) * 100);
+            const ref = eff[0];
+            const ttks = eff.map(w => ttkCalc(w));
+            const rows = [
+                // [label, key/getter, display, pct, low, unit, dec]
+                ['Dégâts Tête', w => w.headDamage, v => v, v => pct(v, maxHeadDamage)],
+                ['Dégâts Corps', w => w.bodyDamage, v => v, v => pct(v, maxBodyDamage)],
+                ['Dégâts Membres', w => w.limbDamage, v => v, v => pct(v, 60)],
+                ['Cadence (RPM)', w => w.rof, v => v, v => pct(v, maxRof)],
+                ['Vélocité', w => w.velocity, v => v, v => pct(v, maxVelocity)],
+                ['Précision en visée', w => w.accuracy, v => v + '%', v => v, false, '%'],
+                ['Précision à la hanche', w => w.hipfire, v => v + '%', v => v, false, '%'],
+                ['Contrôle du recul', w => w.recoil, v => v + '%', v => v, false, '%'],
+                ['Vitesse de visée (accessoires)', w => w.aimSpeed, v => (v > 0 ? '+' : '') + v, v => ((v + 9) / 18) * 100],
+                ['Portée dégâts max', w => w.range, v => v, v => pct(v, maxRange)],
+                ['Chargeur max', w => w.capacity, v => v + ' balles', v => pct(v, maxCapacity), false, ''],
+                ['Rechargement', w => w.reloadTime, v => v + 's', v => (1 - v / 6) * 100, true, 's', 1]
+            ];
             return `
+                <div class="flex flex-wrap items-center gap-2 text-[11px] font-mono text-tactical-muted -mt-2">
+                    <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-tactical-accent"></span>Meilleur</span>
+                    <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-orange-400"></span>Intermédiaire / égalité</span>
+                    <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-tactical-red"></span>Moins bon</span>
+                    <span class="flex items-center gap-1.5"><span class="text-cyan-400">◆</span>Modifié par les accessoires</span>
+                    <span class="ml-auto">TTK calculé à <b class="text-white">${ttkDist} studs</b>${ttkHelmet || ttkVest ? ' • cible protégée' : ''} (onglet « TTK & portée »)</span>
+                </div>
                 <div class="grid grid-cols-1 md:grid-cols-${Math.min(weaponsToCompare.length, 3)} gap-6">
-                    ${weaponsToCompare.map((weapon, wi) => {
-                        const best = (k, low = false) => weapon[k] === (low ? Math.min : Math.max)(...weaponsToCompare.map(w => w[k]));
-                        const pct = (v, m) => Math.min(100, (v / m) * 100);
+                    ${eff.map((weapon, wi) => {
+                        const base = weapon._base;
+                        const t = ttks[wi];
+                        const ttkVals = ttks.map(x => x.tBody);
+                        const mixVals = ttks.map(x => x.tMix);
                         return `
                             <div class="bg-tactical-bg border border-tactical-border rounded-xl p-5 flex flex-col justify-between" style="border-top: 4px solid ${RADAR_COLORS[wi]}">
                                 <div>
-                                    <div class="flex items-center gap-2 text-[10px] font-mono uppercase tracking-wider mb-2" style="color:${RADAR_COLORS[wi]}"><span class="w-5 h-2 rounded-full" style="background:${RADAR_COLORS[wi]}"></span>Couleur sur le graphique</div>
-                                    <!-- Title, pastille & Tier -->
-                                    <div class="flex items-center justify-between mb-2">
+                                    <div class="flex items-center gap-2 text-[10px] font-mono uppercase tracking-wider mb-2" style="color:${RADAR_COLORS[wi]}"><span class="w-5 h-2 rounded-full" style="background:${RADAR_COLORS[wi]}"></span>${wi === 0 && cmpShowDiff && eff.length > 1 ? 'Arme de référence' : 'Couleur sur le graphique'}</div>
+                                    <div class="flex items-center justify-between mb-2 gap-2">
                                         <h4 class="text-xl font-extrabold text-white flex items-center gap-2">
                                             ${getCategoryDot(weapon.category)} ${weapon.name}
                                         </h4>
-                                        <span class="text-xs font-mono font-bold px-2 py-0.5 rounded border ${getTierBadgeClass(weapon.tier)}">
-                                            Tier ${weapon.tier}
-                                        </span>
+                                        <span class="text-xs font-mono font-bold px-2 py-0.5 rounded border shrink-0 ${getTierBadgeClass(weapon.tier)}">Tier ${weapon.tier}</span>
                                     </div>
-                                    <p class="text-xs font-mono text-tactical-muted mb-1">${weapon.caliber} • ${weapon.category} • ${weapon.fireMode}</p>
-                                    <p class="text-[11px] font-mono text-cyan-400/80 mb-4">Accessoires : ${weapon.attach || '—'}</p>
-
-                                    <!-- Stat Bars -->
+                                    <p class="text-xs font-mono text-tactical-muted mb-3">${weapon.caliber} • ${weapon.category} • ${weapon.fireMode}${weapon.silent ? ' • <span class="text-cyan-400">silencieux</span>' : ''}</p>
+                                    ${attSelectors(base)}
+                                    <div class="grid grid-cols-2 gap-2 mb-4">
+                                        <div class="rounded-lg border border-tactical-border bg-tactical-card px-3 py-2">
+                                            <div class="text-[9px] uppercase tracking-widest text-tactical-muted">TTK corps</div>
+                                            <div class="font-mono font-extrabold text-sm ${RANK_TXT[cmpRank(t.tBody, ttkVals, true)]}">${fmtTTK(t.tBody)}${cmpShowDiff && wi > 0 && isFinite(t.tBody) && isFinite(ttks[0].tBody) ? cmpDelta(t.tBody / 1000, ttks[0].tBody / 1000, true, 's', 2) : ''}</div>
+                                            <div class="text-[10px] font-mono text-tactical-muted">${isFinite(t.nBody) ? t.nBody + ' balles corps' : '—'}</div>
+                                        </div>
+                                        <div class="rounded-lg border border-tactical-border bg-tactical-card px-3 py-2">
+                                            <div class="text-[9px] uppercase tracking-widest text-tactical-muted">TTK 1 tête + corps</div>
+                                            <div class="font-mono font-extrabold text-sm ${RANK_TXT[cmpRank(t.tMix, mixVals, true)]}">${fmtTTK(t.tMix)}${cmpShowDiff && wi > 0 && isFinite(t.tMix) && isFinite(ttks[0].tMix) ? cmpDelta(t.tMix / 1000, ttks[0].tMix / 1000, true, 's', 2) : ''}</div>
+                                            <div class="text-[10px] font-mono text-tactical-muted">${t.restBody ? `1 tête + ${t.restBody} corps` : '1 tête suffit'}</div>
+                                        </div>
+                                    </div>
                                     <div class="space-y-4 font-mono text-xs">
-                                        ${statBar('Dégâts Tête', weapon.headDamage, pct(weapon.headDamage, maxHeadDamage), best('headDamage'))}
-                                        ${statBar('Dégâts Corps', weapon.bodyDamage, pct(weapon.bodyDamage, maxBodyDamage), best('bodyDamage'))}
-                                        ${statBar('Dégâts Membres', weapon.limbDamage, pct(weapon.limbDamage, 60), best('limbDamage'))}
-                                        ${statBar('Cadence (RPM)', weapon.rof, pct(weapon.rof, maxRof), best('rof'))}
-                                        ${statBar('Vélocité', weapon.velocity, pct(weapon.velocity, maxVelocity), best('velocity'))}
-                                        ${statBar('Précision en visée', weapon.accuracy + '%', weapon.accuracy, best('accuracy'))}
-                                        ${statBar('Précision à la hanche', weapon.hipfire + '%', weapon.hipfire, best('hipfire'))}
-                                        ${statBar('Contrôle du recul', weapon.recoil + '%', weapon.recoil, best('recoil'))}
-                                        ${statBar('Portée dégâts max', weapon.range, pct(weapon.range, maxRange), best('range'))}
-                                        ${statBar('Chargeur max', weapon.capacity + ' balles', pct(weapon.capacity, maxCapacity), best('capacity'))}
-                                        ${statBar('Rechargement', weapon.reloadTime + 's', (1 - weapon.reloadTime / 6) * 100, best('reloadTime', true))}
+                                        ${rows.map(([label, get, disp, p, low = false, unit = '', dec = 0]) => {
+                                            const v = get(weapon), bv = get(base) === undefined ? 0 : get(base);
+                                            const vals = eff.map(get);
+                                            const modded = label.startsWith('Vitesse de visée') ? v !== 0 : v !== bv;
+                                            let extra = '';
+                                            if (modded && !label.startsWith('Vitesse de visée')) extra += `<span class="text-cyan-400 text-[10px] ml-1" title="Valeur de base : ${disp(bv)}">◆ ${disp(bv)}→</span>`;
+                                            if (cmpShowDiff && eff.length > 1) extra += wi === 0 ? `<span class="text-tactical-muted text-[10px] ml-1">(réf.)</span>` : cmpDelta(v, get(ref), low, unit, dec);
+                                            return statBarW(label, disp(v), p(v), cmpRank(v, vals, low), extra);
+                                        }).join('')}
                                         ${rowKV('Chargeurs dispo', weapon.mags)}
                                         ${rowKV('Accessoires', weapon.attach)}
                                     </div>
                                 </div>
-
                                 <div class="mt-6 pt-4 border-t border-tactical-border/40 text-xs text-tactical-muted">
                                     ${weapon.description}
                                     <div class="mt-2"><span class="text-tactical-gold font-semibold">Où le trouver :</span> <span class="text-white">${weapon.loot}</span> • <span class="text-white">${weapon.rarity}</span>${spawnChips(weapon)}</div>
                                 </div>
-                            </div>
-                        `;
+                            </div>`;
                     }).join('')}
                 </div>
+                <p class="text-[10px] text-tactical-muted">Accessoires : chaque point de modificateur ajoute environ +4 % de contrôle du recul ou de précision à la hanche et +1 % de précision en visée (estimation, le jeu n'affiche que des modificateurs de -3 à +3). Le silencieux artisanal (Oil Filter) réduit la portée de 20 %.</p>
             `;
         }
+
+        // ---- Simulateur TTK & portée ----
+        function ttkControls() {
+            return `
+                <div class="bg-tactical-bg border border-tactical-border rounded-2xl p-4 space-y-3">
+                    <div class="flex flex-wrap items-center justify-between gap-3">
+                        <label class="text-xs font-bold uppercase tracking-wider text-white" for="ttk-dist">Distance de la cible</label>
+                        <span class="font-mono text-lg font-extrabold text-tactical-accent" id="ttk-dist-val">${ttkDist} studs</span>
+                    </div>
+                    <input id="ttk-dist" type="range" min="0" max="${TTK_MAX_DIST}" step="5" value="${ttkDist}" class="w-full" style="accent-color:#00ff88">
+                    <div class="flex justify-between text-[10px] font-mono text-tactical-muted"><span>0</span><span>200</span><span>400</span><span>600</span><span>${TTK_MAX_DIST}</span></div>
+                    <div class="flex flex-wrap gap-4 pt-1">
+                        <label class="flex items-center gap-2 text-xs text-white cursor-pointer"><input type="checkbox" id="ttk-helmet" ${ttkHelmet ? 'checked' : ''} style="accent-color:#e5c07b"> Cible avec casque militaire <span class="text-tactical-muted font-mono">(-${TTK_ARMOR.helmet * 100} % tête)</span></label>
+                        <label class="flex items-center gap-2 text-xs text-white cursor-pointer"><input type="checkbox" id="ttk-vest" ${ttkVest ? 'checked' : ''} style="accent-color:#e5c07b"> Gilet pare-balles <span class="text-tactical-muted font-mono">(-${TTK_ARMOR.vest * 100} % corps)</span></label>
+                    </div>
+                </div>`;
+        }
+        function buildTTKResults(weapons) {
+            const eff = weapons.map(effWeapon);
+            const res = eff.map(w => ttkCalc(w));
+            const bodyVals = res.map(r => r.tBody), mixVals = res.map(r => r.tMix), headVals = res.map(r => r.tHead);
+            const cards = eff.map((w, i) => {
+                const r = res[i];
+                const zone = r.f >= 0.999 ? 'Dégâts pleins' : (ttkDist >= Math.max(w.range + 1, w.minRange) ? 'Dégâts minimum' : 'Chute des dégâts');
+                const line = (label, n, t, vals, sub) => `
+                    <div class="flex items-center justify-between gap-2 py-1.5 border-b border-tactical-border/40 last:border-0">
+                        <span class="text-tactical-muted">${label}<span class="block text-[10px]">${sub}</span></span>
+                        <span class="text-right"><span class="font-extrabold ${RANK_TXT[cmpRank(t, vals.map(v => isFinite(v) ? v : 1e12), true)]}">${fmtTTK(t)}</span>${cmpShowDiff && i > 0 && isFinite(t) && isFinite(vals[0]) ? cmpDelta(t / 1000, vals[0] / 1000, true, 's', 2) : ''}<span class="block text-[10px] text-tactical-muted">${isFinite(n) ? n + ' balle' + (n > 1 ? 's' : '') : '—'}</span></span>
+                    </div>`;
+                return `
+                    <div class="bg-tactical-bg border border-tactical-border rounded-xl p-4 font-mono text-xs" style="border-top:4px solid ${RADAR_COLORS[i]}">
+                        <div class="flex items-center justify-between gap-2 mb-1">
+                            <span class="text-sm font-extrabold text-white">${w.name}</span>
+                            <span class="text-[10px] px-1.5 py-0.5 rounded border ${getTierBadgeClass(w.tier)}">Tier ${w.tier}</span>
+                        </div>
+                        <div class="text-[10px] text-tactical-muted mb-3">${w._atts.length ? w._atts.map(a => a.name).join(' + ') : 'Sans accessoire'}</div>
+                        <div class="rounded-lg bg-tactical-card border border-tactical-border px-3 py-2 mb-3">
+                            <div class="text-[9px] uppercase tracking-widest text-tactical-muted">Meilleur scénario réaliste</div>
+                            <div class="text-lg font-extrabold text-tactical-accent">${fmtTTK(Math.min(r.tMix, r.tBody))}</div>
+                            <div class="text-[11px] text-white">${r.tBody < r.tMix ? `${r.nBody} balle${r.nBody > 1 ? 's' : ''} dans le corps` : r.restBody ? `${r.restBody} balle${r.restBody > 1 ? 's' : ''} corps + 1 tête` : '1 balle dans la tête'}</div>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2 mb-3 text-center">
+                            <div class="rounded-lg border border-tactical-border px-1 py-1.5"><div class="text-[9px] text-tactical-muted uppercase">Tête</div><div class="font-bold text-white">${fmtDmg(r.head)}</div></div>
+                            <div class="rounded-lg border border-tactical-border px-1 py-1.5"><div class="text-[9px] text-tactical-muted uppercase">Corps</div><div class="font-bold text-white">${fmtDmg(r.body)}</div></div>
+                            <div class="rounded-lg border border-tactical-border px-1 py-1.5"><div class="text-[9px] text-tactical-muted uppercase">Membres</div><div class="font-bold text-white">${fmtDmg(r.limb)}</div></div>
+                        </div>
+                        <div class="text-[10px] mb-2"><span class="${r.f >= 0.999 ? 'text-tactical-accent' : r.f <= ttkMinFactor(w) + 1e-6 ? 'text-tactical-red' : 'text-orange-400'}">${zone}</span> <span class="text-tactical-muted">• ${Math.round(r.f * 100)} % des dégâts • pleins jusqu'à ${w.range}, minimum dès ${w.minRange}</span></div>
+                        ${line('Corps uniquement', r.nBody, r.tBody, bodyVals, 'torse')}
+                        ${line('Tête uniquement', r.nHead, r.tHead, headVals, 'headshots')}
+                        ${line('1 tête + corps', r.nMix, r.tMix, mixVals, 'combo')}
+                        ${line('Membres uniquement', r.nLimb, r.tLimb, res.map(x => x.tLimb), 'bras / jambes')}
+                    </div>`;
+            }).join('');
+            return `<div class="grid grid-cols-1 md:grid-cols-${Math.min(weapons.length, 3)} gap-4">${cards}</div>${buildTTKChart(eff)}`;
+        }
+        function buildTTKChart(eff) {
+            const W = 640, H = 260, L = 48, R = 14, T = 16, B = 34;
+            const steps = 80;
+            const series = eff.map(w => { const pts = []; for (let i = 0; i <= steps; i++) { const d = i * TTK_MAX_DIST / steps; pts.push([d, ttkCalc(w, d).tBody]); } return pts; });
+            const maxT = Math.max(200, ...series.flat().map(p => p[1]).filter(isFinite));
+            const yMax = Math.ceil(maxT / 250) * 250;
+            const X = d => L + d / TTK_MAX_DIST * (W - L - R), Y = t => T + (1 - Math.min(t, yMax) / yMax) * (H - T - B);
+            let grid = '';
+            for (let i = 0; i <= 4; i++) { const t = yMax * i / 4, y = Y(t); grid += `<line x1="${L}" x2="${W - R}" y1="${y}" y2="${y}" stroke="#2a2f3a"/><text x="${L - 6}" y="${y + 3}" text-anchor="end" class="ttk-ax">${(t / 1000).toFixed(2)}s</text>`; }
+            for (let d = 0; d <= TTK_MAX_DIST; d += 100) grid += `<text x="${X(d)}" y="${H - 14}" text-anchor="middle" class="ttk-ax">${d}</text>`;
+            const lines = series.map((pts, i) => `<path d="${pts.map((p, j) => `${j ? 'L' : 'M'}${X(p[0]).toFixed(1)} ${Y(p[1]).toFixed(1)}`).join('')}" fill="none" stroke="${RADAR_COLORS[i]}" stroke-width="2.5" stroke-linejoin="round"/>`).join('');
+            const cursor = `<line x1="${X(ttkDist)}" x2="${X(ttkDist)}" y1="${T}" y2="${H - B}" stroke="#ffffff" stroke-dasharray="4 4" opacity=".6"/>`;
+            return `
+                <div class="bg-tactical-bg border border-tactical-border rounded-2xl p-4">
+                    <div class="text-[10px] font-bold uppercase tracking-widest text-tactical-muted mb-2">TTK (corps uniquement) selon la distance</div>
+                    <svg viewBox="0 0 ${W} ${H}" class="w-full" role="img" aria-label="Courbe du temps pour tuer selon la distance">
+                        <style>.ttk-ax{font:600 10px 'JetBrains Mono',monospace;fill:#8b949e}</style>
+                        ${grid}${lines}${cursor}
+                        <text x="${(L + W - R) / 2}" y="${H - 2}" text-anchor="middle" class="ttk-ax">distance (studs)</text>
+                    </svg>
+                    <div class="flex flex-wrap gap-3 mt-2 text-[11px] font-mono">${eff.map((w, i) => `<span class="flex items-center gap-1.5"><span class="w-4 h-1.5 rounded-full" style="background:${RADAR_COLORS[i]}"></span><span class="text-white">${w.name}</span></span>`).join('')}</div>
+                </div>`;
+        }
+        function buildTTKSection(weapons) {
+            return `
+                ${ttkControls()}
+                <div id="ttk-results" class="space-y-4">${buildTTKResults(weapons)}</div>
+                <div class="bg-tactical-bg/60 border border-tactical-border rounded-xl p-4">
+                    <div class="text-[10px] font-bold uppercase tracking-widest text-tactical-muted mb-2">Accessoires équipés (modifient la portée pour le silencieux artisanal)</div>
+                    <div class="grid grid-cols-1 md:grid-cols-${Math.min(weapons.length, 3)} gap-4">${weapons.map(w => `<div><div class="text-xs font-bold text-white mb-1">${w.name}</div>${attSelectors(w)}</div>`).join('')}</div>
+                </div>
+                <p class="text-[10px] text-tactical-muted leading-relaxed">Calcul : ${TTK_HP} PV par joueur. Les dégâts sont pleins jusqu'à la « portée dégâts max », baissent en ligne droite puis restent au minimum après la « portée min » (même règle que le jeu). Le dégât minimum est une stat cachée : il est estimé à 50 % (calibres légers), 60 % (calibres lourds) ou 70 % (fusils de précision). Le TTK compte le temps entre la 1re et la dernière balle à la cadence max (RPM), avec un rechargement si le chargeur est vide. Les réductions du casque et du gilet sont des estimations.</p>`;
+        }
+
+        // Événements du comparateur (accessoires, distance, protections, écarts)
+        document.addEventListener('change', e => {
+            const s = e.target.closest('[data-att-w]');
+            if (s) {
+                const id = s.dataset.attW, slot = s.dataset.attSlot;
+                cmpMods[id] = cmpMods[id] || {};
+                if (s.value) cmpMods[id][slot] = s.value; else delete cmpMods[id][slot];
+                renderModalContent();
+                return;
+            }
+            if (e.target.id === 'ttk-helmet' || e.target.id === 'ttk-vest') {
+                ttkHelmet = document.getElementById('ttk-helmet').checked;
+                ttkVest = document.getElementById('ttk-vest').checked;
+                const box = document.getElementById('ttk-results');
+                if (box) box.innerHTML = buildTTKResults(compareList.map(id => ALL_ITEMS.find(w => w.id === id)).filter(Boolean));
+                return;
+            }
+            if (e.target.id === 'cmp-diff-toggle') { cmpShowDiff = e.target.checked; renderModalContent(); }
+        });
+        document.addEventListener('input', e => {
+            if (e.target.id !== 'ttk-dist') return;
+            ttkDist = +e.target.value;
+            document.getElementById('ttk-dist-val').textContent = ttkDist + ' studs';
+            const box = document.getElementById('ttk-results');
+            if (box) box.innerHTML = buildTTKResults(compareList.map(id => ALL_ITEMS.find(w => w.id === id)).filter(Boolean));
+        });
 
         function statBar(label, value, pct, isBest = false) {
             return `
@@ -1881,12 +2278,19 @@
             { key: 'rof', label: 'Cadence', suffix: ' RPM' },
             { key: 'velocity', label: 'Vélocité', suffix: '' },
             { key: 'accuracy', label: 'Précision', suffix: '%' },
+            { key: 'recoil', label: 'Contrôle recul', suffix: '%' },
+            { key: 'hipfire', label: 'Préc. hanche', suffix: '%' },
             { key: 'capacity', label: 'Chargeur', suffix: ' balles' }
         ];
         const RADAR_COLORS = ['#00ff88', '#e5c07b', '#ff4757'];
 
-        function buildRadarSection(weaponsToCompare) {
+        function buildRadarSection(baseWeapons) {
+            const weaponsToCompare = baseWeapons.map(effWeapon);
             return `
+                <div class="w-full bg-tactical-bg/60 border border-tactical-border rounded-2xl p-4">
+                    <div class="text-[10px] font-bold uppercase tracking-widest text-tactical-muted mb-3">Accessoires (le radar se met à jour en direct)</div>
+                    <div class="grid grid-cols-1 md:grid-cols-${Math.min(baseWeapons.length, 3)} gap-4">${baseWeapons.map((w, i) => `<div><div class="text-xs font-bold mb-1" style="color:${RADAR_COLORS[i]}">${w.name}</div>${attSelectors(w)}</div>`).join('')}</div>
+                </div>
                 <div class="flex flex-col items-center gap-6">
                     <div class="w-full bg-tactical-bg/70 border border-tactical-border rounded-2xl p-4">
                         <div class="text-[10px] font-bold uppercase tracking-widest text-tactical-muted mb-3 text-center">Légende des couleurs : quelle couleur = quelle arme</div>
@@ -1901,6 +2305,7 @@
                     </div>
                     </div>
                     ${buildRadarSVG(weaponsToCompare)}
+                    ${cmpShowDiff && weaponsToCompare.length > 1 ? `<div class="w-full overflow-x-auto"><table class="w-full text-xs font-mono"><thead><tr class="text-tactical-muted"><th class="text-left p-2">Stat</th>${weaponsToCompare.map((w, i) => `<th class="text-right p-2" style="color:${RADAR_COLORS[i]}">${w.name}</th>`).join('')}</tr></thead><tbody>${RADAR_AXES.map(ax => { const vals = weaponsToCompare.map(w => w[ax.key]); return `<tr class="border-t border-tactical-border/50"><td class="p-2 text-tactical-muted">${ax.label}</td>${weaponsToCompare.map((w, i) => `<td class="p-2 text-right font-bold ${RANK_TXT[cmpRank(w[ax.key], vals)]}">${w[ax.key]}${ax.suffix}${i ? cmpDelta(w[ax.key], vals[0]) : ''}</td>`).join('')}</tr>`; }).join('')}</tbody></table></div>` : ''}
                     <p class="text-xs text-tactical-muted text-center max-w-xl">
                         Chaque axe est normalisé sur 0-100 par rapport à la meilleure arme du catalogue sur cette statistique.
                         Plus le polygone coloré est grand et régulier, plus l'arme est polyvalente.
@@ -2361,7 +2766,12 @@
         // Bascule catalogue <-> carte
         function onGroupChange() {
             const isMap = currentGroup === 'carte', isCreator = currentGroup === 'createur', isFind = currentGroup === 'finditem', isXh = currentGroup === 'crosshair', isLieux = currentGroup === 'lieux';
-            const special = isMap || isCreator || isFind || isXh || isLieux;
+            const isBuild = currentGroup === 'build', isRun = currentGroup === 'lootrun';
+            const special = isMap || isCreator || isFind || isXh || isLieux || isBuild || isRun;
+            document.getElementById('build-section').classList.toggle('hidden', !isBuild);
+            document.getElementById('lootrun-section').classList.toggle('hidden', !isRun);
+            if (isBuild && typeof bdRender === 'function') bdRender();
+            if (isRun && typeof lrRender === 'function') lrRender();
             document.body.classList.toggle('map-mode', special);
             document.getElementById('map-section').classList.toggle('hidden', !isMap);
             document.getElementById('creator-section').classList.toggle('hidden', !isCreator);
@@ -3549,5 +3959,508 @@
         document.addEventListener('DOMContentLoaded', ulSetup);
     </script>
 
+    <script>
+        // ============================================================
+        // OUTILS : encodage Base64 des liens de partage
+        // ============================================================
+        function b64Enc(obj) {
+            const bin = unescape(encodeURIComponent(JSON.stringify(obj)));
+            return btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+        }
+        function b64Dec(str) {
+            let s = String(str || '').replace(/-/g, '+').replace(/_/g, '/');
+            while (s.length % 4) s += '=';
+            return JSON.parse(decodeURIComponent(escape(atob(s))));
+        }
+        function toolCopy(text, input) {
+            const done = () => {};
+            if (navigator.clipboard && navigator.clipboard.writeText) return navigator.clipboard.writeText(text).then(() => true).catch(() => { if (input) { input.select(); try { return document.execCommand('copy'); } catch (e) {} } return false; });
+            if (input) { input.select(); try { return Promise.resolve(document.execCommand('copy')); } catch (e) {} }
+            return Promise.resolve(false);
+        }
+        function toolGoTab(id) {
+            currentGroup = id; currentCategory = 'Tous';
+            renderMainTabs(); updateSortOptions(); renderCategoryButtons(); renderGrid(); onGroupChange();
+        }
+
+        // ============================================================
+        // BUILD / SAC À DOS (simulateur d'inventaire)
+        // ============================================================
+        const BD_KEY = 'ar2_builds_v1';
+        const BD_DIMS = { 24: [6, 4], 32: [8, 4], 40: [8, 5], 48: [8, 6], 56: [8, 7] };
+        const BD_WSIZE = {
+            'Pistolets': [2, 2, 1.0], 'Revolvers': [2, 2, 1.2], 'Pistolets Mitrailleurs': [3, 2, 2.0], 'PM / SMG': [3, 2, 2.6],
+            'Fusils Courts': [4, 2, 2.8], 'Carabines': [4, 2, 3.2], "Carabines d'Assaut": [4, 2, 3.2], "Fusils d'Assaut": [5, 2, 3.6],
+            'Fusils de Combat': [5, 2, 4.3], 'Fusils': [5, 2, 3.8], 'Fusils à Pompe': [5, 2, 3.5], 'Fusils de Précision': [6, 2, 4.6],
+            'Snipers': [6, 2, 6.0], 'Mitrailleuses': [7, 2, 8.0], 'Explosifs': [1, 1, 0.6]
+        };
+        const BD_HSIZE = { 'bandage': [1, 1, .1], 'field-dressing': [1, 1, .1], 'small-medkit': [2, 1, .5], 'large-medkit': [2, 2, 1.2], 'blood-bag': [1, 2, .5], 'painkillers': [1, 1, .1] };
+        const BD_AMMO_STACK = 30;
+        const BD_KIND_COLOR = { w: '#ff4757', m: '#e5c07b', a: '#fbbf24', h: '#ff7eb3', f: '#fb923c', x: '#22d3ee', e: '#a78bfa' };
+        const BD_TABS = [['w', 'Armes'], ['m', 'Chargeurs'], ['a', 'Munitions'], ['h', 'Soins'], ['f', 'Nourriture'], ['x', 'Accessoires']];
+        let bd = { name: '', bag: 'rucksack', p: '', s: '', items: [] };
+        let bdSel = -1, bdTab = 'm', bdQ = '', bdSaved = [], bdDrag = null;
+        try { bdSaved = JSON.parse(localStorage.getItem(BD_KEY) || '[]'); if (!Array.isArray(bdSaved)) bdSaved = []; } catch (e) { bdSaved = []; }
+        const bdSaveStore = () => { try { localStorage.setItem(BD_KEY, JSON.stringify(bdSaved)); } catch (e) {} };
+        const bdWeapons = () => ALL_ITEMS.filter(i => i.type === 'weapon' || i.type === 'explosive');
+        const bdFindW = id => ALL_ITEMS.find(i => i.id === id && (i.type === 'weapon' || i.type === 'explosive'));
+        const bdPlain = s => String(s || '').replace(/<[^>]+>/g, '');
+        const bdCalibers = () => [...new Set(WEAPONS_DATA.map(w => w.caliber).filter(c => c && c !== '—'))].sort();
+
+        // Description d'un objet à partir de sa clé (w:id, m:id, a:calibre, h:id, f:id, x:id)
+        function bdDef(key) {
+            const [k, ...rest] = key.split(':'); const id = rest.join(':');
+            if (k === 'w') { const w = bdFindW(id); if (!w) return null; const s = BD_WSIZE[w.category] || [4, 2, 3]; return { k: w.type === 'explosive' ? 'e' : 'w', name: bdPlain(w.name), w: s[0], h: s[1], kg: s[2], ref: w }; }
+            if (k === 'm') { const w = bdFindW(id); if (!w || !(w.capacity > 1)) return null; return { k, name: 'Chargeur ' + bdPlain(w.name), short: 'Chg.', w: 1, h: w.capacity >= 15 ? 2 : 1, kg: w.capacity >= 30 ? .5 : .3, ammo: w.capacity, cal: w.caliber, ref: w }; }
+            if (k === 'a') return { k, name: `Munitions ${id} (x${BD_AMMO_STACK})`, short: id, w: 1, h: 1, kg: .35, ammo: BD_AMMO_STACK, cal: id };
+            if (k === 'h') { const h = HEAL_ITEMS_DATA.find(x => x.id === id); if (!h) return null; const s = BD_HSIZE[id] || [1, 1, .2]; return { k, name: h.name, w: s[0], h: s[1], kg: s[2], heal: h.healAmount || 0, ref: h }; }
+            if (k === 'f') { const f = FOOD_DATA.find(x => x.id === id); if (!f) return null; const m = /^(\d)x(\d)$/.exec(f.size || ''); const w = m ? +m[1] : 1, h = m ? +m[2] : 1; return { k, name: f.name, w, h, kg: .35 * w * h, energy: f.energy || 0, hydration: f.hydration || 0, ref: f }; }
+            if (k === 'x') { const a = ATTACHMENTS_DATA.find(x => x.id === id); if (!a) return null; return { k, name: a.name, w: a.slot === 'Sous-canon' ? 1 : 2, h: 1, kg: .3, ref: a }; }
+            return null;
+        }
+        function bdDims() { const b = BACKPACKS_DATA.find(x => x.id === bd.bag) || BACKPACKS_DATA[0]; return BD_DIMS[b.slots] || [8, Math.ceil(b.slots / 8)]; }
+        function bdSize(it) { const d = bdDef(it.key); if (!d) return [1, 1]; return it.r ? [d.h, d.w] : [d.w, d.h]; }
+        function bdFits(x, y, w, h, skip) {
+            const [C, Rr] = bdDims();
+            if (x < 0 || y < 0 || x + w > C || y + h > Rr) return false;
+            return bd.items.every((it, i) => {
+                if (i === skip) return true;
+                const [iw, ih] = bdSize(it);
+                return x >= it.x + iw || x + w <= it.x || y >= it.y + ih || y + h <= it.y;
+            });
+        }
+        function bdFirstFit(d, skip) {
+            const [C, Rr] = bdDims();
+            for (const r of [0, 1]) { const w = r ? d.h : d.w, h = r ? d.w : d.h; for (let y = 0; y < Rr; y++) for (let x = 0; x < C; x++) if (bdFits(x, y, w, h, skip)) return { x, y, r }; }
+            return null;
+        }
+        function bdAdd(key) {
+            const d = bdDef(key); if (!d) return;
+            const pos = bdFirstFit(d, -1);
+            if (!pos) return bdMsg(`Plus de place pour « ${d.name} » (${d.w}x${d.h} cases).`, false);
+            bd.items.push({ key, ...pos }); bdSel = bd.items.length - 1;
+            bdMsg(`${d.name} ajouté.`); bdRenderGrid(); bdRenderStats();
+        }
+        function bdRepack(silent) {
+            const old = bd.items.map(it => ({ key: it.key })); const sized = old.map(o => ({ o, d: bdDef(o.key) })).filter(x => x.d).sort((a, b) => b.d.w * b.d.h - a.d.w * a.d.h);
+            bd.items = []; let lost = 0;
+            sized.forEach(({ o, d }) => { const p = bdFirstFit(d, -1); if (p) bd.items.push({ key: o.key, ...p }); else lost++; });
+            bdSel = -1;
+            if (!silent) bdMsg(lost ? `${lost} objet(s) ne rentrent plus dans ce sac.` : 'Sac rangé automatiquement.', !lost);
+            return lost;
+        }
+        function bdMsg(t, ok = true) { const m = document.getElementById('bd-msg'); if (m) { m.textContent = t; m.className = 'text-xs h-4 mt-2 ' + (ok ? 'text-tactical-accent' : 'text-tactical-red'); } }
+
+        function bdRenderSelects() {
+            document.getElementById('bd-bag').innerHTML = BACKPACKS_DATA.slice().sort((a, b) => a.slots - b.slots).map(b => { const [c, r] = BD_DIMS[b.slots] || [8, Math.ceil(b.slots / 8)]; return `<option value="${b.id}" ${b.id === bd.bag ? 'selected' : ''}>${bdPlain(b.name)} — ${b.slots} cases (${c}x${r})</option>`; }).join('');
+            const opts = sel => `<option value="">— Aucune —</option>` + bdWeapons().filter(w => w.type === 'weapon').slice().sort((a, b) => bdPlain(a.name).localeCompare(bdPlain(b.name))).map(w => `<option value="${w.id}" ${w.id === sel ? 'selected' : ''}>${bdPlain(w.name)} (${bdPlain(w.caliber)})</option>`).join('');
+            document.getElementById('bd-primary').innerHTML = opts(bd.p);
+            document.getElementById('bd-secondary').innerHTML = opts(bd.s);
+            document.getElementById('bd-name').value = bd.name || '';
+        }
+        function bdPaletteItems() {
+            const eq = [bd.p, bd.s].filter(Boolean);
+            let list = [];
+            if (bdTab === 'w') list = bdWeapons().map(w => 'w:' + w.id);
+            if (bdTab === 'm') { const ws = bdWeapons().filter(w => w.capacity > 1); list = [...eq.filter(id => ws.some(w => w.id === id)), ...ws.filter(w => !eq.includes(w.id)).map(w => w.id)].map(id => 'm:' + id); }
+            if (bdTab === 'a') { const cals = bdCalibers(); const eqC = eq.map(id => (bdFindW(id) || {}).caliber).filter(Boolean); list = [...new Set([...eqC, ...cals])].map(c => 'a:' + c); }
+            if (bdTab === 'h') list = HEAL_ITEMS_DATA.map(h => 'h:' + h.id);
+            if (bdTab === 'f') list = FOOD_DATA.map(f => 'f:' + f.id);
+            if (bdTab === 'x') list = ATTACHMENTS_DATA.map(a => 'x:' + a.id);
+            const q = bdQ.toLowerCase();
+            return list.map(k => [k, bdDef(k)]).filter(([, d]) => d && (!q || d.name.toLowerCase().includes(q)));
+        }
+        function bdRenderPalette() {
+            document.getElementById('bd-pal-tabs').innerHTML = BD_TABS.map(([k, l]) => `<button type="button" data-bd-tab="${k}" class="fi-chip ${bdTab === k ? 'active' : ''}">${l}</button>`).join('');
+            const eq = [bd.p, bd.s].filter(Boolean);
+            document.getElementById('bd-palette').innerHTML = bdPaletteItems().map(([key, d]) => {
+                const star = d.ref && eq.includes(d.ref.id) && (d.k === 'm') || (d.k === 'a' && eq.some(id => (bdFindW(id) || {}).caliber === d.cal));
+                return `<button type="button" data-bd-add="${crEsc(key)}" class="w-full flex items-center gap-2 text-left px-2.5 py-1.5 rounded-lg border ${star ? 'border-tactical-accent/50' : 'border-tactical-border'} bg-tactical-bg hover:border-tactical-accent transition-colors">
+                    <span class="w-2 h-2 rounded-full shrink-0" style="background:${BD_KIND_COLOR[d.k]}"></span>
+                    <span class="text-xs text-white truncate flex-1">${crEsc(d.name)}${star ? ' <span class="text-tactical-accent text-[10px]">• équipée</span>' : ''}</span>
+                    <span class="text-[10px] font-mono text-tactical-muted shrink-0">${d.w}x${d.h}${d.ammo ? ' • ' + d.ammo + ' b.' : ''}</span>
+                    <span class="text-tactical-accent font-bold text-sm shrink-0">+</span>
+                </button>`;
+            }).join('') || '<p class="text-[11px] text-tactical-muted">Aucun objet.</p>';
+        }
+        const BD_CELL = 46;
+        function bdRenderGrid() {
+            const [C, Rr] = bdDims();
+            const b = BACKPACKS_DATA.find(x => x.id === bd.bag) || BACKPACKS_DATA[0];
+            document.getElementById('bd-bag-title').innerHTML = `${bdPlain(b.name)} <span class="text-tactical-muted font-mono text-xs">${b.slots} cases • ${C}x${Rr}</span>`;
+            const g = document.getElementById('bd-grid');
+            g.style.width = C * BD_CELL + 'px'; g.style.height = Rr * BD_CELL + 'px';
+            let cells = '';
+            for (let y = 0; y < Rr; y++) for (let x = 0; x < C; x++) cells += `<div class="absolute border border-tactical-border/70 bg-tactical-bg rounded-[3px]" style="left:${x * BD_CELL}px;top:${y * BD_CELL}px;width:${BD_CELL - 2}px;height:${BD_CELL - 2}px"></div>`;
+            const items = bd.items.map((it, i) => {
+                const d = bdDef(it.key); if (!d) return '';
+                const [w, h] = bdSize(it); const c = BD_KIND_COLOR[d.k];
+                const label = d.k === 'a' ? d.short : d.name;
+                return `<div data-bd-item="${i}" title="${crEsc(d.name)}" class="absolute rounded-md cursor-grab flex flex-col justify-between p-1 overflow-hidden ${i === bdSel ? 'ring-2 ring-white z-10' : ''}" style="left:${it.x * BD_CELL}px;top:${it.y * BD_CELL}px;width:${w * BD_CELL - 2}px;height:${h * BD_CELL - 2}px;background:${c}26;border:1.5px solid ${c}">
+                    <span class="text-[9px] leading-tight font-bold text-white break-words" style="${w === 1 && h >= 2 ? 'writing-mode:vertical-rl' : ''}">${crEsc(label)}</span>
+                    ${d.ammo ? `<span class="text-[9px] font-mono" style="color:${c}">${d.ammo}</span>` : ''}
+                </div>`;
+            }).join('');
+            g.innerHTML = cells + items + '<div id="bd-ghost" class="absolute rounded-md pointer-events-none hidden"></div>';
+            const tools = document.getElementById('bd-sel-tools');
+            const sd = bdSel >= 0 && bd.items[bdSel] ? bdDef(bd.items[bdSel].key) : null;
+            tools.innerHTML = sd ? `<span class="text-[11px] text-tactical-muted self-center mr-1 truncate max-w-[180px]">${crEsc(sd.name)}</span><button type="button" id="bd-rot" class="xh-btn">Pivoter (R)</button><button type="button" id="bd-del" class="xh-btn">Retirer (Suppr)</button>` : '<span class="text-[11px] text-tactical-muted">Clique sur un objet pour le sélectionner</span>';
+        }
+        function bdRenderStats() {
+            const [C, Rr] = bdDims(); const total = C * Rr;
+            let used = 0, kg = 0, heal = 0, energy = 0, hyd = 0; const ammo = {};
+            bd.items.forEach(it => { const d = bdDef(it.key); if (!d) return; used += d.w * d.h; kg += d.kg; heal += d.heal || 0; energy += d.energy || 0; hyd += d.hydration || 0; if (d.ammo) ammo[d.cal] = (ammo[d.cal] || 0) + d.ammo; });
+            const eq = [bd.p, bd.s].map(bdFindW).filter(Boolean);
+            eq.forEach(w => { kg += (BD_WSIZE[w.category] || [0, 0, 3])[2]; if (w.capacity > 1) ammo[w.caliber] = (ammo[w.caliber] || 0) + w.capacity; });
+            const pct = Math.round(used / total * 100);
+            const bar = pct > 90 ? '#ff4757' : pct > 65 ? '#fb923c' : '#00ff88';
+            const totalAmmo = Object.values(ammo).reduce((a, b) => a + b, 0);
+            const eqCals = eq.map(w => w.caliber);
+            document.getElementById('bd-stats').innerHTML = `
+                <div class="text-[10px] font-bold uppercase tracking-widest text-tactical-muted mb-3">Résumé du build</div>
+                <div class="flex justify-between text-xs font-mono mb-1"><span class="text-tactical-muted">Encombrement</span><span class="font-bold" style="color:${bar}">${used} / ${total} cases (${pct} %)</span></div>
+                <div class="w-full bg-tactical-border/50 h-2 rounded-full overflow-hidden mb-3"><div class="h-full rounded-full" style="width:${pct}%;background:${bar}"></div></div>
+                <div class="space-y-1.5 text-xs font-mono">
+                    ${rowKV('Poids estimé', kg.toFixed(1) + ' kg')}
+                    ${rowKV('Objets dans le sac', bd.items.length)}
+                    ${rowKV('Balles emportées', `<span class="text-tactical-gold">${totalAmmo}</span>`)}
+                    ${rowKV('Soins', heal + ' PV')}
+                    ${rowKV('Énergie / hydratation', `${energy} / ${hyd > 0 ? '+' : ''}${hyd}`)}
+                </div>
+                <div class="mt-3 pt-3 border-t border-tactical-border/60 space-y-1">
+                    <div class="text-[10px] font-bold uppercase tracking-widest text-tactical-muted mb-1">Balles par calibre <span class="normal-case font-normal">(chargeurs + armes équipées)</span></div>
+                    ${Object.keys(ammo).length ? Object.entries(ammo).sort((a, b) => b[1] - a[1]).map(([c, n]) => `<div class="flex justify-between text-xs font-mono"><span class="${eqCals.includes(c) ? 'text-white' : 'text-tactical-red'}">${crEsc(bdPlain(c))}${eqCals.includes(c) ? '' : ' (aucune arme)'}</span><span class="font-bold text-tactical-gold">${n}</span></div>`).join('') : '<div class="text-[11px] text-tactical-muted">Aucune munition.</div>'}
+                    ${eq.filter(w => !ammo[w.caliber] || ammo[w.caliber] <= w.capacity).map(w => `<div class="text-[11px] text-orange-400">Pas de chargeur de rechange pour ${crEsc(bdPlain(w.name))}.</div>`).join('')}
+                </div>
+                <div class="mt-3 pt-3 border-t border-tactical-border/60 text-[11px] font-mono text-tactical-muted">
+                    Équipé : <span class="text-white">${eq.length ? eq.map(w => bdPlain(w.name)).join(' + ') : 'aucune arme'}</span>
+                </div>`;
+        }
+        function bdRenderSaved() {
+            document.getElementById('bd-saved').innerHTML = bdSaved.length ? bdSaved.map((b, i) => `
+                <div class="flex items-center gap-2 bg-tactical-bg border border-tactical-border rounded-lg px-2.5 py-1.5">
+                    <span class="text-xs text-white truncate flex-1">${crEsc(b.name || 'Build sans nom')}</span>
+                    <button type="button" data-bd-load="${i}" class="text-[10px] font-bold uppercase text-tactical-accent hover:underline">Charger</button>
+                    <button type="button" data-bd-rm="${i}" class="text-[10px] font-bold uppercase text-tactical-muted hover:text-tactical-red">✕</button>
+                </div>`).join('') : '<p class="text-[11px] text-tactical-muted">Aucun build enregistré.</p>';
+        }
+        function bdRender() { bdRenderSelects(); bdRenderPalette(); bdRenderGrid(); bdRenderStats(); bdRenderSaved(); }
+        function bdExport() { return { n: bd.name || '', b: bd.bag, p: bd.p || '', s: bd.s || '', i: bd.items.map(it => [it.key, it.x, it.y, it.r ? 1 : 0]) }; }
+        function bdImport(o) {
+            if (!o || typeof o !== 'object') throw 0;
+            bd = { name: String(o.n || o.name || '').slice(0, 40), bag: BACKPACKS_DATA.some(b => b.id === o.b) ? o.b : 'rucksack', p: bdFindW(o.p) ? o.p : '', s: bdFindW(o.s) ? o.s : '', items: [] };
+            (o.i || []).forEach(a => { if (Array.isArray(a) && bdDef(String(a[0]))) bd.items.push({ key: String(a[0]), x: +a[1] || 0, y: +a[2] || 0, r: a[3] ? 1 : 0 }); });
+            // vérifie les chevauchements / dépassements : on range si besoin
+            const ok = bd.items.every((it, i) => { const [w, h] = bdSize(it); return bdFits(it.x, it.y, w, h, i); });
+            if (!ok) bdRepack(true);
+            bdSel = -1;
+        }
+        function bdShareUrl() { return location.href.split('#')[0] + '#build=' + b64Enc(bdExport()); }
+
+        function bdSetup() {
+            const sec = document.getElementById('build-section'); if (!sec) return;
+            document.getElementById('bd-bag').onchange = e => { bd.bag = e.target.value; const lost = bdRepack(true); bdRender(); if (lost) bdMsg(`${lost} objet(s) ne rentraient plus et ont été retirés.`, false); };
+            document.getElementById('bd-primary').onchange = e => { bd.p = e.target.value; bdRenderPalette(); bdRenderStats(); };
+            document.getElementById('bd-secondary').onchange = e => { bd.s = e.target.value; bdRenderPalette(); bdRenderStats(); };
+            document.getElementById('bd-name').oninput = e => { bd.name = e.target.value; };
+            document.getElementById('bd-pal-q').oninput = e => { bdQ = e.target.value; bdRenderPalette(); };
+            document.getElementById('bd-auto').onclick = () => { bdRepack(false); bdRenderGrid(); bdRenderStats(); };
+            document.getElementById('bd-clear').onclick = () => { if (bd.items.length && !confirm('Vider tout le sac ?')) return; bd.items = []; bdSel = -1; bdRenderGrid(); bdRenderStats(); bdMsg('Sac vidé.'); };
+            document.getElementById('bd-save').onclick = () => {
+                const name = (bd.name || '').trim() || prompt('Nom du build ?', 'Mon build') || '';
+                if (!name) return; bd.name = name; document.getElementById('bd-name').value = name;
+                const data = bdExport(); const i = bdSaved.findIndex(b => b.name === name);
+                const rec = { name, data }; if (i >= 0) bdSaved[i] = rec; else bdSaved.push(rec);
+                bdSaveStore(); bdRenderSaved(); bdMsg('Build enregistré dans ton navigateur.');
+            };
+            document.getElementById('bd-share').onclick = () => {
+                const url = bdShareUrl(); const inp = document.getElementById('bd-share-url');
+                inp.value = url; document.getElementById('bd-share-box').classList.remove('hidden');
+                history.replaceState(null, '', '#build=' + url.split('#build=')[1]);
+                toolCopy(url, inp).then(ok => bdMsg(ok ? 'Lien copié : colle-le sur Discord.' : 'Lien prêt : copie-le ci-dessus.'));
+            };
+            document.getElementById('bd-copy').onclick = () => { const inp = document.getElementById('bd-share-url'); toolCopy(inp.value, inp).then(ok => bdMsg(ok ? 'Lien copié.' : 'Sélectionne le lien et copie-le.', ok)); };
+            sec.addEventListener('click', e => {
+                const t = e.target.closest('[data-bd-tab]'); if (t) { bdTab = t.dataset.bdTab; bdRenderPalette(); return; }
+                const a = e.target.closest('[data-bd-add]'); if (a) { bdAdd(a.dataset.bdAdd); return; }
+                const l = e.target.closest('[data-bd-load]'); if (l) { const b = bdSaved[+l.dataset.bdLoad]; if (b) { try { bdImport(b.data); bdRender(); bdMsg(`Build « ${b.name} » chargé.`); } catch (er) { bdMsg('Build illisible.', false); } } return; }
+                const r = e.target.closest('[data-bd-rm]'); if (r) { const b = bdSaved[+r.dataset.bdRm]; if (b && confirm(`Supprimer le build « ${b.name} » ?`)) { bdSaved.splice(+r.dataset.bdRm, 1); bdSaveStore(); bdRenderSaved(); } return; }
+                if (e.target.id === 'bd-rot') return bdRotate();
+                if (e.target.id === 'bd-del') return bdDelete();
+            });
+            // glisser-déposer dans la grille
+            const grid = document.getElementById('bd-grid');
+            grid.addEventListener('pointerdown', e => {
+                const el = e.target.closest('[data-bd-item]'); if (!el) { bdSel = -1; bdRenderGrid(); return; }
+                const i = +el.dataset.bdItem, it = bd.items[i], rect = grid.getBoundingClientRect();
+                bdDrag = { i, ox: e.clientX - rect.left - it.x * BD_CELL, oy: e.clientY - rect.top - it.y * BD_CELL, sx: e.clientX, sy: e.clientY, moved: false, tx: it.x, ty: it.y };
+                grid.setPointerCapture(e.pointerId); e.preventDefault();
+            });
+            grid.addEventListener('pointermove', e => {
+                if (!bdDrag) return;
+                if (Math.abs(e.clientX - bdDrag.sx) + Math.abs(e.clientY - bdDrag.sy) > 5) bdDrag.moved = true;
+                if (!bdDrag.moved) return;
+                const rect = grid.getBoundingClientRect(), it = bd.items[bdDrag.i], [w, h] = bdSize(it);
+                const tx = Math.round((e.clientX - rect.left - bdDrag.ox) / BD_CELL), ty = Math.round((e.clientY - rect.top - bdDrag.oy) / BD_CELL);
+                bdDrag.tx = tx; bdDrag.ty = ty;
+                const ok = bdFits(tx, ty, w, h, bdDrag.i), gh = document.getElementById('bd-ghost');
+                gh.classList.remove('hidden');
+                Object.assign(gh.style, { left: tx * BD_CELL + 'px', top: ty * BD_CELL + 'px', width: w * BD_CELL - 2 + 'px', height: h * BD_CELL - 2 + 'px', background: ok ? '#00ff8833' : '#ff475733', border: '2px dashed ' + (ok ? '#00ff88' : '#ff4757'), zIndex: 20 });
+                const el = grid.querySelector(`[data-bd-item="${bdDrag.i}"]`); if (el) el.style.opacity = '.45';
+            });
+            const end = () => {
+                if (!bdDrag) return; const dr = bdDrag; bdDrag = null;
+                if (dr.moved) { const it = bd.items[dr.i], [w, h] = bdSize(it); if (bdFits(dr.tx, dr.ty, w, h, dr.i)) { it.x = dr.tx; it.y = dr.ty; } else bdMsg('Pas assez de place à cet endroit.', false); }
+                bdSel = dr.i; bdRenderGrid();
+            };
+            grid.addEventListener('pointerup', end); grid.addEventListener('pointercancel', end);
+            document.addEventListener('keydown', e => {
+                if (currentGroup !== 'build' || bdSel < 0 || /INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName)) return;
+                if (e.key === 'r' || e.key === 'R') { e.preventDefault(); bdRotate(); }
+                if (e.key === 'Delete' || e.key === 'Backspace') { e.preventDefault(); bdDelete(); }
+            });
+        }
+        function bdRotate() {
+            const it = bd.items[bdSel]; if (!it) return;
+            const [w, h] = bdSize(it);
+            if (bdFits(it.x, it.y, h, w, bdSel)) it.r = it.r ? 0 : 1;
+            else { const d = bdDef(it.key), nr = it.r ? 0 : 1, nw = nr ? d.h : d.w, nh = nr ? d.w : d.h; const [C, Rr] = bdDims(); let done = false; for (let y = 0; y < Rr && !done; y++) for (let x = 0; x < C && !done; x++) if (bdFits(x, y, nw, nh, bdSel)) { it.x = x; it.y = y; it.r = nr; done = true; } if (!done) return bdMsg('Impossible de pivoter : pas assez de place.', false); }
+            bdRenderGrid();
+        }
+        function bdDelete() { if (!bd.items[bdSel]) return; bd.items.splice(bdSel, 1); bdSel = -1; bdRenderGrid(); bdRenderStats(); }
+        function bdDefault() {
+            bd = { name: '', bag: 'rucksack', p: WEAPONS_DATA.some(w => w.id === 'm4a1') ? 'm4a1' : '', s: WEAPONS_DATA.some(w => w.id === 'm1911') ? 'm1911' : '', items: [] };
+            ['m:' + bd.p, 'm:' + bd.p, 'm:' + bd.s, 'h:bandage', 'h:bandage', 'h:small-medkit', 'f:mre'].forEach(k => { const d = bdDef(k); if (d) { const p = bdFirstFit(d, -1); if (p) bd.items.push({ key: k, ...p }); } });
+        }
+
+        // ============================================================
+        // PLANIFICATEUR DE LOOT RUN
+        // ============================================================
+        const LR_KEY = 'ar2_runs_v1';
+        const LR_STUDS_PER_UNIT = 2580 / 170;  // ≈ 15,2 studs par unité de carte (1 case de grille ≈ 2580 studs, estimation)
+        const LR_M_PER_STUD = 0.28;            // 1 stud ≈ 0,28 m (convention Roblox)
+        const LR_MAX = 8;
+        let lrPts = [], lrSaved = [];
+        try { lrSaved = JSON.parse(localStorage.getItem(LR_KEY) || '[]'); if (!Array.isArray(lrSaved)) lrSaved = []; } catch (e) { lrSaved = []; }
+        const lrSaveStore = () => { try { localStorage.setItem(LR_KEY, JSON.stringify(lrSaved)); } catch (e) {} };
+        const lrLoc = uid => MAP_DATA.locations.find(l => l.uid === uid);
+        const lrName = p => p.uid && lrLoc(p.uid) ? bdPlain(lrLoc(p.uid).name) : `Point libre (case ${gridSquare(p.x, p.y)})`;
+        function lrFmtTime(s) { s = Math.round(s); const m = Math.floor(s / 60), r = s % 60; return m ? `${m} min ${String(r).padStart(2, '0')} s` : `${r} s`; }
+        function lrFmtDist(st) { return `${Math.round(st).toLocaleString('fr-FR')} studs <span class="text-tactical-muted">(≈ ${(st * LR_M_PER_STUD / 1000).toLocaleString('fr-FR', { maximumFractionDigits: 2 })} km)</span>`; }
+        function lrAddAt(x, y) {
+            if (lrPts.length >= LR_MAX) return lrRenderSummaryMsg(`Maximum ${LR_MAX} points.`);
+            let best = null, bd2 = 40 * 40;
+            MAP_DATA.locations.forEach(l => { if (l.hidden) return; const d = (l.x - x) ** 2 + (l.y - y) ** 2; if (d < bd2) { bd2 = d; best = l; } });
+            const p = best ? { uid: best.uid, x: best.x, y: best.y } : { x: Math.round(x), y: Math.round(y) };
+            const last = lrPts[lrPts.length - 1];
+            if (last && last.x === p.x && last.y === p.y) return;
+            lrPts.push(p); lrRender();
+        }
+        let lrNote = '';
+        function lrRenderSummaryMsg(t) { lrNote = t; lrRender(); setTimeout(() => { lrNote = ''; }, 50); }
+        function lrRenderMap() {
+            const box = document.getElementById('lr-map'); if (!box) return;
+            const P = MAP_MODES.normal.pal;
+            const grid = []; for (let i = 0; i <= 6; i++) { const v = 75 + i * 170; grid.push(`<line x1="${v}" y1="0" x2="${v}" y2="${MAP_H}" stroke="${P.grid}"/><line x1="0" y1="${v}" x2="${MAP_W}" y2="${v}" stroke="${P.grid}"/>`); }
+            const inRoute = new Set(lrPts.map(p => p.uid).filter(Boolean));
+            const locs = MAP_DATA.locations.filter(l => !l.hidden).map(l => { const c = MAP_CATS[l.cat] ? MAP_CATS[l.cat].color : '#8b949e'; return `<g class="lr-loc"><circle cx="${l.x}" cy="${l.y}" r="${inRoute.has(l.uid) ? 0 : 5}" fill="${c}" opacity=".85" stroke="#0b0f14" stroke-width="1.5"/><text x="${l.x}" y="${l.y - 9}" text-anchor="middle" class="lr-lbl">${l.name.replace(/\s*\(.*?\)\s*/g, '')}</text><title>${bdPlain(l.name)}</title></g>`; }).join('');
+            const path = lrPts.length > 1 ? `<path d="${lrPts.map((p, i) => `${i ? 'L' : 'M'}${p.x} ${p.y}`).join('')}" fill="none" stroke="#f97316" stroke-width="5" stroke-linejoin="round" stroke-linecap="round" opacity=".9"/><path d="${lrPts.map((p, i) => `${i ? 'L' : 'M'}${p.x} ${p.y}`).join('')}" fill="none" stroke="#fff" stroke-width="1.5" stroke-dasharray="6 8" opacity=".8"/>` : '';
+            const marks = lrPts.map((p, i) => `<g transform="translate(${p.x},${p.y})"><circle r="13" fill="${i === 0 ? '#00ff88' : i === lrPts.length - 1 && i > 0 ? '#ff4757' : '#f97316'}" stroke="#0b0f14" stroke-width="2.5"/><text y="4.5" text-anchor="middle" class="lr-num">${i + 1}</text></g>`).join('');
+            box.innerHTML = `<svg id="lr-svg" viewBox="0 0 ${MAP_W} ${MAP_H}" class="w-full h-full block select-none" role="img" aria-label="Carte de l'archipel pour tracer un itinéraire">
+                <style>.lr-lbl{font:700 11px Inter,sans-serif;fill:#e6edf3;paint-order:stroke;stroke:#0b0f14;stroke-width:3px;pointer-events:none}.lr-num{font:800 13px 'JetBrains Mono',monospace;fill:#0b0f14;pointer-events:none}</style>
+                <rect width="${MAP_W}" height="${MAP_H}" fill="${P.ocean}"/>${grid.join('')}
+                <path d="${MAP_DATA.paths.land}" fill="${P.land}" stroke="${P.coast}" stroke-width="2"/>
+                <path d="${MAP_DATA.paths.sand}" fill="${P.sand}"/><path d="${MAP_DATA.paths.forest}" fill="${P.forest}"/>
+                <path d="${MAP_DATA.paths.lakes}" fill="${P.lake}"/><path d="${MAP_DATA.paths.roads}" fill="${P.road}"/>
+                ${locs}${path}${marks}</svg>`;
+        }
+        // Probabilité qu'un objet soit trouvé sur l'itinéraire (à partir des tags de loot des lieux)
+        function lrLootScores() {
+            const locTags = lrPts.map(p => p.uid ? (FI_LOC_TAGS[p.uid] || {}) : {}).filter(t => Object.keys(t).length);
+            if (!locTags.length) return [];
+            return ALL_ITEMS.filter(i => !i.custom || i.type === 'weapon').map(item => {
+                const tags = fiItemTags(item); let miss = 1, sum = 0;
+                locTags.forEach(lt => { let w = 0; Object.entries(tags).forEach(([t, v]) => { if (lt[t]) w += v * lt[t]; }); sum += w; miss *= 1 - Math.min(.9, w / 6.5); });
+                return { item, p: 1 - miss, sum };
+            }).filter(x => x.p > 0.05);
+        }
+        const lrLvl = p => p >= .75 ? ['Élevée', 'text-tactical-accent'] : p >= .4 ? ['Moyenne', 'text-orange-400'] : ['Faible', 'text-tactical-red'];
+        function lrRenderLoot() {
+            const box = document.getElementById('lr-loot');
+            const sc = lrLootScores();
+            if (!sc.length) { box.innerHTML = '<div class="text-[10px] font-bold uppercase tracking-widest text-tactical-muted mb-2">Loot probable</div><p class="text-[11px] text-tactical-muted">Place au moins un point sur un lieu connu de la carte pour voir les loots probables.</p>'; return; }
+            const by = (fn, n) => sc.filter(x => fn(x.item)).sort((a, b) => b.p - a.p || (TIER_ORDER[b.item.tier] || 0) - (TIER_ORDER[a.item.tier] || 0) || b.sum - a.sum).slice(0, n);
+            const weapons = by(i => i.type === 'weapon', 40);
+            const topW = weapons.slice().sort((a, b) => ((TIER_ORDER[b.item.tier] || 0) * .25 + b.p) - ((TIER_ORDER[a.item.tier] || 0) * .25 + a.p)).slice(0, 6);
+            const cal = {}; weapons.forEach(x => { const c = bdPlain(x.item.caliber); if (!c || c === '—') return; cal[c] = cal[c] ? { p: Math.max(cal[c].p, x.p), n: cal[c].n + 1 } : { p: x.p, n: 1 }; });
+            const cals = Object.entries(cal).sort((a, b) => b[1].p - a[1].p || b[1].n - a[1].n).slice(0, 4);
+            const heals = by(i => i.sub === 'Items de Soin', 3), food = by(i => i.group === 'nourriture' && i.sub !== 'Items de Soin', 4);
+            const atts = by(i => i.group === 'accessoires', 3), bags = by(i => i.group === 'sacs', 2);
+            const sTier = weapons.filter(x => x.item.tier === 'S' && x.p >= .45);
+            const high = [];
+            if (cals[0] && cals[0][1].p >= .75) high.push(`munitions ${cals.slice(0, 2).filter(c => c[1].p >= .75).map(c => c[0]).join(' / ')}`);
+            if (heals[0] && heals[0].p >= .75) high.push(/military|large|blood|field/i.test(bdPlain(heals[0].item.name)) ? 'soins militaires' : 'soins');
+            if (sTier.length) high.push('armes S-Tier');
+            else if (weapons.some(x => x.item.tier === 'A' && x.p >= .75)) high.push('armes A-Tier');
+            if (food[0] && food[0].p >= .75) high.push('nourriture');
+            const row = (name, p, extra = '') => { const [l, c] = lrLvl(p); return `<div class="flex items-center justify-between gap-2 py-1 border-b border-tactical-border/40 last:border-0"><span class="text-xs text-white truncate">${name}${extra}</span><span class="text-[10px] font-mono font-bold shrink-0 ${c}">${l}</span></div>`; };
+            const block = (title, html) => html ? `<div class="mt-3"><div class="text-[10px] font-bold uppercase tracking-widest text-tactical-muted mb-1">${title}</div>${html}</div>` : '';
+            box.innerHTML = `
+                <div class="text-[10px] font-bold uppercase tracking-widest text-tactical-muted mb-2">Loot probable sur ce trajet</div>
+                <div class="rounded-lg border border-tactical-accent/40 bg-tactical-accent/5 px-3 py-2 text-xs text-white">${high.length ? `<b class="text-tactical-accent">Probabilité élevée sur ce trajet :</b> ${high.join(', ')}.` : 'Pas de loot à forte probabilité : ajoute des lieux militaires ou des villes.'}</div>
+                ${block('Meilleures armes', topW.map(x => row(bdPlain(x.item.name), x.p, ` <span class="text-[9px] font-mono px-1 py-0.5 rounded border ${getTierBadgeClass(x.item.tier)}">${x.item.tier}</span>`)).join(''))}
+                ${block('Munitions', cals.map(([c, v]) => row(c, v.p, ` <span class="text-[10px] text-tactical-muted">${v.n} arme${v.n > 1 ? 's' : ''}</span>`)).join(''))}
+                ${block('Soins', heals.map(x => row(bdPlain(x.item.name), x.p)).join(''))}
+                ${block('Nourriture & boissons', food.map(x => row(bdPlain(x.item.name), x.p)).join(''))}
+                ${block('Accessoires', atts.map(x => row(bdPlain(x.item.name), x.p)).join(''))}
+                ${block('Sacs à dos', bags.map(x => row(bdPlain(x.item.name), x.p)).join(''))}
+                <p class="text-[10px] text-tactical-muted mt-3">Estimation à partir des types de loot de chaque lieu (même moteur que Find Item), pas des taux exacts du jeu.</p>`;
+        }
+        function lrRenderSummary() {
+            const walk = Math.max(1, +document.getElementById('lr-walk').value || 16), sprint = Math.max(1, +document.getElementById('lr-sprint').value || 24);
+            const legs = []; let tot = 0;
+            for (let i = 1; i < lrPts.length; i++) { const a = lrPts[i - 1], b = lrPts[i]; const st = Math.hypot(b.x - a.x, b.y - a.y) * LR_STUDS_PER_UNIT; legs.push(st); tot += st; }
+            const islands = [...new Set(lrPts.map(p => p.uid && lrLoc(p.uid) ? lrLoc(p.uid).island : null).filter(Boolean))];
+            document.getElementById('lr-summary').innerHTML = `
+                ${lrNote ? `<div class="text-xs text-tactical-red mb-2">${lrNote}</div>` : ''}
+                <div class="grid grid-cols-3 gap-2 mb-3 text-center">
+                    <div class="rounded-lg border border-tactical-border bg-tactical-bg px-2 py-2"><div class="text-[9px] uppercase tracking-widest text-tactical-muted">Distance</div><div class="font-mono font-extrabold text-white text-sm">${Math.round(tot).toLocaleString('fr-FR')}</div><div class="text-[10px] text-tactical-muted">studs</div></div>
+                    <div class="rounded-lg border border-tactical-border bg-tactical-bg px-2 py-2"><div class="text-[9px] uppercase tracking-widest text-tactical-muted">Marche</div><div class="font-mono font-extrabold text-tactical-gold text-sm">${lrFmtTime(tot / walk)}</div></div>
+                    <div class="rounded-lg border border-tactical-border bg-tactical-bg px-2 py-2"><div class="text-[9px] uppercase tracking-widest text-tactical-muted">Sprint</div><div class="font-mono font-extrabold text-tactical-accent text-sm">${lrFmtTime(tot / sprint)}</div></div>
+                </div>
+                <div class="text-[11px] font-mono text-tactical-muted mb-2">${lrPts.length} point(s) • ${tot ? lrFmtDist(tot) : '—'}${islands.length ? ' • ' + islands.join(', ') : ''}</div>
+                <div class="space-y-1 max-h-[260px] overflow-y-auto pr-1">
+                    ${lrPts.length ? lrPts.map((p, i) => `
+                        <div class="flex items-center gap-2 bg-tactical-bg border border-tactical-border rounded-lg px-2 py-1.5">
+                            <span class="w-5 h-5 rounded-full text-[10px] font-extrabold flex items-center justify-center shrink-0" style="background:${i === 0 ? '#00ff88' : i === lrPts.length - 1 && i > 0 ? '#ff4757' : '#f97316'};color:#0b0f14">${i + 1}</span>
+                            <span class="text-xs text-white truncate flex-1">${crEsc(lrName(p))}</span>
+                            ${i ? `<span class="text-[10px] font-mono text-tactical-muted shrink-0">+${Math.round(legs[i - 1]).toLocaleString('fr-FR')} • ${lrFmtTime(legs[i - 1] / sprint)}</span>` : '<span class="text-[10px] font-mono text-tactical-accent shrink-0">départ</span>'}
+                            <button type="button" data-lr-rm="${i}" class="text-tactical-muted hover:text-tactical-red text-xs shrink-0" aria-label="Retirer ce point">✕</button>
+                        </div>`).join('') : '<p class="text-[11px] text-tactical-muted">Clique sur la carte pour placer le point de départ.</p>'}
+                </div>
+                <p class="text-[10px] text-tactical-muted mt-2">Distances à vol d'oiseau. Échelle estimée : 1 case de grille ≈ 2 580 studs. Vitesses modifiables (Roblox : 16 studs/s en marche).</p>`;
+        }
+        function lrRenderSaved() {
+            document.getElementById('lr-saved').innerHTML = lrSaved.length ? lrSaved.map((r, i) => `
+                <div class="flex items-center gap-2 bg-tactical-bg border border-tactical-border rounded-lg px-2.5 py-1.5">
+                    <span class="text-xs text-white truncate flex-1">${crEsc(r.name)}</span>
+                    <button type="button" data-lr-load="${i}" class="text-[10px] font-bold uppercase text-tactical-accent hover:underline">Charger</button>
+                    <button type="button" data-lr-del="${i}" class="text-[10px] font-bold uppercase text-tactical-muted hover:text-tactical-red">✕</button>
+                </div>`).join('') : '<p class="text-[11px] text-tactical-muted">Aucun itinéraire enregistré.</p>';
+        }
+        function lrRender() { lrRenderMap(); lrRenderSummary(); lrRenderLoot(); lrRenderSaved(); }
+        const lrExport = () => lrPts.map(p => p.uid ? p.uid : [p.x, p.y]);
+        function lrImport(arr) {
+            if (!Array.isArray(arr)) throw 0;
+            lrPts = arr.slice(0, LR_MAX).map(v => { if (typeof v === 'string') { const l = lrLoc(v); return l ? { uid: l.uid, x: l.x, y: l.y } : null; } if (Array.isArray(v) && isFinite(v[0]) && isFinite(v[1])) return { x: +v[0], y: +v[1] }; return null; }).filter(Boolean);
+        }
+        function lrSetup() {
+            const sec = document.getElementById('lootrun-section'); if (!sec) return;
+            const pre = document.getElementById('lr-preset');
+            pre.innerHTML = '<option value="">Charger un chemin connu…</option>' + (typeof LOOT_ROUTES !== 'undefined' ? LOOT_ROUTES : []).map(r => `<option value="${r.id}">${bdPlain(r.name)}</option>`).join('');
+            pre.onchange = () => { const r = LOOT_ROUTES.find(x => x.id === pre.value); if (r) { lrImport(r.steps.map(s => s.uid)); lrRender(); } pre.value = ''; };
+            document.getElementById('lr-map').addEventListener('click', e => {
+                const svg = document.getElementById('lr-svg'); if (!svg) return;
+                const pt = svg.createSVGPoint(); pt.x = e.clientX; pt.y = e.clientY;
+                const p = pt.matrixTransform(svg.getScreenCTM().inverse());
+                lrAddAt(p.x, p.y);
+            });
+            document.getElementById('lr-undo').onclick = () => { lrPts.pop(); lrRender(); };
+            document.getElementById('lr-clear').onclick = () => { lrPts = []; lrRender(); };
+            ['lr-walk', 'lr-sprint'].forEach(id => document.getElementById(id).oninput = lrRenderSummary);
+            document.getElementById('lr-save').onclick = () => {
+                if (lrPts.length < 2) return lrRenderSummaryMsg('Place au moins 2 points.');
+                const name = prompt("Nom de l'itinéraire ?", lrPts.map(lrName).filter((n, i, a) => i === 0 || i === a.length - 1).join(' → ')); if (!name) return;
+                const i = lrSaved.findIndex(r => r.name === name); const rec = { name, pts: lrExport() };
+                if (i >= 0) lrSaved[i] = rec; else lrSaved.push(rec); lrSaveStore(); lrRenderSaved();
+            };
+            document.getElementById('lr-share').onclick = () => {
+                if (lrPts.length < 2) return lrRenderSummaryMsg('Place au moins 2 points.');
+                const code = b64Enc(lrExport()), url = location.href.split('#')[0] + '#run=' + code, inp = document.getElementById('lr-share-url');
+                inp.value = url; document.getElementById('lr-share-box').classList.remove('hidden'); history.replaceState(null, '', '#run=' + code);
+                toolCopy(url, inp);
+            };
+            document.getElementById('lr-copy').onclick = () => { const inp = document.getElementById('lr-share-url'); toolCopy(inp.value, inp); };
+            sec.addEventListener('click', e => {
+                const rm = e.target.closest('[data-lr-rm]'); if (rm) { lrPts.splice(+rm.dataset.lrRm, 1); lrRender(); return; }
+                const ld = e.target.closest('[data-lr-load]'); if (ld) { const r = lrSaved[+ld.dataset.lrLoad]; if (r) { lrImport(r.pts); lrRender(); } return; }
+                const dl = e.target.closest('[data-lr-del]'); if (dl) { const r = lrSaved[+dl.dataset.lrDel]; if (r && confirm(`Supprimer l'itinéraire « ${r.name} » ?`)) { lrSaved.splice(+dl.dataset.lrDel, 1); lrSaveStore(); lrRenderSaved(); } }
+            });
+        }
+
+        // ============================================================
+        // PACK SQUAD : export / import JSON (lieux + armes + builds + itinéraires)
+        // ============================================================
+        function sqPack() {
+            return { type: 'ar2-squad-pack', version: 1, site: 'AR2 Wiki & Map', date: new Date().toISOString(), lieux: ulLocs, armes: crWeapons, builds: bdSaved, runs: lrSaved };
+        }
+        function sqDownload() {
+            const blob = new Blob([JSON.stringify(sqPack(), null, 2)], { type: 'application/json' });
+            const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `ar2-pack-squad-${new Date().toISOString().slice(0, 10)}.json`; a.click();
+            setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+        }
+        // Accepte un pack squad, ou les anciens fichiers (tableau de lieux / d'armes)
+        function sqApply(data) {
+            const res = { lieux: 0, armes: 0, builds: 0, runs: 0 };
+            const addLocs = arr => (arr || []).forEach((u, n) => { if (u && u.name && isFinite(u.x) && isFinite(u.y)) { if (!u.uid || !String(u.uid).startsWith('u-')) u.uid = 'u-' + Date.now().toString(36) + n; const i = ulLocs.findIndex(q => q.uid === u.uid); if (i >= 0) ulLocs[i] = u; else ulLocs.push(u); res.lieux++; } });
+            const addW = arr => (arr || []).forEach((w, n) => { if (w && w.name && !(isFinite(w.x) && isFinite(w.y) && !w.wclass)) { w.id = w.id && String(w.id).startsWith('custom-') ? w.id : 'custom-' + Date.now().toString(36) + n; const i = crWeapons.findIndex(q => q.id === w.id); if (i >= 0) crWeapons[i] = w; else crWeapons.push(w); res.armes++; } });
+            if (Array.isArray(data)) {
+                const locs = data.filter(o => o && isFinite(o.x) && isFinite(o.y) && !o.wclass);
+                if (locs.length) addLocs(locs); else addW(data);
+            } else if (data && typeof data === 'object') {
+                addLocs(data.lieux || data.locations); addW(data.armes || data.weapons);
+                (data.builds || []).forEach(b => { if (b && b.name && b.data) { const i = bdSaved.findIndex(q => q.name === b.name); if (i >= 0) bdSaved[i] = b; else bdSaved.push(b); res.builds++; } });
+                (data.runs || []).forEach(r => { if (r && r.name && Array.isArray(r.pts)) { const i = lrSaved.findIndex(q => q.name === r.name); if (i >= 0) lrSaved[i] = r; else lrSaved.push(r); res.runs++; } });
+            } else throw 0;
+            if (res.lieux) ulRefresh();
+            if (res.armes) crRefreshAll();
+            if (res.builds) bdSaveStore();
+            if (res.runs) lrSaveStore();
+            return res;
+        }
+        const sqSummary = r => `Pack importé : ${r.lieux} lieu(x), ${r.armes} arme(s), ${r.builds} build(s), ${r.runs} itinéraire(s).`;
+        function sqSetup() {
+            const hosts = [['ul-export', ulMsg], ['cr-export', crMsg]];
+            hosts.forEach(([anchorId, msg], idx) => {
+                const anchor = document.getElementById(anchorId); if (!anchor) return;
+                const wrap = anchor.parentElement;
+                const cls = anchor.className;
+                wrap.insertAdjacentHTML('beforeend', `
+                    <button type="button" data-sq-export class="${cls}" title="Lieux + armes + builds + itinéraires dans un seul fichier">Exporter mes données (.json)</button>
+                    <label class="${cls} cursor-pointer" title="Fichier .json d'un pote (pack squad, lieux ou armes)">Importer un pack squad<input type="file" data-sq-import accept=".json,application/json" class="hidden"></label>
+                    <button type="button" data-sq-copy class="${cls}" title="Copie tout dans le presse-papiers pour le coller sur Discord">Copier le code</button>
+                    <button type="button" data-sq-paste class="${cls}" title="Colle le code reçu d'un pote">Coller un code</button>`);
+                wrap.querySelector('[data-sq-export]').onclick = () => { sqDownload(); msg('Pack squad exporté (lieux, armes, builds, itinéraires).'); };
+                wrap.querySelector('[data-sq-import]').onchange = e => {
+                    const file = e.target.files[0]; if (!file) return;
+                    const rd = new FileReader();
+                    rd.onload = () => { try { msg(sqSummary(sqApply(JSON.parse(rd.result)))); } catch (err) { msg('Fichier invalide.', false); } e.target.value = ''; };
+                    rd.readAsText(file);
+                };
+                wrap.querySelector('[data-sq-copy]').onclick = () => { const code = 'AR2SQUAD:' + b64Enc(sqPack()); toolCopy(code).then(ok => msg(ok ? `Code copié (${Math.round(code.length / 1024 * 10) / 10} Ko) : colle-le sur Discord.` : 'Copie impossible : utilise « Exporter ».', ok)); };
+                wrap.querySelector('[data-sq-paste]').onclick = () => {
+                    const raw = prompt('Colle ici le code AR2SQUAD reçu (ou le contenu JSON) :'); if (!raw) return;
+                    try { const t = raw.trim(); const data = t.startsWith('AR2SQUAD:') ? b64Dec(t.slice(9)) : JSON.parse(t); msg(sqSummary(sqApply(data))); } catch (err) { msg('Code invalide.', false); }
+                };
+            });
+        }
+
+        // ============================================================
+        // Démarrage + liens partagés (#build=… / #run=…)
+        // ============================================================
+        function toolsHash() {
+            const h = location.hash;
+            try {
+                if (h.startsWith('#build=')) { bdImport(b64Dec(h.slice(7))); toolGoTab('build'); bdMsg(`Build partagé chargé${bd.name ? ' : « ' + bd.name + ' »' : ''}.`); return true; }
+                if (h.startsWith('#run=')) { lrImport(b64Dec(h.slice(5))); toolGoTab('lootrun'); return true; }
+            } catch (e) { console.warn('Lien partagé invalide', e); }
+            return false;
+        }
+        document.addEventListener('DOMContentLoaded', () => {
+            bdDefault(); bdSetup(); lrSetup(); sqSetup();
+            toolsHash();
+            window.addEventListener('hashchange', toolsHash);
+        });
+    </script>
 </body>
 </html>
