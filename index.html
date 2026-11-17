@@ -755,6 +755,21 @@
             </div>
         </div>
 
+        <!-- ===== COSMÉTIQUES ===== -->
+        <section id="cosmetiques-section" class="hidden pb-10">
+            <div class="mb-4">
+                <h2 class="text-2xl font-extrabold text-white tracking-tight">Cosmétiques</h2>
+                <p class="text-xs text-tactical-muted mt-1 max-w-3xl">Tous les vêtements, chapeaux, masques et tenues d'AR2 : où les trouver, quel infecté les lâche, leurs couleurs, leur rareté et leurs chances estimées. Clique sur un cosmétique pour tout savoir.</p>
+            </div>
+            <div id="cos-root"></div>
+        </section>
+        <div id="cos-modal" class="hidden fixed inset-0 z-[70] bg-black/75 backdrop-blur-sm items-start justify-center p-3 md:p-8" role="dialog" aria-modal="true" aria-label="Détail du cosmétique">
+            <div class="ev-modal-box relative w-full max-w-5xl max-h-full overflow-y-auto bg-tactical-card border border-tactical-border rounded-2xl p-5 md:p-6 shadow-2xl">
+                <button type="button" data-cos-close="1" class="absolute right-3 top-3 z-10 bg-tactical-card/90 w-9 h-9 rounded-lg border border-tactical-border text-tactical-muted hover:text-white hover:border-tactical-muted text-xl leading-none" aria-label="Fermer">&times;</button>
+                <div id="cos-modal-body"></div>
+            </div>
+        </div>
+
         <!-- ===== ÉVÉNEMENTS ALÉATOIRES ===== -->
         <section id="events-section" class="hidden pb-10">
             <div class="mb-4">
@@ -789,7 +804,7 @@
         </section>
     </main>
     <footer class="max-w-7xl mx-auto px-4 pb-28 pt-2 text-center text-[11px] text-tactical-muted">
-        Images des objets, des événements et des spawns d'accessoires : <a href="https://roblox-apocalypse-rising.fandom.com/wiki/Apocalypse_Rising_Wiki" target="_blank" rel="noopener" class="underline hover:text-tactical-accent">wiki Apocalypse Rising (Fandom)</a>, licence <a href="https://creativecommons.org/licenses/by-sa/3.0/" target="_blank" rel="noopener" class="underline hover:text-tactical-accent">CC BY-SA</a> (<a href="img/items/CREDITS.md" target="_blank" rel="noopener" class="underline hover:text-tactical-accent">liste des sources</a>). Site fait par des fans, non affilié à Gullet Productions ni à Roblox.
+        Images des objets, des cosmétiques, des événements et des spawns d'accessoires : <a href="https://roblox-apocalypse-rising.fandom.com/wiki/Apocalypse_Rising_Wiki" target="_blank" rel="noopener" class="underline hover:text-tactical-accent">wiki Apocalypse Rising (Fandom)</a>, licence <a href="https://creativecommons.org/licenses/by-sa/3.0/" target="_blank" rel="noopener" class="underline hover:text-tactical-accent">CC BY-SA</a> (<a href="img/items/CREDITS.md" target="_blank" rel="noopener" class="underline hover:text-tactical-accent">liste des sources</a>). Site fait par des fans, non affilié à Gullet Productions ni à Roblox.
     </footer>
 
     <!-- ===== LISTE DE LOOT (wishlist) ===== -->
@@ -1361,6 +1376,7 @@
             { id: 'accessoires', label: "Accessoires d'Armes",    icon: 'eye',  color: '#22d3ee',
               subs: ['Optiques / Lunettes', 'Canon / Silencieux', 'Sous-Canon / Poignées & Lasers'] },
             { id: 'accguide',    label: 'Guide des accessoires',  icon: 'sight', color: '#22d3ee', subs: [] },
+            { id: 'cosmetiques', label: 'Cosmétiques',  icon: 'shirt', color: '#e879f9', subs: [] },
             { id: 'sacs',        label: 'Sacs à Dos (Backpacks)', icon: 'box',  color: '#fbbf24',
               subs: ['Petits sacs (9-12 cases)', 'Sacs moyens (15-16 cases)', 'Grands sacs (18-20 cases)'] },
             { id: 'nourriture',  label: 'Nourriture & Survie',    icon: 'warn', color: '#fb923c',
@@ -1777,6 +1793,7 @@
                 case 'eye':  return `<svg ${st}><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>`;
                 case 'map':  return `<svg ${st}><path d="M9 4L3 6v14l6-2 6 2 6-2V4l-6 2-6-2z"/><path d="M9 4v14M15 6v14"/></svg>`;
                 case 'search': return `<svg ${st}><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>`;
+                case 'shirt': return `<svg ${st}><path d="M8 3l-5 3 2 4 3-1v12h8V9l3 1 2-4-5-3c-.5 1.7-2 3-4 3s-3.5-1.3-4-3z"/></svg>`;
                 case 'sight': return `<svg ${st}><rect x="3" y="9" width="13" height="6" rx="1.5"/><path d="M16 10.5h4v3h-4M7 9V6h5v3M8 15v3"/></svg>`;
                 case 'smoke': return `<svg ${st}><path d="M3 20h18"/><path d="M6 20l3-6h6l3 6"/><path d="M10 10c-2-1-2-3 0-4s2-3 0-4"/><path d="M15 10c-2-1-2-3 0-4"/></svg>`;
                 case 'crosshair': return `<svg ${st}><circle cx="12" cy="12" r="7"/><path d="M12 2v5M12 17v5M2 12h5M17 12h5"/></svg>`;
@@ -1797,7 +1814,7 @@
         function renderMainTabs() {
             document.getElementById('main-tabs').innerHTML = GROUPS.map(g => {
                 const active = g.id === currentGroup;
-                const count = g.id === 'accguide' ? (window.AR2Acc ? AR2Acc.count() : 0) : g.id === 'evenements' ? (window.AR2Events ? AR2Events.count() : 0) : g.id === 'balistique' ? (typeof balWeapons === 'function' ? balWeapons().length : 0) : g.id === 'boss' ? (typeof BOSS_DATA !== 'undefined' ? BOSS_DATA.length : 0) : g.id === 'survie' ? 8 : g.id === 'defi' ? (typeof DF_RULES !== 'undefined' ? DF_RULES.length : 0) : g.id === 'build' ? BACKPACKS_DATA.length : g.id === 'lootrun' ? (typeof LOOT_ROUTES !== 'undefined' ? LOOT_ROUTES.length : 0) : g.id === 'carte' ? (typeof MAP_COUNT !== 'undefined' ? MAP_COUNT : 0) + MAP_DATA.locations.filter(l => l.custom).length : g.id === 'lieux' ? MAP_DATA.locations.filter(l => l.custom).length : g.id === 'createur' ? ALL_ITEMS.filter(i => i.custom).length : g.id === 'finditem' ? ALL_ITEMS.length : g.id === 'crosshair' ? (window.AR2Crosshair ? Object.keys(window.AR2Crosshair.STYLES).length : 11) : ALL_ITEMS.filter(i => i.group === g.id).length;
+                const count = g.id === 'cosmetiques' ? (window.AR2Cos ? AR2Cos.count() : 0) : g.id === 'accguide' ? (window.AR2Acc ? AR2Acc.count() : 0) : g.id === 'evenements' ? (window.AR2Events ? AR2Events.count() : 0) : g.id === 'balistique' ? (typeof balWeapons === 'function' ? balWeapons().length : 0) : g.id === 'boss' ? (typeof BOSS_DATA !== 'undefined' ? BOSS_DATA.length : 0) : g.id === 'survie' ? 8 : g.id === 'defi' ? (typeof DF_RULES !== 'undefined' ? DF_RULES.length : 0) : g.id === 'build' ? BACKPACKS_DATA.length : g.id === 'lootrun' ? (typeof LOOT_ROUTES !== 'undefined' ? LOOT_ROUTES.length : 0) : g.id === 'carte' ? (typeof MAP_COUNT !== 'undefined' ? MAP_COUNT : 0) + MAP_DATA.locations.filter(l => l.custom).length : g.id === 'lieux' ? MAP_DATA.locations.filter(l => l.custom).length : g.id === 'createur' ? ALL_ITEMS.filter(i => i.custom).length : g.id === 'finditem' ? ALL_ITEMS.length : g.id === 'crosshair' ? (window.AR2Crosshair ? Object.keys(window.AR2Crosshair.STYLES).length : 11) : ALL_ITEMS.filter(i => i.group === g.id).length;
                 return `
                     <button data-group="${g.id}" class="flex items-center gap-2.5 px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider border transition-all ${
                         active ? 'bg-tactical-accent text-tactical-bg border-tactical-accent shadow-lg shadow-tactical-accent/10'
@@ -3102,9 +3119,9 @@
         function onGroupChange() {
             const isMap = currentGroup === 'carte', isCreator = currentGroup === 'createur', isFind = currentGroup === 'finditem', isXh = currentGroup === 'crosshair', isLieux = currentGroup === 'lieux';
             const isBuild = currentGroup === 'build', isRun = currentGroup === 'lootrun';
-            const isBal = currentGroup === 'balistique', isBoss = currentGroup === 'boss', isEv = currentGroup === 'evenements', isAcc = currentGroup === 'accguide';
+            const isBal = currentGroup === 'balistique', isBoss = currentGroup === 'boss', isEv = currentGroup === 'evenements', isAcc = currentGroup === 'accguide', isCos = currentGroup === 'cosmetiques';
             const isSv = currentGroup === 'survie', isDf = currentGroup === 'defi';
-            const special = isMap || isCreator || isFind || isXh || isLieux || isBuild || isRun || isBal || isBoss || isEv || isAcc || isSv || isDf;
+            const special = isMap || isCreator || isFind || isXh || isLieux || isBuild || isRun || isBal || isBoss || isEv || isAcc || isCos || isSv || isDf;
             document.getElementById('survie-section').classList.toggle('hidden', !isSv);
             document.getElementById('defi-section').classList.toggle('hidden', !isDf);
             if (isSv && typeof svRender === 'function') svRender();
@@ -3115,6 +3132,8 @@
             if (isEv && typeof evRender === 'function') evRender();
             document.getElementById('accguide-section').classList.toggle('hidden', !isAcc);
             if (isAcc && typeof accRender === 'function') accRender();
+            document.getElementById('cosmetiques-section').classList.toggle('hidden', !isCos);
+            if (isCos && typeof cosRender === 'function') cosRender();
             if (isBal && typeof balRender === 'function') balRender();
             if (isBoss && typeof bossRender === 'function') bossRender();
             document.getElementById('build-section').classList.toggle('hidden', !isBuild);
@@ -6191,6 +6210,7 @@
     </script>
     <script src="events.js"></script>
     <script src="accessories.js"></script>
+    <script src="cosmetics.js"></script>
     <script src="crosshair-app/src/autocolor.js"></script>
     <script src="crosshair-app/src/aimtrainer.js"></script>
     <script src="crosshair-app/src/ar2-tools.js"></script>
