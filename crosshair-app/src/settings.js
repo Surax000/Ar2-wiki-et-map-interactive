@@ -36,7 +36,7 @@ let S = null, bg = 'game', zoom = 1, pvColor = null, pvPick = null;
 const $ = s => document.querySelector(s);
 const cur = () => S.cfg.profiles[S.cfg.active].settings;
 const SW = ['#00ff88', '#ff2d55', '#ffffff', '#22d3ee', '#facc15', '#fb923c', '#e879f9', '#a3e635', '#3b82f6', '#000000'];
-const HK_LABELS = { toggle: 'Afficher / masquer', settings: 'Ouvrir les réglages', nextProfile: 'Profil suivant', center: 'Recentrer', timer: 'Minuteur : afficher / masquer', timer1: 'Minuteur 1 (lancer / relancer)', timer2: 'Minuteur 2 (lancer / relancer)', timer3: 'Minuteur 3 (lancer / relancer)', timerStop: 'Arrêter les minuteurs', spotlight: 'Wiki instantané (par-dessus le jeu)', wiki: 'Ouvrir le wiki AR2 complet', range: 'Télémètre : afficher / masquer', rangeZoom: 'Télémètre : lunette suivante', compass: 'Boussole : afficher / masquer', compassNext: 'Boussole : étape suivante', compassPrev: 'Boussole : étape précédente', themeNext: 'Thème suivant', autoColor: 'Couleur auto on / off', checklist: 'Objectifs à l\'écran', checkNext: 'Cocher l\'objectif suivant', up: 'Monter', down: 'Descendre', left: 'Gauche', right: 'Droite' };
+const HK_LABELS = { toggle: 'Afficher / masquer', settings: 'Ouvrir les réglages', nextProfile: 'Profil suivant', center: 'Recentrer', timer: 'Minuteur : afficher / masquer', timer1: 'Minuteur 1 (lancer / relancer)', timer2: 'Minuteur 2 (lancer / relancer)', timer3: 'Minuteur 3 (lancer / relancer)', timerStop: 'Arrêter les minuteurs', spotlight: 'Wiki instantané (par-dessus le jeu)', wiki: 'Ouvrir le wiki AR2 complet', range: 'Télémètre : afficher / masquer', rangeZoom: 'Télémètre : lunette suivante', compass: 'Boussole : afficher / masquer', compassNext: 'Boussole : étape suivante', compassPrev: 'Boussole : étape précédente', themeNext: 'Thème suivant', autoColor: 'Couleur auto on / off', checklist: 'Objectifs à l\'écran', checkNext: 'Cocher l\'objectif suivant', up: 'Déplacer vers le haut', down: 'Déplacer vers le bas', left: 'Déplacer vers la gauche', right: 'Déplacer vers la droite' };
 
 function drawBg(ctx, w, h) {
     if (bg === 'dark') { ctx.fillStyle = '#14171c'; ctx.fillRect(0, 0, w, h); return; }
@@ -103,7 +103,10 @@ function renderControls() {
     document.querySelectorAll('[data-zoom]').forEach(b => b.classList.toggle('active', +b.dataset.zoom === zoom));
 }
 function renderHotkeys() {
-    $('#hotkeys').innerHTML = Object.keys(HK_LABELS).map(k => `<div class="hk"><span>${HK_LABELS[k]}</span><input readonly data-hk="${k}" value="${(S.cfg.hotkeys[k] || '').replace(/Control/g, 'Ctrl')}"></div>`).join('');
+    const HK_GROUPS = [['Mon viseur', ['toggle', 'nextProfile', 'center', 'autoColor', 'up', 'down', 'left', 'right']], ['Aides en jeu', ['spotlight', 'range', 'rangeZoom', 'compass', 'compassNext', 'compassPrev', 'checklist', 'checkNext']], ['Minuteur', ['timer', 'timer1', 'timer2', 'timer3', 'timerStop']], ["L'appli", ['settings', 'wiki', 'themeNext']]];
+    const seen = new Set(HK_GROUPS.flatMap(g => g[1])); const rest = Object.keys(HK_LABELS).filter(k => !seen.has(k)); if (rest.length) HK_GROUPS.push(['Autres', rest]);
+    const hkRow = k => `<div class="hk"><span>${HK_LABELS[k]}</span><input readonly data-hk="${k}" value="${(S.cfg.hotkeys[k] || '').replace(/Control/g, 'Ctrl')}" placeholder="aucun"></div>`;
+    $('#hotkeys').innerHTML = HK_GROUPS.map(([t, ks]) => `<div class="hk-group"><h4>${t}</h4>${ks.filter(k => HK_LABELS[k]).map(hkRow).join('')}</div>`).join('');
     { const wk = document.getElementById('wiki-key'); if (wk) wk.textContent = (S.cfg.hotkeys.wiki || 'aucun').replace(/Control/g, 'Ctrl'); }
 }
 // ---------- Changement d'arme automatique ----------

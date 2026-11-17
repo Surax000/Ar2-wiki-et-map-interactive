@@ -1,4 +1,12 @@
-## Nouveautés de la v1.5.0
+## Nouveautés de la v1.6.0
+- **Réglages rangés en catégories** : fini la longue liste. À gauche, 6 grandes catégories avec une icône : Mon viseur, Mes armes, Aides en jeu, Wiki et entraînement, Apparence, Réglages de l'appli. En haut, des onglets pour chaque partie (ex : Aides en jeu → Wiki instantané, Télémètre, Boussole, Minuteur, Objectifs).
+- Chaque onglet commence par une phrase simple qui explique à quoi il sert.
+- **Recherche de réglage** (Ctrl+F) : tape « couleur », « touche » ou « boussole » et tous les réglages qui correspondent s'affichent.
+- L'aperçu du viseur et les profils restent à droite quand tu règles ton viseur ou tes armes.
+- Les raccourcis clavier sont classés par groupe (Mon viseur, Aides en jeu, Minuteur, L'appli).
+- Site : la carte de Kin Flats est redessinée dans le style du site (routes, chemins, champs, collines), avec les bâtiments utiles (supérettes, pompiers, police, église, clinique, hôpital) que l'on peut masquer.
+
+## Rappel v1.5.0
 - **Wiki instantané en overlay (Ctrl+Alt+W)** : une barre de recherche semi-transparente s'ouvre par-dessus Roblox, façon Spotlight / PowerToys Run. Tape 3 lettres (M4A1, Ashland…) : stats clés, TTK, meilleurs spawns ou description du lieu, sans Alt-Tab. Entrée = action principale (arme → télémètre, lieu → cap), Ctrl+Entrée = ouvrir la fiche dans le wiki complet, Échap = fermer. Le wiki complet passe sur **Ctrl+Alt+Maj+W**.
 - **Duel Express** : tape « Holographic Sight vs OCR Sight » (ou deux armes, soins, sacs, chargeurs) et l'appli donne un verdict en gros : « Prends OCR Sight : +1 pt de précision en visée, grossissement 4x ». Aussi sur le site (bouton Duel Express).
 - **Télémètre / mode sniper (Ctrl+Alt+D)** : une jauge translucide à côté du viseur. Chaque trait a la hauteur d'un joueur debout à 75, 100, 150… studs avec ta lunette : compare l'ennemi au trait le plus proche, tu lis sa distance, les dégâts au corps de ton arme à cette distance et la chute de balle. **Ctrl+Alt+Maj+D** change de lunette (1x, 3,4x, 4x, 6x…). L'arme suit ta barre rapide (noms des emplacements) ou se choisit dans le wiki. Calibration et champ de vision réglables.

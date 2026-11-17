@@ -8,10 +8,11 @@
 </head>
 <body>
 <header class="top">
-    <div class="brand"><img src="assets/icon.png" alt=""><div><b>AR2 Crosshair</b><span id="ver">v1.5.0</span></div></div>
+    <div class="brand"><img src="assets/icon.png" alt=""><div><b>AR2 Crosshair</b><span id="ver">v1.6.0</span></div></div>
     <div class="top-actions">
         <button id="vis-btn" class="btn primary">Crosshair affiché</button>
-        <span class="hint">Ctrl+Alt + X crosshair • W wiki instantané • D télémètre • K boussole • T minuteur • O objectifs</span>
+        <span class="hint"><span class="kbd">Ctrl+Alt+X</span> afficher / masquer le viseur</span>
+        <button class="btn sm ghost" data-goto="hk-box">Toutes les touches</button>
     </div>
 </header>
 <div id="upd-banner" class="banner hidden"><span id="upd-text"></span><button id="upd-btn" class="btn sm primary">Redémarrer et installer</button></div>
@@ -53,7 +54,7 @@
 
     <!-- Réglages -->
     <section class="panel controls" id="controls">
-        <details open><summary>Couleur</summary>
+        <details open id="cl-box"><summary>Couleur</summary>
             <div class="field"><label>Couleur</label><div class="row gap"><input type="color" data-k="color"><div id="swatches" class="row gap wrap"></div></div></div>
             <div class="field"><label>Opacité <b data-v="opacity"></b></label><input type="range" min="0.1" max="1" step="0.05" data-k="opacity"></div>
         </details>
@@ -76,7 +77,7 @@
             </div>
             <div id="ac-live" class="live small"></div>
         </details>
-        <details open><summary>Dimensions</summary>
+        <details open id="dim-box"><summary>Dimensions</summary>
             <div class="field"><label>Longueur des branches <b data-v="length"></b></label><input type="range" min="0" max="60" step="0.5" data-k="length"></div>
             <div class="field"><label>Épaisseur <b data-v="thickness"></b></label><input type="range" min="0.5" max="12" step="0.5" data-k="thickness"></div>
             <div class="field"><label>Écart au centre <b data-v="gap"></b></label><input type="range" min="0" max="40" step="0.5" data-k="gap"></div>
@@ -93,13 +94,13 @@
                 </div>
             </div>
         </details>
-        <details open><summary>Contour et lueur</summary>
+        <details open id="ol-box"><summary>Contour et lueur</summary>
             <div class="field"><label class="tog"><input type="checkbox" data-k="outline"> Contour</label></div>
             <div class="field row gap"><input type="color" data-k="outlineColor"><div class="grow"><label>Épaisseur du contour <b data-v="outlineWidth"></b></label><input type="range" min="0.5" max="5" step="0.5" data-k="outlineWidth"></div></div>
             <div class="field"><label class="tog"><input type="checkbox" data-k="glow"> Lueur (glow)</label></div>
             <div class="field row gap"><input type="color" data-k="glowColor"><div class="grow"><label>Intensité <b data-v="glowSize"></b></label><input type="range" min="1" max="30" step="1" data-k="glowSize"></div></div>
         </details>
-        <details open><summary>Position</summary>
+        <details open id="pos-box"><summary>Position</summary>
             <div class="field"><label>Écran</label><select id="display"></select></div>
             <div class="field"><label>Décalage horizontal <b data-v="offsetX"></b></label><input type="range" min="-400" max="400" step="1" data-k="offsetX"></div>
             <div class="field"><label>Décalage vertical <b data-v="offsetY"></b></label><input type="range" min="-400" max="400" step="1" data-k="offsetY"></div>
@@ -116,7 +117,7 @@
                 <select id="as-adsmode" class="mt-s"><option value="hold">Clic droit maintenu</option><option value="toggle">Clic droit en bascule</option></select></div>
             <div id="as-status" class="small muted"></div>
         </details>
-        <details id="wl-box"><summary>Liste blanche (applis)</summary>
+        <details open id="wl-box"><summary>Liste blanche (applis)</summary>
             <p class="muted small">Le crosshair s'affiche seulement quand une des applis cochées est au premier plan. Décoche tout le reste : bureau, navigateur, Discord…</p>
             <div class="field"><label class="tog"><input type="checkbox" id="wl-enabled"> Activer la liste blanche</label></div>
             <div id="wl-list"></div>
@@ -124,7 +125,7 @@
             <div class="row gap mt-s wrap"><button id="wl-cap" class="btn sm">Ajouter la fenêtre active (dans 3 s)</button><span id="wl-msg" class="small muted"></span></div>
             <div id="wl-status" class="small muted mt-s"></div>
         </details>
-        <details id="ck-box"><summary>Objectifs (liste à cocher)</summary>
+        <details open id="ck-box"><summary>Objectifs (liste à cocher)</summary>
             <p class="muted small">Ta liste d'objectifs, affichable en petit dans un coin de l'écran pendant que tu joues. Ctrl+Alt+O = afficher / masquer, Ctrl+Alt+N = cocher l'objectif suivant.</p>
             <div class="field"><label>Titre</label><input id="ck-title" maxlength="40" class="w100"></div>
             <div id="ck-list"></div>
@@ -202,7 +203,7 @@
             <p class="muted small">Un mini test pour voir si ton crosshair te convient : réflexes, précision, suivi d'une cible et visibilité sur les fonds du jeu (plaine, forêt, neige, ciel, nuit, ville, sable).</p>
             <button id="aim-open" class="btn sm primary">Ouvrir l'entraînement</button>
         </details>
-        <details id="bk-box"><summary>Sauvegarde (import / export)</summary>
+        <details open id="bk-box"><summary>Sauvegarde (import / export)</summary>
             <p class="muted small">Exporte tout (profils, couleur auto, liste blanche, objectifs, minuteur, changement d'arme, raccourcis, réglages) dans un fichier ou un code à coller. L'import accepte aussi un code AR2X- et la sauvegarde du site AR2 Armory.</p>
             <div class="row gap wrap" id="bk-sections"></div>
             <div class="row gap wrap mt-s"><button id="bk-save" class="btn sm primary">Exporter dans un fichier</button><button id="bk-copy" class="btn sm">Copier le code</button></div>
@@ -213,12 +214,12 @@
                 <button id="bk-import" class="btn sm primary">Importer</button></div>
             <div id="bk-msg" class="small muted mt-s"></div>
         </details>
-        <details><summary>Raccourcis clavier</summary>
+        <details open id="hk-box"><summary>Raccourcis clavier</summary>
             <p class="muted small">Clique dans une case puis appuie sur ta combinaison (ex : Ctrl+Alt+X). Échap pour annuler.</p>
             <div id="hotkeys"></div>
             <div id="hk-msg" class="small"></div>
         </details>
-        <details><summary>Général</summary>
+        <details open id="gen-box"><summary>Général</summary>
             <div class="field"><label class="tog"><input type="checkbox" id="startHidden"> Démarrer avec le crosshair masqué</label></div>
             <div class="field"><label class="tog"><input type="checkbox" id="launchAtStartup"> Lancer au démarrage de Windows</label></div>
             <div class="field"><label class="tog"><input type="checkbox" id="autoUpdate"> Mises à jour automatiques</label></div>
@@ -233,5 +234,6 @@
 <script src="autocolor.js"></script>
 <script src="weapons.js"></script>
 <script src="settings.js"></script>
+<script src="settings-nav.js"></script>
 </body>
 </html>
