@@ -41,5 +41,9 @@ contextBridge.exposeInMainWorld('xh', {
     onIndex: (cb) => ipcRenderer.on('hud-index', (e, ix) => cb(ix)),
     onSpotShow: (cb) => ipcRenderer.on('hud-spot-show', (e, o) => cb(o)),
     onRange: (cb) => ipcRenderer.on('hud-range', (e, d) => cb(d)),
-    onCompass: (cb) => ipcRenderer.on('hud-compass', (e, d) => cb(d))
+    onCompass: (cb) => ipcRenderer.on('hud-compass', (e, d) => cb(d)),
+    // v1.7 : carte tactique, assistant de configuration
+    onTmap: (cb) => ipcRenderer.on('hud-tmap', (e, d) => cb(d)),
+    onHotkeyFired: (cb) => ipcRenderer.on('hk-fired', (e, acc) => cb(acc)),
+    onOpenOnboarding: (cb) => ipcRenderer.on('open-onboarding', () => cb())
 });

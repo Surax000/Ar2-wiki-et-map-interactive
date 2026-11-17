@@ -1,4 +1,11 @@
-## Nouveautés de la v1.6.0
+## Nouveautés de la v1.7.0
+- **Kin Flats dans le Loot Run et la boussole** : sur le site, le Planificateur de Loot Run a deux boutons, Archipel et Kin Flats. Sur Kin Flats, clique sur les icônes (cliniques, pompiers, police, supérettes, hôpitaux, églises) pour tracer ton chemin. Un parcours tout prêt « Kin : Clinique → Pompiers → Police » est dans la liste. « Afficher la boussole en jeu » l'envoie dans l'appli et le cap s'affiche en haut de l'écran.
+- **La boussole connaît tous les lieux du jeu** : 366 lieux (villes, lieux cachés du wiki, bâtiments de Kin Flats, véhicules, événements, tes lieux perso). Dans le wiki instantané, tape un trajet en plusieurs étapes : « Clinique de Kin > Caserne de pompiers de Kin n°1 > Commissariat de Kin ».
+- **Carte tactique en overlay (Ctrl+Alt+M)** : ta carte (archipel ou Kin Flats) en transparence par-dessus le jeu, avec les bâtiments utiles, les lieux cachés, tes lieux perso et ton Loot Run (étape en cours en surbrillance, cap et distance en bas). Appui court : elle reste affichée, rappuie pour la masquer. Touche maintenue : elle disparaît dès que tu relâches. **Ctrl+Alt+Maj+M** change de carte. Taille, opacité et éléments affichés se règlent dans Aides en jeu → Carte tactique.
+- **Mes réglages favoris** : une petite étoile à côté de chaque réglage (Couleur auto, FOV du télémètre, opacité du minuteur…). Clique dessus et le réglage arrive dans « Mes favoris », tout en haut des réglages.
+- **Assistant de configuration** : au premier lancement (ou via le bouton « Assistant » en haut des réglages), 4 écrans rapides : ton FOV Roblox pour le télémètre, ton viseur et la Couleur auto, tes aides (boussole, minuteur, objectifs, télémètre), puis la vérification de tes raccourcis AZERTY (alerte AltGr et test en direct de chaque touche).
+
+## Rappel v1.6.0
 - **Réglages rangés en catégories** : fini la longue liste. À gauche, 6 grandes catégories avec une icône : Mon viseur, Mes armes, Aides en jeu, Wiki et entraînement, Apparence, Réglages de l'appli. En haut, des onglets pour chaque partie (ex : Aides en jeu → Wiki instantané, Télémètre, Boussole, Minuteur, Objectifs).
 - Chaque onglet commence par une phrase simple qui explique à quoi il sert.
 - **Recherche de réglage** (Ctrl+F) : tape « couleur », « touche » ou « boussole » et tous les réglages qui correspondent s'affichent.

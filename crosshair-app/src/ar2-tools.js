@@ -106,6 +106,9 @@
         const t = String(text || '').trim();
         let m = /^(.+?)\s+(?:vs\.?|contre|ou|\/)\s+(.+)$/i.exec(t);
         if (m && m[1].trim().length >= 2 && m[2].trim().length >= 2) return { kind: 'duel', a: m[1].trim(), b: m[2].trim() };
+        // chaîne d'étapes : « Clinique de Kin > Pompiers de Kin > Commissariat de Kin »
+        const parts = t.split(/\s*(?:->|=>|>|→)\s*|\s+vers\s+/i).map(x => x.trim());
+        if (parts.length > 2 && parts.length <= 8 && parts.every(x => x.length >= 2)) return { kind: 'route', a: parts[0], b: parts[parts.length - 1], pts: parts };
         m = /^(.+?)\s*(?:->|=>|>|→|\svers\s)\s*(.+)$/i.exec(t);
         if (m && m[1].trim().length >= 2 && m[2].trim().length >= 2) return { kind: 'route', a: m[1].trim(), b: m[2].trim() };
         m = /^(?:cap|aller|go)\s+(.+)$/i.exec(t);

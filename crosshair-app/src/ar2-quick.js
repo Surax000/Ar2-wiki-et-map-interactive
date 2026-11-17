@@ -199,7 +199,8 @@
         function renderRoute() {
             body.className = 'aq-body full';
             const isLoc = o => o.type === 'loc';
-            const a = cmd.a ? T.best(index, cmd.a, isLoc) : opt.getOrigin(), b = T.best(index, cmd.b, isLoc);
+            if (cmd.pts && cmd.pts.length > 2) return renderChain(isLoc);
+            const a = cmd.a ? T.best(index, cmd.a, isLoc) : opt.getOrigin(), b = (a && T.best(index, cmd.b, o => isLoc(o) && (o.world || 'halsey') === (a.world || 'halsey'))) || T.best(index, cmd.b, isLoc);
             if (!a || !b) { body.innerHTML = `<div class="aq-empty">${!a ? (cmd.a ? `Lieu de départ introuvable : « ${esc(cmd.a)} »` : 'Choisis d\'abord un départ : « Ashland > Regional Airport »') : `Lieu introuvable : « ${esc(cmd.b)} »`}</div>`; lastRoute = null; return; }
             if ((a.world || 'halsey') !== (b.world || 'halsey')) { body.innerHTML = `<div class="aq-empty">${esc(a.name)} et ${esc(b.name)} ne sont pas sur la même carte.</div>`; lastRoute = null; return; }
             const l = T.leg(index, a, b);
@@ -209,6 +210,21 @@
                 <div class="aq-g">${stat('Marche', T.sec(l.walk))}${stat('Sprint', T.sec(l.sprint), 1)}${stat('Véhicule ≈', T.sec(l.vehicle))}</div>
                 <div class="aq-note">Cap mesuré depuis le nord de la carte (0° = N, 90° = E). Aligne-toi avec ta boussole en jeu. Temps estimés (marche 16, sprint 24, véhicule ≈ 60 studs/s).</div>
                 <div class="aq-acts">${A.compass ? '<button class="aq-btn pri" data-act="route">Afficher la boussole en jeu<kbd>Entrée</kbd></button>' : ''}${A.showRoute ? '<button class="aq-btn" data-act="routeMap">Voir sur la carte</button>' : ''}</div></div>`;
+        }
+        // itinéraire en plusieurs étapes (A > B > C) : toutes sur la même carte
+        function renderChain(isLoc) {
+            const first = T.best(index, cmd.pts[0], isLoc);
+            const w = first ? (first.world || 'halsey') : null;
+            const pts = cmd.pts.map((q, i) => i === 0 ? first : (T.best(index, q, o => isLoc(o) && (o.world || 'halsey') === w) || null));
+            const miss = cmd.pts.find((q, i) => !pts[i]);
+            if (miss) { body.innerHTML = `<div class="aq-empty">Lieu introuvable${w ? ' sur ' + (w === 'kf' ? 'Kin Flats' : "l'archipel") : ''} : « ${esc(miss)} »</div>`; lastRoute = null; return; }
+            const r = T.route(index, pts);
+            lastRoute = { pts, leg: r.legs[0] };
+            body.innerHTML = `<div class="aq-verd"><div class="aq-vs" style="flex-wrap:wrap">${pts.map((p, i) => `<span${i === pts.length - 1 ? ' class="w"' : ''}>${esc(p.name)}</span>`).join('→')}</div>
+                <div class="aq-sub" style="margin:4px 0 8px">${w === 'kf' ? 'Kin Flats' : 'Archipel'} • ${pts.length} étapes • ${T.fmtDist(r.studs)} au total</div>
+                ${r.legs.map((l, i) => `<div class="aq-sub" style="margin:2px 0"><b>${Math.round(l.deg)}° ${l.card}</b> → ${esc(l.to.name)} · ${T.fmtDist(l.studs)} · ${T.sec(l.sprint)} en sprint</div>`).join('')}
+                <div class="aq-g">${stat('Marche', T.sec(r.walk))}${stat('Sprint', T.sec(r.sprint), 1)}${stat('Véhicule ≈', T.sec(r.vehicle))}</div>
+                <div class="aq-acts">${A.compass ? '<button class="aq-btn pri" data-act="route">Suivre à la boussole en jeu<kbd>Entrée</kbd></button>' : ''}${A.showRoute ? '<button class="aq-btn" data-act="routeMap">Voir sur la carte</button>' : ''}</div></div>`;
         }
         function update() {
             const v = input.value;

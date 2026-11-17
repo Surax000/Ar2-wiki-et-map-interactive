@@ -11,11 +11,12 @@ const T = require('./ar2-tools.js');
 const DEFAULT_RANGE = () => ({ show: false, weapon: 'm4a1', followSlot: true, zoomBy: {}, fov: 70, calib: 1, side: 'right', gap: 70, onlyAds: false, opacity: 0.9, scale: 1 });
 const DEFAULT_COMPASS = () => ({ show: false, route: null, leg: 0, origin: '', opacity: 0.92, scale: 1, speed: 'sprint', top: 10 });
 const DEFAULT_SPOT = () => ({ opacity: 0.9, hideOnBlur: true });
+const DEFAULT_TMAP = () => ({ world: 'auto', last: 'halsey', opacity: 0.85, size: 0.72, bld: true, hidden: true, custom: true, route: true, events: false, labels: true });
 const clamp = (v, a, b, d) => { v = +v; return isFinite(v) ? Math.max(a, Math.min(b, v)) : d; };
 
 let C = null;                    // contexte fourni par main.js
 let raw = null, index = null;    // index du wiki (brut pour les fenêtres, préparé pour main)
-let spotWin = null, rangeWin = null, compWin = null, refreshWin = null;
+let spotWin = null, rangeWin = null, compWin = null, refreshWin = null, tmapWin = null;
 let adsDown = false, lastMsg = null;
 
 // ---------- configuration ----------
@@ -37,6 +38,12 @@ function normalize(cfg, c) {
     const s = Object.assign(DEFAULT_SPOT(), c.spotlight || cfg.spotlight || {});
     s.opacity = clamp(s.opacity, 0.4, 1, 0.9); s.hideOnBlur = s.hideOnBlur !== false;
     cfg.spotlight = s;
+    const m = Object.assign(DEFAULT_TMAP(), c.tmap || cfg.tmap || {});
+    if (!['auto', 'halsey', 'kf'].includes(m.world)) m.world = 'auto';
+    if (!['halsey', 'kf'].includes(m.last)) m.last = 'halsey';
+    m.opacity = clamp(m.opacity, 0.3, 1, 0.85); m.size = clamp(m.size, 0.35, 0.95, 0.72);
+    ['bld', 'hidden', 'custom', 'route', 'labels'].forEach(x => { m[x] = m[x] !== false; }); m.events = !!m.events;
+    cfg.tmap = m;
 }
 function cleanRoute(r) {
     if (!r || !Array.isArray(r.points)) return null;
@@ -59,7 +66,7 @@ function setIndex(o, save) {
     raw = o; index = T.prep(JSON.parse(JSON.stringify(o)));
     if (save) { try { fs.mkdirSync(path.dirname(cachePath()), { recursive: true }); fs.writeFileSync(cachePath(), JSON.stringify(o)); } catch (e) {} }
     send(spotWin, 'hud-index', raw);
-    placeRange(); placeCompass();
+    placeRange(); placeCompass(); placeTmap();
 }
 function cacheAge() { try { return Date.now() - fs.statSync(cachePath()).mtimeMs; } catch (e) { return Infinity; } }
 // mise à jour discrète de l'index : le site est chargé dans une fenêtre invisible et pousse ses données
@@ -227,20 +234,104 @@ function toggleCompass(v) { const k = C.cfg().compass; k.show = typeof v === 'bo
 function setRoute(r) {
     const rt = cleanRoute(r); if (!rt) return false;
     const k = C.cfg().compass; k.route = rt; k.leg = 0; k.show = true;
-    C.save(); placeCompass(); C.broadcast(); C.refreshTray();
+    C.save(); placeCompass(); placeTmap(); C.broadcast(); C.refreshTray();
     return true;
 }
 function compassStep(d) {
     const k = C.cfg().compass; if (!k.route) return;
     k.leg = Math.max(0, Math.min(k.route.points.length - 2, k.leg + d)); k.show = true;
-    C.save(); placeCompass(); C.broadcast();
+    C.save(); placeCompass(); placeTmap(); C.broadcast();
+}
+
+// ---------- Carte tactique en overlay (Ctrl+Alt+M) ----------
+let tmapOn = false, tmapWorld = null, tmapLast = 0, tmapAt = 0;
+function tmapWorldOf() {
+    const m = C.cfg().tmap, rt = C.cfg().compass.route;
+    if (tmapWorld) return tmapWorld;
+    if (m.world !== 'auto') return m.world;
+    return rt && rt.points[0] ? rt.points[0].world : m.last;
+}
+function tmapData() {
+    const cfg = C.cfg(), m = cfg.tmap, w = tmapWorldOf(), k = cfg.compass, rt = k.route;
+    const map = raw && raw.map ? raw.map : null;
+    const pts = (raw && raw.locs ? raw.locs : []).filter(l => (l.world || 'halsey') === w).filter(l => {
+        const kind = l.kind || 'loc';
+        if (kind === 'loc') return (l.cat !== 'cache' && !l.hidden) || m.hidden;
+        if (kind === 'custom') return m.custom;
+        if (kind === 'veh') return m.bld;
+        if (kind === 'bld') return false; // dessinés avec les icônes de la carte
+        if (kind === 'event') return m.events;
+        return false;
+    }).map(l => ({ n: l.name, x: l.x, y: l.y, c: l.cat, k: l.kind || 'loc', h: !!l.hidden || l.cat === 'cache' }));
+    const route = m.route && rt && rt.points.every(p => p.world === w) ? { pts: rt.points.map(p => ({ n: p.name, x: p.x, y: p.y })), leg: Math.min(k.leg, rt.points.length - 2), title: rt.title } : null;
+    let cap = null;
+    if (route) { const L = T.leg(index, rt.points[route.leg], rt.points[route.leg + 1]); cap = { deg: L.deg, card: L.card16, dist: T.fmtDist(L.studs), to: L.to.name, t: T.sec(L[k.speed] || L.sprint) }; }
+    return { theme: themeOf(), opacity: m.opacity, world: w, map, pts, route, cap, bld: m.bld, labels: m.labels,
+        keys: { toggle: kl(cfg.hotkeys.map), world: kl(cfg.hotkeys.mapWorld) }, routeOther: !!(rt && !route && m.route) };
+}
+function tmapBounds() {
+    const wa = C.display().workArea, m = C.cfg().tmap;
+    const h = Math.round(wa.height * m.size), w = Math.round(Math.min(wa.width * 0.95, h * 1045 / 947));
+    return { x: Math.round(wa.x + (wa.width - w) / 2), y: Math.round(wa.y + (wa.height - h) / 2), width: w, height: h + 34 };
+}
+function placeTmap() {
+    if (!C || !C.cfg()) return;
+    if (!tmapOn || !C.visible()) { if (tmapWin && tmapWin.isVisible()) tmapWin.hide(); return; }
+    if (!tmapWin) {
+        tmapWin = overlayWin('tmap.html', false);
+        const w = tmapWin;
+        w.webContents.on('did-finish-load', () => { w.__ready = true; placeTmap(); });
+        w.on('closed', () => { if (tmapWin === w) tmapWin = null; });
+        return;
+    }
+    if (!tmapWin.__ready) return;
+    tmapWin.setBounds(tmapBounds());
+    send(tmapWin, 'hud-tmap', tmapData());
+    if (!tmapWin.isVisible()) tmapWin.showInactive();
+    tmapWin.setAlwaysOnTop(true, 'screen-saver');
+}
+function showMap(v) {
+    tmapOn = !!v;
+    if (tmapOn) tmapAt = Date.now(); else tmapWorld = null;
+    placeTmap(); C.broadcast();
+}
+// Appui court = afficher / masquer. Touche maintenue = la carte disparaît dès qu'on la relâche.
+// Le hook clavier (comme le push-to-talk de Discord) sait si la touche est encore enfoncée : les répétitions
+// automatiques de Windows pendant l'appui long sont ignorées.
+let keyDown = false, keyDownAt = 0;
+function mapMainKey(keys) {
+    const last = String(C.cfg().hotkeys.map || '').split('+').pop();
+    return last && keys ? keys[last.length === 1 ? last.toUpperCase() : last] : null;
+}
+function mapKey() {
+    const now = Date.now(), dt = now - tmapLast; tmapLast = now;
+    if (tmapOn && keyDown && tmapAt >= keyDownAt - 80) return;   // même appui (répétition)
+    if (tmapOn && dt < 150) return;                              // répétition sans hook clavier
+    showMap(!tmapOn);
+}
+function onKeyDown(code, keys) {
+    if (code !== mapMainKey(keys)) return;
+    if (!keyDown) { keyDown = true; keyDownAt = Date.now(); }
+}
+function onKeyUp(code, keys) {
+    const main = mapMainKey(keys);
+    const mods = keys ? [keys.Ctrl, keys.CtrlRight, keys.Alt, keys.AltRight].filter(x => x != null) : [];
+    if (code !== main && !mods.includes(code)) return;
+    const wasHeld = keyDown && tmapOn && tmapAt >= keyDownAt - 80 && Date.now() - tmapAt > 380;
+    if (code === main) keyDown = false;
+    if (wasHeld) showMap(false);
+}
+function mapNextWorld() {
+    const w = tmapWorldOf() === 'kf' ? 'halsey' : 'kf';
+    tmapWorld = w; C.cfg().tmap.last = w; C.save();
+    if (!tmapOn) showMap(true); else placeTmap();
 }
 
 // ---------- Thèmes ----------
 function setTheme(id, from) {
     if (!T.THEMES[id]) return themeOf();
     C.cfg().theme = id; C.save();
-    [spotWin, rangeWin, compWin].forEach(w => send(w, 'hud-theme', id));
+    [spotWin, rangeWin, compWin, tmapWin].forEach(w => send(w, 'hud-theme', id));
     C.themeTargets().forEach(w => { if (w && !w.isDestroyed()) w.webContents.send('hud-theme', id); });
     const wiki = C.wikiWin();
     if (wiki && from !== 'wiki') wiki.webContents.executeJavaScript(`window.ar2SetTheme && window.ar2SetTheme(${JSON.stringify(id)}, true)`).catch(() => {});
@@ -253,7 +344,7 @@ function cycleTheme() { const o = T.THEME_ORDER; setTheme(o[(o.indexOf(themeOf()
 function fromSite(e) { return C.fromWiki(e) || (refreshWin && e.sender === refreshWin.webContents); }
 function registerIpc() {
     ipcMain.handle('hud-get', () => ({ theme: themeOf(), index: raw, origin: C.cfg().compass.origin, opacity: C.cfg().spotlight.opacity,
-        hotkeys: Object.fromEntries(['spotlight', 'wiki', 'range', 'rangeZoom', 'compass', 'compassNext'].map(k => [k, kl(C.cfg().hotkeys[k])])) }));
+        hotkeys: Object.fromEntries(['spotlight', 'wiki', 'range', 'rangeZoom', 'compass', 'compassNext', 'map'].map(k => [k, kl(C.cfg().hotkeys[k])])) }));
     ipcMain.handle('hud-theme-get', () => themeOf());
     ipcMain.handle('hud-theme-set', (e, id) => setTheme(id));
     ipcMain.handle('hud-act', (e, { act, data } = {}) => {
@@ -286,14 +377,14 @@ function registerIpc() {
 function init(ctx) { C = ctx; loadIndex(); registerIpc(); }
 function onAds(down) { if (adsDown === down) return; adsDown = down; if (C.cfg().range.onlyAds) placeRange(); }
 function onSlot() { if (C.cfg().range.followSlot) placeRange(); }
-function refresh() { placeRange(); placeCompass(); }
+function refresh() { placeRange(); placeCompass(); placeTmap(); }
 function stateInfo() {
     const { w, src } = index ? weaponFor() : {}, sc = w ? zoomFor(w) : null;
     return { indexItems: raw ? raw.items.length : 0, indexDate: raw ? raw.generated : null, range: w ? { weapon: w.name, src, scope: sc.name, z: sc.z, scopes: scopesUnique(w) } : null,
-        compass: C.cfg().compass.route ? compassData() : null, themes: T.THEME_ORDER.map(id => ({ id, name: T.THEMES[id].name, desc: T.THEMES[id].desc, acc: T.THEMES[id].acc, bg: T.THEMES[id].bg })) };
+        compass: C.cfg().compass.route ? compassData() : null, tmap: { on: tmapOn, world: tmapWorldOf(), hasMap: !!(raw && raw.map) }, themes: T.THEME_ORDER.map(id => ({ id, name: T.THEMES[id].name, desc: T.THEMES[id].desc, acc: T.THEMES[id].acc, bg: T.THEMES[id].bg })) };
 }
 function weaponList() { return index ? index.items.filter(i => i.type === 'weapon').map(i => ({ id: i.id, name: i.name, cat: i.cat })) : []; }
-const wins = () => ({ spotWin, rangeWin, compWin, refreshWin });
+const wins = () => ({ spotWin, rangeWin, compWin, refreshWin, tmapWin });
 
 module.exports = { normalize, init, toggleSpot, showSpot, hideSpot, toggleRange, cycleZoom, toggleCompass, compassStep, setRoute, setRangeWeapon, setTheme, cycleTheme,
-    onAds, onSlot, refresh, refreshIndex, stateInfo, weaponList, wins, rangeData, compassData, get index() { return index; }, T };
+    onAds, onSlot, refresh, mapKey, showMap, onKeyUp, onKeyDown, mapNextWorld, tmapData, get tmapOn() { return tmapOn; }, refreshIndex, stateInfo, weaponList, wins, rangeData, compassData, get index() { return index; }, T };

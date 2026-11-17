@@ -50,6 +50,9 @@ function start(h) {
             if (digit[e.keycode]) return handlers.slot && handlers.slot(digit[e.keycode]);
             if (e.keycode === keys.V) return handlers.holster && handlers.holster();
         });
+        // touches brutes (carte tactique « maintenir pour afficher ») : aucune touche n'est bloquée
+        hook.on('keydown', e => { try { handlers.rawDown && handlers.rawDown(e.keycode, keys); } catch (err) {} });
+        hook.on('keyup', e => { try { handlers.rawUp && handlers.rawUp(e.keycode, keys); } catch (err) {} });
         hook.on('mousedown', e => {
             const c = handlers.config && handlers.config(); if (!c || !c.enabled || e.button !== 2) return;
             if (c.onlyRoblox && !robloxFocused()) return;

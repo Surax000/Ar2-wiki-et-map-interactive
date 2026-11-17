@@ -26,12 +26,13 @@ const DEFAULT_HOTKEYS = {
     spotlight: 'Control+Alt+W', wiki: 'Control+Alt+Shift+W',
     range: 'Control+Alt+D', rangeZoom: 'Control+Alt+Shift+D',
     compass: 'Control+Alt+K', compassNext: 'Control+Alt+J', compassPrev: 'Control+Alt+Shift+J',
+    map: 'Control+Alt+M', mapWorld: 'Control+Alt+Shift+M',
     themeNext: ''
 };
 
 let cfgPath, cfg, overlay = null, settingsWin = null, tray = null, visible = true;
 let autoHidden = { holster: false, ads: false, wl: false };
-let lastSlot = null;
+let lastSlot = null, hkFails = [];
 const DEFAULT_AUTO = { enabled: true, onlyRoblox: true, holsterHide: true, adsHide: false, adsMode: 'hold', showToast: true, slots: {}, labels: {} };
 const DEFAULT_WL = () => ({ enabled: false, apps: [
     { id: 'roblox', name: 'Roblox', match: 'Roblox', on: true },
@@ -66,7 +67,8 @@ function defaultConfig() {
         hotkeys: { ...DEFAULT_HOTKEYS },
         startHidden: false,
         launchAtStartup: false,
-        moveStep: 1
+        moveStep: 1,
+        onboarded: false
     };
 }
 function loadConfig() {
@@ -82,6 +84,7 @@ function loadConfig() {
         cfg.profiles.forEach(p => { p.settings = core.withDefaults(p.settings); if (!p.id) p.id = uid(); });
         cfg.autoSwitch = Object.assign(JSON.parse(JSON.stringify(DEFAULT_AUTO)), c.autoSwitch || {});
         if (typeof cfg.autoUpdate !== 'boolean') cfg.autoUpdate = true;
+        if (typeof c.onboarded !== 'boolean') cfg.onboarded = true; // déjà installé avant la v1.7 : pas d'assistant imposé
         normalizeExtras(c);
         cfg.active = Math.min(Math.max(0, cfg.active | 0), cfg.profiles.length - 1);
     } catch (e) { cfg = defaultConfig(); }
@@ -232,7 +235,9 @@ function nudge(dx, dy) {
 function registerHotkeys() {
     globalShortcut.unregisterAll();
     const h = cfg.hotkeys, fails = [];
-    const reg = (acc, fn) => { if (!acc) return; try { if (!globalShortcut.register(acc, fn)) fails.push(acc); } catch (e) { fails.push(acc); } };
+    // chaque raccourci prévient aussi la fenêtre des réglages (test des touches dans l'assistant de configuration)
+    const hit = acc => { if (settingsWin && !settingsWin.isDestroyed()) settingsWin.webContents.send('hk-fired', acc); };
+    const reg = (acc, fn) => { if (!acc) return; try { if (!globalShortcut.register(acc, () => { hit(acc); fn(); })) fails.push(acc); } catch (e) { fails.push(acc); } };
     reg(h.toggle, () => setVisible(!visible));
     reg(h.settings, () => createSettings());
     reg(h.nextProfile, () => setActive((cfg.active + 1) % cfg.profiles.length));
@@ -251,6 +256,8 @@ function registerHotkeys() {
     reg(h.compassNext, () => hud.compassStep(1));
     reg(h.compassPrev, () => hud.compassStep(-1));
     reg(h.themeNext, () => hud.cycleTheme());
+    reg(h.map, () => hud.mapKey());
+    reg(h.mapWorld, () => hud.mapNextWorld());
     reg(h.up, () => nudge(0, -1)); reg(h.down, () => nudge(0, 1)); reg(h.left, () => nudge(-1, 0)); reg(h.right, () => nudge(1, 0));
     return fails;
 }
@@ -263,7 +270,7 @@ function broadcast() {
 let bcTimer = null;
 function broadcastSoon() { clearTimeout(bcTimer); bcTimer = setTimeout(broadcast, 60); }
 function state() {
-    return { cfg, visible, shown: shown(), autoHidden, lastSlot, hook: { started: ws.state.started, error: ws.state.error }, update: updater.status, installed: updater.isInstalled(), displays: screen.getAllDisplays().map((d, i) => ({ i, label: `Écran ${i + 1} – ${d.size.width}×${d.size.height}${d.id === screen.getPrimaryDisplay().id ? ' (principal)' : ''}` })), hud: hud.stateInfo(), weapons: hudWeapons(), version: app.getVersion(), autoColor: acState, fgTitle: wlTitle, now: Date.now(), presets: Object.fromEntries(Object.entries(CHECK_PRESETS).map(([k, v]) => [k, v.name])) };
+    return { cfg, visible, shown: shown(), hkFails, firstRun: !cfg.onboarded, autoHidden, lastSlot, hook: { started: ws.state.started, error: ws.state.error }, update: updater.status, installed: updater.isInstalled(), displays: screen.getAllDisplays().map((d, i) => ({ i, label: `Écran ${i + 1} – ${d.size.width}×${d.size.height}${d.id === screen.getPrimaryDisplay().id ? ' (principal)' : ''}` })), hud: hud.stateInfo(), weapons: hudWeapons(), version: app.getVersion(), autoColor: acState, fgTitle: wlTitle, now: Date.now(), presets: Object.fromEntries(Object.entries(CHECK_PRESETS).map(([k, v]) => [k, v.name])) };
 }
 
 function trayIcon() {
@@ -286,6 +293,11 @@ function refreshTray() {
             { label: 'Étape précédente', accelerator: cfg.hotkeys.compassPrev, enabled: !!cfg.compass.route, click: () => hud.compassStep(-1) },
             { label: 'Effacer la destination', enabled: !!cfg.compass.route, click: () => { cfg.compass.route = null; cfg.compass.leg = 0; saveConfig(); hud.refresh(); refreshTray(); broadcast(); } }
         ] },
+        { label: 'Carte tactique (overlay)', submenu: [
+            { label: 'Afficher la carte', type: 'checkbox', checked: !!hud.tmapOn, accelerator: cfg.hotkeys.map, click: m => hud.showMap(m.checked) },
+            { label: 'Changer de carte (archipel / Kin Flats)', accelerator: cfg.hotkeys.mapWorld, click: () => hud.mapNextWorld() }
+        ] },
+        { label: 'Assistant de configuration…', click: () => { createSettings(); const go = () => settingsWin && settingsWin.webContents.send('open-onboarding'); if (settingsWin.webContents.isLoading()) settingsWin.webContents.once('did-finish-load', () => setTimeout(go, 300)); else go(); } },
         { label: 'Thème', submenu: hud.T.THEME_ORDER.map(id => ({ label: hud.T.THEMES[id].name, type: 'radio', checked: cfg.theme === id, click: () => hud.setTheme(id) })) },
         { type: 'separator' },
         { label: 'Profil', submenu: cfg.profiles.map((p, i) => ({ label: p.name, type: 'radio', checked: i === cfg.active, click: () => setActive(i) })) },
@@ -320,6 +332,7 @@ ipcMain.handle('set-config', (e, partial) => {
         try { app.setLoginItemSettings({ openAtLogin: p.launchAtStartup, args: ['--hidden'] }); } catch (err) {}
     }
     if (typeof p.autoUpdate === 'boolean') { cfg.autoUpdate = p.autoUpdate; updater.schedule(cfg.autoUpdate); }
+    if (typeof p.onboarded === 'boolean') cfg.onboarded = p.onboarded;
     if (p.autoSwitch) {
         const a = p.autoSwitch;
         if (a.slots) cfg.autoSwitch.slots = Object.assign({}, cfg.autoSwitch.slots, a.slots);
@@ -329,7 +342,7 @@ ipcMain.handle('set-config', (e, partial) => {
         autoHidden = { holster: false, ads: false, wl: autoHidden.wl }; applyVisibility();
     }
     let fails = [];
-    if (p.hotkeys) { cfg.hotkeys = Object.assign({}, cfg.hotkeys, p.hotkeys); fails = registerHotkeys(); }
+    if (p.hotkeys) { cfg.hotkeys = Object.assign({}, cfg.hotkeys, p.hotkeys); fails = registerHotkeys(); hkFails = fails; }
     placeOverlay(); saveConfig(); refreshTray();
     return { ...state(), fails };
 });
@@ -653,6 +666,8 @@ ipcMain.handle('hud-extras', (e, p = {}) => {
     if (p.range) c.range = Object.assign({}, cfg.range, p.range, { zoomBy: Object.assign({}, cfg.range.zoomBy, (p.range && p.range.zoomBy) || {}) });
     if (p.compass) c.compass = Object.assign({}, cfg.compass, p.compass);
     if (p.spotlight) c.spotlight = Object.assign({}, cfg.spotlight, p.spotlight);
+    if (p.tmap) c.tmap = Object.assign({}, cfg.tmap, p.tmap);
+    if ('showMap' in p) hud.showMap(!!p.showMap);
     if ('clearRoute' in p) c.compass = Object.assign({}, c.compass || cfg.compass, { route: null, leg: 0 });
     hud.normalize(cfg, Object.assign({ theme: cfg.theme }, c));
     if (p.theme) hud.setTheme(p.theme);
@@ -698,7 +713,7 @@ function buildBackup(sections) {
     if (sec.includes('whitelist')) d.whitelist = cfg.whitelist;
     if (sec.includes('checklist')) d.checklist = cfg.checklist;
     if (sec.includes('timer')) d.timer = Object.assign({}, cfg.timer, { running: [] });
-    if (sec.includes('hud')) d.hud = { theme: cfg.theme, range: cfg.range, compass: Object.assign({}, cfg.compass, { show: false }), spotlight: cfg.spotlight };
+    if (sec.includes('hud')) d.hud = { theme: cfg.theme, range: cfg.range, compass: Object.assign({}, cfg.compass, { show: false }), spotlight: cfg.spotlight, tmap: cfg.tmap };
     if (sec.includes('hotkeys')) d.hotkeys = cfg.hotkeys;
     if (sec.includes('general')) d.general = { display: cfg.display, startHidden: cfg.startHidden, launchAtStartup: cfg.launchAtStartup, moveStep: cfg.moveStep, autoUpdate: cfg.autoUpdate };
     return { app: 'ar2-crosshair', format: 1, version: app.getVersion(), exported: new Date().toISOString(), sections: Object.keys(d).filter(k => k !== 'active'), data: JSON.parse(JSON.stringify(d)) };
@@ -752,9 +767,9 @@ function applyBackup(o, mode, sections) {
     if (Object.keys(extras).length) normalizeExtras(Object.assign({ autoColor: cfg.autoColor, whitelist: cfg.whitelist, checklist: cfg.checklist }, extras));
     if (sec.includes('hud') && d.hud) {
         const h = d.hud;
-        hud.normalize(cfg, { theme: h.theme || cfg.theme, range: Object.assign({}, replace ? {} : cfg.range, h.range || {}), compass: Object.assign({}, replace ? {} : cfg.compass, h.compass || {}), spotlight: Object.assign({}, cfg.spotlight, h.spotlight || {}) });
+        hud.normalize(cfg, { theme: h.theme || cfg.theme, range: Object.assign({}, replace ? {} : cfg.range, h.range || {}), compass: Object.assign({}, replace ? {} : cfg.compass, h.compass || {}), spotlight: Object.assign({}, cfg.spotlight, h.spotlight || {}), tmap: Object.assign({}, cfg.tmap, h.tmap || {}) });
         hud.setTheme(cfg.theme); hud.refresh();
-        done.push('thème, télémètre et boussole');
+        done.push('thème, télémètre, boussole et carte tactique');
     }
     if (sec.includes('hotkeys') && d.hotkeys) { cfg.hotkeys = Object.assign({ ...DEFAULT_HOTKEYS }, replace ? {} : cfg.hotkeys, d.hotkeys); done.push('raccourcis'); }
     if (sec.includes('general') && d.general) {
@@ -829,11 +844,11 @@ else {
         tray = new Tray(trayIcon());
         tray.on('click', () => createSettings());
         refreshTray();
-        registerHotkeys();
+        hkFails = registerHotkeys();
         updater.init({ onChange: () => { refreshTray(); broadcast(); } });
         if (ws.loadForeground) ws.loadForeground();
         wlSchedule(); acSync(); placeChecklist(); timerSchedule(); placeTimer();
-        ws.start({ config: () => SELFTEST ? Object.assign({}, cfg.autoSwitch, { onlyRoblox: false }) : cfg.autoSwitch, slot: onSlot, holster: onHolster, ads: onAds });
+        ws.start({ config: () => SELFTEST ? Object.assign({}, cfg.autoSwitch, { onlyRoblox: false }) : cfg.autoSwitch, slot: onSlot, holster: onHolster, ads: onAds, rawDown: (c, k) => hud.onKeyDown(c, k), rawUp: (c, k) => hud.onKeyUp(c, k) });
         if (SELFTEST) return runSelftest();
         updater.schedule(cfg.autoUpdate);
         if (!process.argv.includes('--hidden')) createSettings();
@@ -927,6 +942,24 @@ async function runSelftest() {
             hud.toggleRange(false); hud.toggleCompass(false); cfg.compass.route = null;
             out.hudOk = out.hud.indexItems > 100 && out.hud.range.created && out.hud.range.marks > 3 && out.hud.compass.created && out.hud.compass.deg === 229 && out.hud.spot.ok && out.hud.theme === 'nvg';
         } catch (e) { out.hudError = String(e && e.stack || e); }
+        write();
+        // v1.7 : carte tactique + chaîne Kin Flats (non bloquant)
+        try {
+            const W = () => hud.wins();
+            const kf = (hud.index && hud.index.locs || []).filter(l => l.world === 'kf' && /^(Clinique|Caserne|Commissariat|Hôpital|Supérette|Église)/.test(l.name));
+            const pick = re => kf.find(l => re.test(l.name));
+            const pts = [pick(/^Clinique de Kin/), pick(/pompiers de Kin/i), pick(/^Commissariat de Kin/)].filter(Boolean);
+            if (pts.length === 3) hud.setRoute({ title: 'Kin', points: pts.map(l => ({ id: l.id, name: l.name, x: l.x, y: l.y, world: 'kf' })) });
+            hud.showMap(true); await wait(2000);
+            const tw = W().tmapWin;
+            const d = hud.tmapData();
+            out.tmap = { created: !!tw, visible: tw ? tw.isVisible() : false, world: d.world, pts: (d.pts || []).length, route: d.route ? d.route.pts.length : 0, kfBld: kf.length,
+                svg: tw ? await tw.webContents.executeJavaScript('document.querySelectorAll("svg *").length') : 0 };
+            if (process.env.AR2_SHOT && tw) { try { fs.writeFileSync(path.join(process.env.AR2_SHOT, 'tmap.png'), (await tw.webContents.capturePage()).toPNG()); } catch (e) { } }
+            hud.showMap(false); await wait(300); out.tmap.hidden = tw ? !tw.isVisible() : true;
+            hud.toggleCompass(false); cfg.compass.route = null;
+            out.tmapOk = out.tmap.created && out.tmap.visible && out.tmap.hidden && out.tmap.svg > 20 && out.tmap.kfBld >= 15 && out.tmap.world === 'kf' && out.tmap.route === 3;
+        } catch (e) { out.tmapError = String(e && e.stack || e); }
         write();
         // mises à jour
         await updater.check();

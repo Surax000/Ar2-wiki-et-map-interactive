@@ -8,11 +8,12 @@
 </head>
 <body>
 <header class="top">
-    <div class="brand"><img src="assets/icon.png" alt=""><div><b>AR2 Crosshair</b><span id="ver">v1.6.0</span></div></div>
+    <div class="brand"><img src="assets/icon.png" alt=""><div><b>AR2 Crosshair</b><span id="ver">v1.7.0</span></div></div>
     <div class="top-actions">
         <button id="vis-btn" class="btn primary">Crosshair affiché</button>
         <span class="hint"><span class="kbd">Ctrl+Alt+X</span> afficher / masquer le viseur</span>
         <button class="btn sm ghost" data-goto="hk-box">Toutes les touches</button>
+        <button class="btn sm ghost" data-onboarding id="ob-open-top">Assistant</button>
     </div>
 </header>
 <div id="upd-banner" class="banner hidden"><span id="upd-text"></span><button id="upd-btn" class="btn sm primary">Redémarrer et installer</button></div>
@@ -189,6 +190,20 @@
             <div class="field"><label>Taille <b id="cp-scale-v"></b></label><input type="range" id="cp-scale" min="0.6" max="2" step="0.1"></div>
             <div class="field"><label>Opacité <b id="cp-op-v"></b></label><input type="range" id="cp-op" min="0.2" max="1" step="0.05"></div>
         </details>
+        <details open id="tm2-box"><summary>Carte tactique (overlay)</summary>
+            <p class="muted small"><span class="kbd" id="tmap-key">Ctrl+Alt+M</span> affiche ta carte (archipel ou Kin Flats) par-dessus le jeu, en transparence : bâtiments utiles (cliniques, police, pompiers, garages), lieux cachés du wiki, tes lieux perso et ton Loot Run en cours. Appui court : la carte reste affichée, rappuie pour la masquer. Touche maintenue : elle disparaît dès que tu relâches. <span class="kbd" id="tmap-wkey">Ctrl+Alt+Maj+M</span> change de carte.</p>
+            <div id="tmap-info" class="hudinfo"></div>
+            <div class="row gap wrap mt-s"><button id="tmap-test" class="btn sm primary">Voir la carte 5 secondes</button></div>
+            <div class="field"><label>Carte affichée</label><select id="tmap-world" class="w100"><option value="auto">Automatique (celle du Loot Run, sinon la dernière vue)</option><option value="halsey">Toujours l'archipel (Halsey)</option><option value="kf">Toujours Kin Flats</option></select></div>
+            <div class="field"><label class="tog"><input type="checkbox" id="tmap-bld"> Bâtiments utiles (cliniques, police, pompiers, supérettes, garages)</label></div>
+            <div class="field"><label class="tog"><input type="checkbox" id="tmap-hidden"> Lieux cachés du wiki (pas sur la carte du jeu)</label></div>
+            <div class="field"><label class="tog"><input type="checkbox" id="tmap-custom"> Mes lieux perso (onglet « Ajouter un lieu » du wiki)</label></div>
+            <div class="field"><label class="tog"><input type="checkbox" id="tmap-route"> Mon Loot Run / la destination de la boussole</label></div>
+            <div class="field"><label class="tog"><input type="checkbox" id="tmap-events"> Événements aléatoires (crashs d'hélico, convois…)</label></div>
+            <div class="field"><label class="tog"><input type="checkbox" id="tmap-labels"> Noms des lieux</label></div>
+            <div class="field"><label>Taille <b id="tmap-size-v"></b></label><input type="range" id="tmap-size" min="0.35" max="0.95" step="0.05"></div>
+            <div class="field"><label>Opacité <b id="tmap-op-v"></b></label><input type="range" id="tmap-op" min="0.3" max="1" step="0.05"></div>
+        </details>
         <details open id="wiki-box"><summary>Wiki AR2 (site complet)</summary>
             <p class="muted small">Tout le site AR2 dans l'appli : armes, TTK, build, carte, loot run, balistique, boss, survie, défi… Depuis le wiki, tu envoies un crosshair ou des objectifs dans l'appli en un clic (sans copier-coller). Raccourci <b id="wiki-key">Ctrl+Alt+W</b>.</p>
             <div class="row gap wrap">
@@ -220,6 +235,7 @@
             <div id="hk-msg" class="small"></div>
         </details>
         <details open id="gen-box"><summary>Général</summary>
+            <div class="field row gap"><button class="btn sm primary" data-onboarding id="ob-open">Assistant de configuration</button><span class="small muted">Refaire les 4 étapes du début : FOV, viseur, aides et raccourcis.</span></div>
             <div class="field"><label class="tog"><input type="checkbox" id="startHidden"> Démarrer avec le crosshair masqué</label></div>
             <div class="field"><label class="tog"><input type="checkbox" id="launchAtStartup"> Lancer au démarrage de Windows</label></div>
             <div class="field"><label class="tog"><input type="checkbox" id="autoUpdate"> Mises à jour automatiques</label></div>
@@ -235,5 +251,6 @@
 <script src="weapons.js"></script>
 <script src="settings.js"></script>
 <script src="settings-nav.js"></script>
+<script src="onboarding.js"></script>
 </body>
 </html>

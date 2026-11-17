@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'unsafe-inline'">
+<style>
+html,body{margin:0;padding:0;background:transparent;overflow:hidden;font-family:"Segoe UI",Inter,system-ui,sans-serif;color:var(--c-text,#fff);height:100%}
+#wrap{position:absolute;inset:0;display:flex;flex-direction:column}
+#map{flex:1;min-height:0;border-radius:14px;overflow:hidden;border:1px solid rgb(var(--t-acc,0 255 136) / .45);box-shadow:0 0 0 1px rgba(0,0,0,.5)}
+#map svg{display:block;width:100%;height:100%}
+#bar{height:30px;margin-top:4px;display:flex;align-items:center;gap:10px;padding:0 12px;border-radius:10px;background:var(--c-hud,rgba(10,13,18,.82));border:1px solid rgb(var(--t-acc,0 255 136) / .3);font-size:12px;white-space:nowrap;overflow:hidden}
+#bar b{color:var(--c-acc,#00ff88)}
+#bar .w{font-weight:800;letter-spacing:.04em;text-transform:uppercase}
+#bar .cap{font:800 13px ui-monospace,Consolas,monospace;color:var(--c-acc,#00ff88)}
+#bar .k{margin-left:auto;color:var(--c-muted,#8b949e)}
+#bar .k i{font-style:normal;color:var(--c-text,#fff);border:1px solid rgba(255,255,255,.2);border-radius:4px;padding:0 4px;margin:0 2px;font-size:11px}
+.lbl{font:700 11px "Segoe UI",Inter,sans-serif;fill:#e6edf3;paint-order:stroke;stroke:#0b0f14;stroke-width:3px}
+.lbl.big{font-size:14px;font-weight:800}
+.lbl.hid{fill:#d8b4fe}
+.isl{font:800 20px "Segoe UI",Inter,sans-serif;letter-spacing:.2em;fill:#ffffff;opacity:.16}
+.grid{font:800 20px ui-monospace,Consolas,monospace;fill:#4ade8050}
+.num{font:800 13px ui-monospace,Consolas,monospace;fill:#0b0f14}
+@keyframes pulse{0%{r:14;opacity:.9}100%{r:34;opacity:0}}
+.pulse{animation:pulse 1.4s ease-out infinite}
+</style></head><body><div id="wrap"><div id="map"></div><div id="bar"></div></div>
+<script src="ar2-tools.js"></script>
+<script src="tmap.js"></script>
+</body></html>
