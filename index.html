@@ -104,6 +104,7 @@
         .ev-lpic { flex: none; width: 38px; height: 22px; display: flex; align-items: center; justify-content: center; }
         .ev-lpic img { max-width: 100%; max-height: 100%; object-fit: contain; }
         .ev-prob { background: rgb(var(--t-bg, 15 17 21) / .6); border: 1px solid rgb(var(--t-border, 42 47 58)); border-radius: 12px; padding: 12px; }
+        .acc-cover .item-pic { width: 100%; height: 100%; object-fit: cover; }
         .ev-hero img { transition: transform .35s ease; }
         .ev-hero:hover img { transform: scale(1.04); }
         .fi-item { display: flex; align-items: center; gap: 8px; width: 100%; text-align: left; padding: 7px 10px; border-radius: 10px; border: 1px solid transparent; font-size: 12px; color: #c9d1d9; }
@@ -169,7 +170,7 @@
 <body class="min-h-screen flex flex-col pb-28">
 
     <!-- Header / Navbar -->
-    <header class="border-b border-tactical-border bg-tactical-card/80 backdrop-blur-md sticky top-0 z-30">
+    <header class="border-b border-tactical-border bg-tactical-card/80 backdrop-blur-md relative md:sticky md:top-0 z-30">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 min-h-[5rem] py-2 flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
             <div class="flex items-center space-x-3">
                 <div class="w-10 h-10 rounded-lg bg-tactical-accent/10 border border-tactical-accent flex items-center justify-center text-tactical-accent">
@@ -739,6 +740,21 @@
             <div id="boss-grid" class="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-4"></div>
         </section>
 
+        <!-- ===== GUIDE DES ACCESSOIRES ===== -->
+        <section id="accguide-section" class="hidden pb-10">
+            <div class="mb-4">
+                <h2 class="text-2xl font-extrabold text-white tracking-tight">Guide des accessoires</h2>
+                <p class="text-xs text-tactical-muted mt-1 max-w-3xl">Tous les accessoires d'armes d'AR2 : effets, réticules, rareté, chances de les trouver, armes compatibles et la carte des 120 spawns documentés avec leurs photos. Clique sur un accessoire pour tout savoir.</p>
+            </div>
+            <div id="acc-root"></div>
+        </section>
+        <div id="acc-modal" class="hidden fixed inset-0 z-[70] bg-black/75 backdrop-blur-sm items-start justify-center p-3 md:p-8" role="dialog" aria-modal="true" aria-label="Détail de l'accessoire">
+            <div class="ev-modal-box relative w-full max-w-6xl max-h-full overflow-y-auto bg-tactical-card border border-tactical-border rounded-2xl p-5 md:p-6 shadow-2xl">
+                <button type="button" data-acc-close="1" class="absolute right-3 top-3 z-10 bg-tactical-card/90 w-9 h-9 rounded-lg border border-tactical-border text-tactical-muted hover:text-white hover:border-tactical-muted text-xl leading-none" aria-label="Fermer">&times;</button>
+                <div id="acc-modal-body"></div>
+            </div>
+        </div>
+
         <!-- ===== ÉVÉNEMENTS ALÉATOIRES ===== -->
         <section id="events-section" class="hidden pb-10">
             <div class="mb-4">
@@ -773,7 +789,7 @@
         </section>
     </main>
     <footer class="max-w-7xl mx-auto px-4 pb-28 pt-2 text-center text-[11px] text-tactical-muted">
-        Images des objets et des événements : <a href="https://roblox-apocalypse-rising.fandom.com/wiki/Apocalypse_Rising_Wiki" target="_blank" rel="noopener" class="underline hover:text-tactical-accent">wiki Apocalypse Rising (Fandom)</a>, licence <a href="https://creativecommons.org/licenses/by-sa/3.0/" target="_blank" rel="noopener" class="underline hover:text-tactical-accent">CC BY-SA</a> (<a href="img/items/CREDITS.md" target="_blank" rel="noopener" class="underline hover:text-tactical-accent">liste des sources</a>). Site fait par des fans, non affilié à Gullet Productions ni à Roblox.
+        Images des objets, des événements et des spawns d'accessoires : <a href="https://roblox-apocalypse-rising.fandom.com/wiki/Apocalypse_Rising_Wiki" target="_blank" rel="noopener" class="underline hover:text-tactical-accent">wiki Apocalypse Rising (Fandom)</a>, licence <a href="https://creativecommons.org/licenses/by-sa/3.0/" target="_blank" rel="noopener" class="underline hover:text-tactical-accent">CC BY-SA</a> (<a href="img/items/CREDITS.md" target="_blank" rel="noopener" class="underline hover:text-tactical-accent">liste des sources</a>). Site fait par des fans, non affilié à Gullet Productions ni à Roblox.
     </footer>
 
     <!-- ===== LISTE DE LOOT (wishlist) ===== -->
@@ -1135,7 +1151,7 @@
             A({ id: 'ocr', name: 'OCR Sight', slot: 'Optique', zoom: '4x', aimAcc: 1, rarity: 'Rare', description: "Lunette 4x de l'armée US. Légère hausse de la précision en visée." }),
             A({ id: 'pelican', name: 'Pelican Scope', slot: 'Optique', zoom: '3.4x', aimAcc: 1, rarity: 'Rare', description: "Lunette 3.4x de l'armée canadienne, idéale à moyenne portée." }),
             A({ id: 'prism', name: 'Prism Scope', slot: 'Optique', zoom: '4x', aimAcc: 1, rarity: 'Rare', description: "Lunette prismatique britannique 4x." }),
-            A({ id: 'rifle-scope', name: 'Rifle Scope', slot: 'Optique', zoom: '6x', aimAcc: 1, aimSpeed: -1, rarity: 'Rare', description: "Lunette 6x pour le tir longue distance. Visée un peu plus lente." }),
+            A({ id: 'rifle-scope', name: 'Rifle Scope', slot: 'Optique', zoom: '6x', aimAcc: 1, aimSpeed: -1, rarity: 'Commun', description: "Lunette 6x pour le tir longue distance. Visée un peu plus lente." }),
             A({ id: 'oil-filter', name: 'Oil Filter Suppressor', slot: 'Canon', silent: true, aimSpeed: -3, rarity: 'Commun', description: "Silencieux artisanal. Supprime le traceur et n'attire pas les infectés, mais grosse perte de portée effective." }),
             A({ id: 'std-sup', name: 'Standard Suppressor', slot: 'Canon', silent: true, aimSpeed: -2, rarity: 'Peu commun', description: "Silencieux standard : discrétion totale, visée modérément ralentie." }),
             A({ id: 'mil-sup', name: 'Military Suppressor', slot: 'Canon', silent: true, aimSpeed: -1, rarity: 'Rare', description: "Silencieux militaire : le meilleur compromis discrétion / maniabilité." }),
@@ -1344,6 +1360,7 @@
               subs: ["Fusils d'Assaut", "Carabines d'Assaut", 'Fusils de Combat', 'Carabines', 'Fusils', 'Fusils de Précision', 'Snipers', 'Fusils à Pompe', 'PM / SMG', 'Mitrailleuses', 'Fusils Courts', 'Revolvers', 'Pistolets', 'Pistolets Mitrailleurs', 'Explosifs'] },
             { id: 'accessoires', label: "Accessoires d'Armes",    icon: 'eye',  color: '#22d3ee',
               subs: ['Optiques / Lunettes', 'Canon / Silencieux', 'Sous-Canon / Poignées & Lasers'] },
+            { id: 'accguide',    label: 'Guide des accessoires',  icon: 'sight', color: '#22d3ee', subs: [] },
             { id: 'sacs',        label: 'Sacs à Dos (Backpacks)', icon: 'box',  color: '#fbbf24',
               subs: ['Petits sacs (9-12 cases)', 'Sacs moyens (15-16 cases)', 'Grands sacs (18-20 cases)'] },
             { id: 'nourriture',  label: 'Nourriture & Survie',    icon: 'warn', color: '#fb923c',
@@ -1760,6 +1777,7 @@
                 case 'eye':  return `<svg ${st}><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>`;
                 case 'map':  return `<svg ${st}><path d="M9 4L3 6v14l6-2 6 2 6-2V4l-6 2-6-2z"/><path d="M9 4v14M15 6v14"/></svg>`;
                 case 'search': return `<svg ${st}><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>`;
+                case 'sight': return `<svg ${st}><rect x="3" y="9" width="13" height="6" rx="1.5"/><path d="M16 10.5h4v3h-4M7 9V6h5v3M8 15v3"/></svg>`;
                 case 'smoke': return `<svg ${st}><path d="M3 20h18"/><path d="M6 20l3-6h6l3 6"/><path d="M10 10c-2-1-2-3 0-4s2-3 0-4"/><path d="M15 10c-2-1-2-3 0-4"/></svg>`;
                 case 'crosshair': return `<svg ${st}><circle cx="12" cy="12" r="7"/><path d="M12 2v5M12 17v5M2 12h5M17 12h5"/></svg>`;
                 case 'pin': return `<svg ${st}><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>`;
@@ -1779,7 +1797,7 @@
         function renderMainTabs() {
             document.getElementById('main-tabs').innerHTML = GROUPS.map(g => {
                 const active = g.id === currentGroup;
-                const count = g.id === 'evenements' ? (window.AR2Events ? AR2Events.count() : 0) : g.id === 'balistique' ? (typeof balWeapons === 'function' ? balWeapons().length : 0) : g.id === 'boss' ? (typeof BOSS_DATA !== 'undefined' ? BOSS_DATA.length : 0) : g.id === 'survie' ? 8 : g.id === 'defi' ? (typeof DF_RULES !== 'undefined' ? DF_RULES.length : 0) : g.id === 'build' ? BACKPACKS_DATA.length : g.id === 'lootrun' ? (typeof LOOT_ROUTES !== 'undefined' ? LOOT_ROUTES.length : 0) : g.id === 'carte' ? (typeof MAP_COUNT !== 'undefined' ? MAP_COUNT : 0) + MAP_DATA.locations.filter(l => l.custom).length : g.id === 'lieux' ? MAP_DATA.locations.filter(l => l.custom).length : g.id === 'createur' ? ALL_ITEMS.filter(i => i.custom).length : g.id === 'finditem' ? ALL_ITEMS.length : g.id === 'crosshair' ? (window.AR2Crosshair ? Object.keys(window.AR2Crosshair.STYLES).length : 11) : ALL_ITEMS.filter(i => i.group === g.id).length;
+                const count = g.id === 'accguide' ? (window.AR2Acc ? AR2Acc.count() : 0) : g.id === 'evenements' ? (window.AR2Events ? AR2Events.count() : 0) : g.id === 'balistique' ? (typeof balWeapons === 'function' ? balWeapons().length : 0) : g.id === 'boss' ? (typeof BOSS_DATA !== 'undefined' ? BOSS_DATA.length : 0) : g.id === 'survie' ? 8 : g.id === 'defi' ? (typeof DF_RULES !== 'undefined' ? DF_RULES.length : 0) : g.id === 'build' ? BACKPACKS_DATA.length : g.id === 'lootrun' ? (typeof LOOT_ROUTES !== 'undefined' ? LOOT_ROUTES.length : 0) : g.id === 'carte' ? (typeof MAP_COUNT !== 'undefined' ? MAP_COUNT : 0) + MAP_DATA.locations.filter(l => l.custom).length : g.id === 'lieux' ? MAP_DATA.locations.filter(l => l.custom).length : g.id === 'createur' ? ALL_ITEMS.filter(i => i.custom).length : g.id === 'finditem' ? ALL_ITEMS.length : g.id === 'crosshair' ? (window.AR2Crosshair ? Object.keys(window.AR2Crosshair.STYLES).length : 11) : ALL_ITEMS.filter(i => i.group === g.id).length;
                 return `
                     <button data-group="${g.id}" class="flex items-center gap-2.5 px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider border transition-all ${
                         active ? 'bg-tactical-accent text-tactical-bg border-tactical-accent shadow-lg shadow-tactical-accent/10'
@@ -3084,9 +3102,9 @@
         function onGroupChange() {
             const isMap = currentGroup === 'carte', isCreator = currentGroup === 'createur', isFind = currentGroup === 'finditem', isXh = currentGroup === 'crosshair', isLieux = currentGroup === 'lieux';
             const isBuild = currentGroup === 'build', isRun = currentGroup === 'lootrun';
-            const isBal = currentGroup === 'balistique', isBoss = currentGroup === 'boss', isEv = currentGroup === 'evenements';
+            const isBal = currentGroup === 'balistique', isBoss = currentGroup === 'boss', isEv = currentGroup === 'evenements', isAcc = currentGroup === 'accguide';
             const isSv = currentGroup === 'survie', isDf = currentGroup === 'defi';
-            const special = isMap || isCreator || isFind || isXh || isLieux || isBuild || isRun || isBal || isBoss || isEv || isSv || isDf;
+            const special = isMap || isCreator || isFind || isXh || isLieux || isBuild || isRun || isBal || isBoss || isEv || isAcc || isSv || isDf;
             document.getElementById('survie-section').classList.toggle('hidden', !isSv);
             document.getElementById('defi-section').classList.toggle('hidden', !isDf);
             if (isSv && typeof svRender === 'function') svRender();
@@ -3095,6 +3113,8 @@
             document.getElementById('boss-section').classList.toggle('hidden', !isBoss);
             document.getElementById('events-section').classList.toggle('hidden', !isEv);
             if (isEv && typeof evRender === 'function') evRender();
+            document.getElementById('accguide-section').classList.toggle('hidden', !isAcc);
+            if (isAcc && typeof accRender === 'function') accRender();
             if (isBal && typeof balRender === 'function') balRender();
             if (isBoss && typeof bossRender === 'function') bossRender();
             document.getElementById('build-section').classList.toggle('hidden', !isBuild);
@@ -6170,6 +6190,7 @@
     })();
     </script>
     <script src="events.js"></script>
+    <script src="accessories.js"></script>
     <script src="crosshair-app/src/autocolor.js"></script>
     <script src="crosshair-app/src/aimtrainer.js"></script>
     <script src="crosshair-app/src/ar2-tools.js"></script>
