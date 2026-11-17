@@ -30,5 +30,16 @@ contextBridge.exposeInMainWorld('xh', {
     onTimerAlarm: (cb) => ipcRenderer.on('timer-alarm', (e, a) => cb(a)),
     timerBeeped: () => ipcRenderer.send('timer-beeped'),
     aimOpen: () => ipcRenderer.invoke('aim-open'),
-    wikiOpen: (tab) => ipcRenderer.invoke('wiki-open', tab)
+    wikiOpen: (tab) => ipcRenderer.invoke('wiki-open', tab),
+    // HUD v1.5 : wiki instantané, télémètre, boussole, thèmes
+    hudGet: () => ipcRenderer.invoke('hud-get'),
+    hudAct: (act, data) => ipcRenderer.invoke('hud-act', { act, data }),
+    hudExtras: (p) => ipcRenderer.invoke('hud-extras', p),
+    getTheme: () => ipcRenderer.invoke('hud-theme-get'),
+    setTheme: (id) => ipcRenderer.invoke('hud-theme-set', id),
+    onTheme: (cb) => ipcRenderer.on('hud-theme', (e, id) => cb(id)),
+    onIndex: (cb) => ipcRenderer.on('hud-index', (e, ix) => cb(ix)),
+    onSpotShow: (cb) => ipcRenderer.on('hud-spot-show', (e, o) => cb(o)),
+    onRange: (cb) => ipcRenderer.on('hud-range', (e, d) => cb(d)),
+    onCompass: (cb) => ipcRenderer.on('hud-compass', (e, d) => cb(d))
 });

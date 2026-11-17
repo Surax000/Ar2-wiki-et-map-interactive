@@ -8,5 +8,5 @@ window.xh.onChecklist(c => {
     box.style.transform = `scale(${k})`;
     box.style.opacity = Math.max(0.2, Math.min(1, +c.opacity || 0.85));
     box.innerHTML = `<div class="t">${esc(c.title || 'Objectifs')}<span>${done}/${c.items.length}</span></div>` +
-        (items.length ? items.map(i => `<div class="i ${i.done ? 'd' : ''}"><span class="c"></span><span class="x">${esc(i.text)}</span></div>`).join('') : '<div class="i"><span class="x" style="color:#00ff88">Tout est fait.</span></div>');
+        (items.length ? items.map(i => `<div class="i ${i.done ? 'd' : ''}"><span class="c"></span><span class="x">${esc(i.text)}</span></div>`).join('') : '<div class="i"><span class="x" style="color:var(--c-acc,#00ff88)">Tout est fait.</span></div>');
 });

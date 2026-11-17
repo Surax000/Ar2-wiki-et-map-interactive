@@ -8,10 +8,10 @@
 </head>
 <body>
 <header class="top">
-    <div class="brand"><img src="assets/icon.png" alt=""><div><b>AR2 Crosshair</b><span id="ver">v1.4.0</span></div></div>
+    <div class="brand"><img src="assets/icon.png" alt=""><div><b>AR2 Crosshair</b><span id="ver">v1.5.0</span></div></div>
     <div class="top-actions">
         <button id="vis-btn" class="btn primary">Crosshair affiché</button>
-        <span class="hint">Ctrl+Alt+X afficher / masquer • Ctrl+Alt+A couleur auto • Ctrl+Alt+T minuteur • Ctrl+Alt+F1/F2/F3 lancer • Ctrl+Alt+O objectifs</span>
+        <span class="hint">Ctrl+Alt + X crosshair • W wiki instantané • D télémètre • K boussole • T minuteur • O objectifs</span>
     </div>
 </header>
 <div id="upd-banner" class="banner hidden"><span id="upd-text"></span><button id="upd-btn" class="btn sm primary">Redémarrer et installer</button></div>
@@ -152,6 +152,42 @@
             <div class="field"><label>Taille <b id="tm-scale-v"></b></label><input type="range" id="tm-scale" min="0.6" max="2" step="0.1"></div>
             <div class="field"><label>Opacité <b id="tm-op-v"></b></label><input type="range" id="tm-op" min="0.2" max="1" step="0.05"></div>
         </details>
+        <details open id="th-box"><summary>Thème visuel (HUD Skins)</summary>
+            <p class="muted small">Change l'ambiance de l'appli, de toutes les fenêtres en jeu (wiki instantané, télémètre, boussole, objectifs, minuteur) et du site ouvert dans l'appli.</p>
+            <div id="th-list" class="themes"></div>
+        </details>
+        <details open id="sp-box"><summary>Wiki instantané (par-dessus le jeu)</summary>
+            <p class="muted small">Appuie sur <span class="kbd" id="sp-key">Ctrl+Alt+W</span> en jeu : une barre de recherche semi-transparente s'ouvre par-dessus Roblox. Tape 3 lettres (M4A1, Ashland…) pour voir les stats clés ou les spawns sans Alt-Tab. « A vs B » donne un verdict Duel Express, « Ashland &gt; Regional Airport » un cap. Échap pour refermer.</p>
+            <div class="row gap wrap"><button id="sp-open" class="btn sm primary">Ouvrir le wiki instantané</button><button id="sp-refresh" class="btn sm">Mettre à jour les données</button></div>
+            <div class="field"><label>Opacité du fond <b id="sp-op-v"></b></label><input type="range" id="sp-op" min="0.4" max="1" step="0.02"></div>
+            <div class="field"><label class="tog"><input type="checkbox" id="sp-blur"> Se fermer quand je reviens dans le jeu</label></div>
+            <div id="sp-info" class="small muted"></div>
+        </details>
+        <details open id="rg-box"><summary>Télémètre (distance au viseur)</summary>
+            <p class="muted small"><span class="kbd" id="rg-key">Ctrl+Alt+D</span> affiche une jauge translucide à côté du viseur. Chaque trait a la hauteur d'un joueur debout à la distance écrite dessous : compare l'ennemi dans ta lunette au trait le plus proche, tu lis sa distance, les dégâts au corps de ton arme et la chute de balle (en hauteurs de tête). <span class="kbd" id="rg-zkey">Ctrl+Alt+Maj+D</span> change de lunette.</p>
+            <div class="field"><label class="tog"><input type="checkbox" id="rg-show"> Afficher le télémètre</label></div>
+            <div class="field"><label class="tog"><input type="checkbox" id="rg-follow"> Suivre l'arme de la barre rapide (noms des emplacements du changement d'arme)</label></div>
+            <div class="field"><label>Arme</label><select id="rg-weapon" class="w100"></select></div>
+            <div class="field"><label>Lunette / zoom</label><select id="rg-scope" class="w100"></select></div>
+            <div class="field row gap wrap"><label class="tog"><input type="checkbox" id="rg-ads"> Seulement pendant la visée (clic droit, avec le changement d'arme auto activé)</label><select id="rg-side"><option value="right">À droite du viseur</option><option value="left">À gauche du viseur</option></select></div>
+            <div class="field"><label>Écart au viseur <b id="rg-gap-v"></b></label><input type="range" id="rg-gap" min="20" max="400" step="5"></div>
+            <div class="field"><label>Champ de vision Roblox (vertical) <b id="rg-fov-v"></b></label><input type="range" id="rg-fov" min="50" max="100" step="1"></div>
+            <div class="field"><label>Calibration <b id="rg-cal-v"></b></label><input type="range" id="rg-cal" min="0.5" max="2" step="0.01"></div>
+            <p class="muted small">Calibrer : place un ami debout à une distance connue (ex : 100 studs, mesurée sur la carte), puis règle jusqu'à ce que son personnage ait la même hauteur que le trait 100.</p>
+            <div class="field"><label>Taille du texte <b id="rg-scale-v"></b></label><input type="range" id="rg-scale" min="0.6" max="2" step="0.1"></div>
+            <div class="field"><label>Opacité <b id="rg-op-v"></b></label><input type="range" id="rg-op" min="0.2" max="1" step="0.05"></div>
+            <div id="rg-info" class="hudinfo"></div>
+        </details>
+        <details open id="cp-box"><summary>Boussole / cap de navigation</summary>
+            <p class="muted small"><span class="kbd" id="cp-key">Ctrl+Alt+K</span> affiche en haut de l'écran le cap à suivre (ex : 229° S-O vers Regional Airport), la distance et le temps de trajet estimé. Choisis la destination dans le wiki instantané (« Ashland &gt; Regional Airport »), sur la carte du wiki ou envoie un Loot Run complet. <span class="kbd" id="cp-nkey">Ctrl+Alt+J</span> passe à l'étape suivante.</p>
+            <div id="cp-info" class="hudinfo"></div>
+            <div class="row gap wrap mt-s"><button id="cp-pick" class="btn sm primary">Choisir une destination</button><button id="cp-prev" class="btn sm">Étape précédente</button><button id="cp-next" class="btn sm">Étape suivante</button><button id="cp-clear" class="btn sm ghost">Effacer</button></div>
+            <div class="field"><label class="tog"><input type="checkbox" id="cp-show"> Afficher la boussole par-dessus le jeu</label></div>
+            <div class="field"><label>Temps affiché</label><select id="cp-speed" class="w100"><option value="walk">À pied (marche)</option><option value="sprint">En sprint</option><option value="vehicle">En véhicule</option></select></div>
+            <div class="field"><label>Position depuis le haut <b id="cp-top-v"></b></label><input type="range" id="cp-top" min="0" max="400" step="2"></div>
+            <div class="field"><label>Taille <b id="cp-scale-v"></b></label><input type="range" id="cp-scale" min="0.6" max="2" step="0.1"></div>
+            <div class="field"><label>Opacité <b id="cp-op-v"></b></label><input type="range" id="cp-op" min="0.2" max="1" step="0.05"></div>
+        </details>
         <details open id="wiki-box"><summary>Wiki AR2 (site complet)</summary>
             <p class="muted small">Tout le site AR2 dans l'appli : armes, TTK, build, carte, loot run, balistique, boss, survie, défi… Depuis le wiki, tu envoies un crosshair ou des objectifs dans l'appli en un clic (sans copier-coller). Raccourci <b id="wiki-key">Ctrl+Alt+W</b>.</p>
             <div class="row gap wrap">
@@ -191,6 +227,8 @@
         </details>
     </section>
 </main>
+<script src="ar2-tools.js"></script>
+<script src="theme-client.js"></script>
 <script src="crosshair-core.js"></script>
 <script src="autocolor.js"></script>
 <script src="weapons.js"></script>

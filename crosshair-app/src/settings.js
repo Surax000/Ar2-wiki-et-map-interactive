@@ -2,7 +2,7 @@
 const C = window.AR2Crosshair;
 // Mode démo (ouverture dans un navigateur, sans Electron)
 if (!window.xh) {
-    const st = { cfg: { active: 0, profiles: C.PRESETS.map((p, i) => ({ id: 'p' + i, name: p.name, settings: C.withDefaults(p.s) })), display: 0, autoUpdate: true, autoSwitch: { enabled: true, onlyRoblox: true, holsterHide: true, adsHide: false, adsMode: 'hold', slots: {}, labels: {} }, hotkeys: { toggle: 'Control+Alt+X', settings: 'Control+Alt+S', nextProfile: 'Control+Alt+P', center: 'Control+Alt+C', autoColor: 'Control+Alt+A', checklist: 'Control+Alt+O', checkNext: 'Control+Alt+N', timer: 'Control+Alt+T', timer1: 'Control+Alt+F1', timer2: 'Control+Alt+F2', timer3: 'Control+Alt+F3', timerStop: 'Control+Alt+R', wiki: 'Control+Alt+W', up: 'Control+Alt+Up', down: 'Control+Alt+Down', left: 'Control+Alt+Left', right: 'Control+Alt+Right' }, startHidden: false, launchAtStartup: false, moveStep: 1, autoColor: JSON.parse(JSON.stringify(window.AR2AutoColor.DEFAULTS)), whitelist: { enabled: false, apps: [{ id: 'roblox', name: 'Roblox', match: 'Roblox', on: true }, { id: 'minecraft', name: 'Minecraft', match: 'Minecraft', on: false }] }, checklist: { title: 'Objectifs', overlay: false, corner: 'tr', scale: 1, opacity: 0.85, hideDone: false, items: [{ id: 'a', text: 'Trouver un sac à dos', done: true }, { id: 'b', text: 'Une arme à feu + 2 chargeurs', done: false }] }, timer: { overlay: true, corner: 'tl', scale: 1, opacity: 0.9, sound: true, volume: 0.5, warn: 30, warnBeep: false, keepDone: 45, presets: [{ id: 'caisses', name: 'Caisses militaires', min: 15 }, { id: 'helico', name: 'Hélico crashé', min: 10 }, { id: 'boost', name: 'Boost', min: 5 }], running: [] } }, autoColor: { samples: 0 }, fgTitle: null, presets: { debut: 'Début de partie', militaire: 'Run militaire', boss: 'Chasse au boss' }, visible: true, displays: [{ i: 0, label: 'Écran 1 – 1920×1080 (principal)' }], version: '1.4.0', update: { state: 'none', mode: 'auto', version: '1.4.0' }, hook: { started: true }, installed: true };
+    const st = { cfg: { active: 0, profiles: C.PRESETS.map((p, i) => ({ id: 'p' + i, name: p.name, settings: C.withDefaults(p.s) })), display: 0, autoUpdate: true, autoSwitch: { enabled: true, onlyRoblox: true, holsterHide: true, adsHide: false, adsMode: 'hold', slots: {}, labels: {} }, hotkeys: { toggle: 'Control+Alt+X', settings: 'Control+Alt+S', nextProfile: 'Control+Alt+P', center: 'Control+Alt+C', autoColor: 'Control+Alt+A', checklist: 'Control+Alt+O', checkNext: 'Control+Alt+N', timer: 'Control+Alt+T', timer1: 'Control+Alt+F1', timer2: 'Control+Alt+F2', timer3: 'Control+Alt+F3', timerStop: 'Control+Alt+R', spotlight: 'Control+Alt+W', wiki: 'Control+Alt+Shift+W', range: 'Control+Alt+D', rangeZoom: 'Control+Alt+Shift+D', compass: 'Control+Alt+K', compassNext: 'Control+Alt+J', compassPrev: 'Control+Alt+Shift+J', themeNext: '', up: 'Control+Alt+Up', down: 'Control+Alt+Down', left: 'Control+Alt+Left', right: 'Control+Alt+Right' }, theme: 'classic', range: { show: false, weapon: 'm4a1', followSlot: true, zoomBy: {}, fov: 70, calib: 1, side: 'right', gap: 70, onlyAds: false, opacity: 0.9, scale: 1 }, compass: { show: false, route: null, leg: 0, opacity: 0.92, scale: 1, speed: 'sprint', top: 10 }, spotlight: { opacity: 0.9, hideOnBlur: true }, startHidden: false, launchAtStartup: false, moveStep: 1, autoColor: JSON.parse(JSON.stringify(window.AR2AutoColor.DEFAULTS)), whitelist: { enabled: false, apps: [{ id: 'roblox', name: 'Roblox', match: 'Roblox', on: true }, { id: 'minecraft', name: 'Minecraft', match: 'Minecraft', on: false }] }, checklist: { title: 'Objectifs', overlay: false, corner: 'tr', scale: 1, opacity: 0.85, hideDone: false, items: [{ id: 'a', text: 'Trouver un sac à dos', done: true }, { id: 'b', text: 'Une arme à feu + 2 chargeurs', done: false }] }, timer: { overlay: true, corner: 'tl', scale: 1, opacity: 0.9, sound: true, volume: 0.5, warn: 30, warnBeep: false, keepDone: 45, presets: [{ id: 'caisses', name: 'Caisses militaires', min: 15 }, { id: 'helico', name: 'Hélico crashé', min: 10 }, { id: 'boost', name: 'Boost', min: 5 }], running: [] } }, autoColor: { samples: 0 }, fgTitle: null, presets: { debut: 'Début de partie', militaire: 'Run militaire', boss: 'Chasse au boss' }, visible: true, displays: [{ i: 0, label: 'Écran 1 – 1920×1080 (principal)' }], version: '1.5.0', update: { state: 'none', mode: 'auto', version: '1.5.0' }, hook: { started: true }, installed: true };
     const cur = () => st.cfg.profiles[st.cfg.active].settings;
     window.xh = {
         getState: async () => st, update: async p => { Object.assign(cur(), p); return st; },
@@ -22,6 +22,8 @@ if (!window.xh) {
         timerStop: async id => { st.cfg.timer.running = id === 'all' ? [] : st.cfg.timer.running.filter(r => r.id !== id); return st; },
         timerAdd: async ({ id, sec }) => { const r = st.cfg.timer.running.find(x => x.id === id); if (r) { r.end += sec * 1000; r.doneAt = null; } return st; },
         aimOpen: async () => { window.open('aim.html'); return true; },
+        hudExtras: async p => { ['range', 'compass', 'spotlight'].forEach(k => { if (p[k]) st.cfg[k] = Object.assign({}, st.cfg[k], p[k]); }); if (p.theme) { st.cfg.theme = p.theme; window.AR2Tools.applyTheme(p.theme); } if ('clearRoute' in p) st.cfg.compass.route = null; return st; },
+        getTheme: async () => st.cfg.theme, setTheme: async id => { st.cfg.theme = id; window.AR2Tools.applyTheme(id); return id; }, onTheme: () => {},
         wikiOpen: async () => { window.open('../../index.html'); return true; },
         backupExport: async o => { const b = { app: 'ar2-crosshair', format: 1, version: st.version, data: { profiles: st.cfg.profiles, autoColor: st.cfg.autoColor, whitelist: st.cfg.whitelist, checklist: st.cfg.checklist, hotkeys: st.cfg.hotkeys } }; return o && o.as === 'code' ? 'AR2CFG-' + btoa(unescape(encodeURIComponent(JSON.stringify(b)))) : JSON.stringify(b, null, 2); },
         backupSave: async () => ({ ok: true, file: 'ar2-crosshair-sauvegarde.json' }), backupOpen: async () => null,
@@ -34,7 +36,7 @@ let S = null, bg = 'game', zoom = 1, pvColor = null, pvPick = null;
 const $ = s => document.querySelector(s);
 const cur = () => S.cfg.profiles[S.cfg.active].settings;
 const SW = ['#00ff88', '#ff2d55', '#ffffff', '#22d3ee', '#facc15', '#fb923c', '#e879f9', '#a3e635', '#3b82f6', '#000000'];
-const HK_LABELS = { toggle: 'Afficher / masquer', settings: 'Ouvrir les réglages', nextProfile: 'Profil suivant', center: 'Recentrer', timer: 'Minuteur : afficher / masquer', timer1: 'Minuteur 1 (lancer / relancer)', timer2: 'Minuteur 2 (lancer / relancer)', timer3: 'Minuteur 3 (lancer / relancer)', timerStop: 'Arrêter les minuteurs', wiki: 'Ouvrir le wiki AR2', autoColor: 'Couleur auto on / off', checklist: 'Objectifs à l\'écran', checkNext: 'Cocher l\'objectif suivant', up: 'Monter', down: 'Descendre', left: 'Gauche', right: 'Droite' };
+const HK_LABELS = { toggle: 'Afficher / masquer', settings: 'Ouvrir les réglages', nextProfile: 'Profil suivant', center: 'Recentrer', timer: 'Minuteur : afficher / masquer', timer1: 'Minuteur 1 (lancer / relancer)', timer2: 'Minuteur 2 (lancer / relancer)', timer3: 'Minuteur 3 (lancer / relancer)', timerStop: 'Arrêter les minuteurs', spotlight: 'Wiki instantané (par-dessus le jeu)', wiki: 'Ouvrir le wiki AR2 complet', range: 'Télémètre : afficher / masquer', rangeZoom: 'Télémètre : lunette suivante', compass: 'Boussole : afficher / masquer', compassNext: 'Boussole : étape suivante', compassPrev: 'Boussole : étape précédente', themeNext: 'Thème suivant', autoColor: 'Couleur auto on / off', checklist: 'Objectifs à l\'écran', checkNext: 'Cocher l\'objectif suivant', up: 'Monter', down: 'Descendre', left: 'Gauche', right: 'Droite' };
 
 function drawBg(ctx, w, h) {
     if (bg === 'dark') { ctx.fillStyle = '#14171c'; ctx.fillRect(0, 0, w, h); return; }
@@ -136,7 +138,7 @@ function renderUpdate() {
     b.classList.toggle('hidden', !show);
     if (show) { $('#upd-text').textContent = txt + (u.state === 'ready' ? " Elle s'installera aussi toute seule à la fermeture de l'appli." : u.mode === 'manual' ? ' (version portable : télécharge la nouvelle version)' : ''); $('#upd-btn').textContent = u.state === 'ready' ? 'Redémarrer et installer' : 'Télécharger'; }
 }
-function renderAll() { renderProfiles(); renderStyles(); renderControls(); renderHotkeys(); renderAuto(); renderUpdate(); renderPreview(); renderAC(); renderWL(); renderCK(); renderTM(); renderBK(); }
+function renderAll() { renderHUD(); renderProfiles(); renderStyles(); renderControls(); renderHotkeys(); renderAuto(); renderUpdate(); renderPreview(); renderAC(); renderWL(); renderCK(); renderTM(); renderBK(); }
 
 async function upd(partial) {
     Object.assign(cur(), partial);
@@ -362,7 +364,7 @@ $('#ck-hidedone').onchange = e => ckSet({ hideDone: e.target.checked });
 });
 
 // ================= Sauvegarde =================
-const BK = { profiles: 'Profils', autoSwitch: "Changement d'arme", autoColor: 'Couleur auto', whitelist: 'Liste blanche', checklist: 'Objectifs', timer: 'Minuteur', hotkeys: 'Raccourcis', general: 'Réglages généraux' };
+const BK = { profiles: 'Profils', autoSwitch: "Changement d'arme", autoColor: 'Couleur auto', whitelist: 'Liste blanche', checklist: 'Objectifs', timer: 'Minuteur', hud: 'Thème, télémètre, boussole', hotkeys: 'Raccourcis', general: 'Réglages généraux' };
 let bkSel = Object.keys(BK);
 function renderBK() {
     $('#bk-sections').innerHTML = Object.entries(BK).map(([k, l]) => `<label class="tog small"><input type="checkbox" data-bks="${k}" ${bkSel.includes(k) ? 'checked' : ''}> ${l}</label>`).join('');
@@ -451,3 +453,65 @@ $('#tm-test').onclick = () => {
 $('#aim-open').onclick = () => xh.aimOpen();
 $('#wiki-open').onclick = () => xh.wikiOpen();
 document.querySelectorAll('[data-wiki-tab]').forEach(b => { b.onclick = () => xh.wikiOpen(b.dataset.wikiTab); });
+
+// ================= v1.5 : thème, wiki instantané, télémètre, boussole =================
+const TT = window.AR2Tools;
+function hudInfo() {
+    if (S.hud) return S.hud;
+    // mode démo : calcul local
+    const th = TT.THEME_ORDER.map(id => ({ id, name: TT.THEMES[id].name, desc: TT.THEMES[id].desc, acc: TT.THEMES[id].acc, bg: TT.THEMES[id].bg }));
+    return { themes: th, indexItems: 0, range: { weapon: 'M4A1', src: 'manuel', scope: 'Visée mécanique (1x)', z: 1, scopes: [{ id: 'iron', name: 'Visée mécanique (1x)', z: 1 }, { id: 'ocr', name: 'OCR Sight (4x)', z: 4 }] }, compass: null };
+}
+const hk = k => hkTxt(S.cfg.hotkeys[k]).replace(/Shift/g, 'Maj');
+const hudSet = async p => { S = await xh.hudExtras(p); renderHUD(); };
+function slider(id, val, fmt) { const el = $('#' + id); if (!el) return; if (document.activeElement !== el) el.value = val; const v = $('#' + id + '-v'); if (v) v.textContent = fmt(+el.value); }
+function renderHUD() {
+    if (!S || !S.cfg.range) return;
+    const H = hudInfo(), r = S.cfg.range, k = S.cfg.compass, sp = S.cfg.spotlight, cur = S.cfg.theme || 'classic';
+    TT.applyTheme(cur);
+    $('#th-list').innerHTML = H.themes.map(t => { const T0 = TT.THEMES[t.id]; return `<button class="theme-card ${t.id === cur ? 'on' : ''}" data-theme="${t.id}" style="--th-bg:${T0.card};--th-bd:${T0.border};--th-acc:${T0.acc};--th-tx:${T0.text}"><b><i></i>${esc(t.name)}</b><span>${esc(t.desc)}</span></button>`; }).join('');
+    $('#sp-key').textContent = hk('spotlight'); $('#rg-key').textContent = hk('range'); $('#rg-zkey').textContent = hk('rangeZoom'); $('#cp-key').textContent = hk('compass'); $('#cp-nkey').textContent = hk('compassNext');
+    slider('sp-op', sp.opacity, v => Math.round(v * 100) + ' %'); $('#sp-blur').checked = !!sp.hideOnBlur;
+    $('#sp-info').textContent = H.indexItems ? `Données du wiki : ${H.indexItems} fiches${H.indexDate ? ' (mises à jour le ' + new Date(H.indexDate).toLocaleDateString('fr-FR') + ')' : ''}. Elles se mettent à jour toutes seules quand tu ouvres le wiki complet.` : '';
+    // télémètre
+    $('#rg-show').checked = !!r.show; $('#rg-follow').checked = !!r.followSlot; $('#rg-ads').checked = !!r.onlyAds; $('#rg-side').value = r.side;
+    const ws = S.weapons || [];
+    const wsel = $('#rg-weapon');
+    if (document.activeElement !== wsel) {
+        const cats = [...new Set(ws.map(w => w.cat))];
+        wsel.innerHTML = ws.length ? cats.map(c => `<optgroup label="${esc(c)}">${ws.filter(w => w.cat === c).map(w => `<option value="${esc(w.id)}">${esc(w.name)}</option>`).join('')}</optgroup>`).join('') : '<option value="m4a1">M4A1</option>';
+        wsel.value = r.weapon;
+    }
+    const sc = $('#rg-scope'), R = H.range;
+    if (R && document.activeElement !== sc) { sc.innerHTML = R.scopes.map(s => `<option value="${s.z}">${esc(s.name)}</option>`).join(''); sc.value = String(R.z); }
+    slider('rg-gap', r.gap, v => v + ' px'); slider('rg-fov', r.fov, v => v + '°'); slider('rg-cal', r.calib, v => 'x' + v.toFixed(2)); slider('rg-scale', r.scale, v => 'x' + v.toFixed(1)); slider('rg-op', r.opacity, v => Math.round(v * 100) + ' %');
+    $('#rg-info').innerHTML = R ? `Arme mesurée : <b>${esc(R.weapon)}</b> · ${esc(R.scope)} <span class="muted">(${esc(R.src)})</span>` : 'Aucune arme.';
+    // boussole
+    $('#cp-show').checked = !!k.show; $('#cp-speed').value = k.speed;
+    slider('cp-top', k.top, v => v + ' px'); slider('cp-scale', k.scale, v => 'x' + v.toFixed(1)); slider('cp-op', k.opacity, v => Math.round(v * 100) + ' %');
+    const D = H.compass;
+    $('#cp-info').innerHTML = D && !D.empty ? `Cap actuel : <b>${Math.round(D.deg) % 360}° ${esc(D.card16)}</b> vers <b>${esc(D.to)}</b> depuis ${esc(D.from)} · ${esc(D.dist)}${D.legs > 1 ? ` · étape ${D.leg}/${D.legs}` : ''}` : 'Pas encore de destination.';
+    ['cp-prev', 'cp-next', 'cp-clear'].forEach(id => { $('#' + id).disabled = !(D && !D.empty); });
+}
+$('#th-list').addEventListener('click', e => { const b = e.target.closest('[data-theme]'); if (b) hudSet({ theme: b.dataset.theme }); });
+$('#sp-open').onclick = () => hudSet({ openSpot: true });
+$('#sp-refresh').onclick = async () => { await hudSet({ refreshIndex: true }); $('#sp-info').textContent = 'Mise à jour en cours (le site est chargé en arrière-plan)…'; };
+$('#sp-blur').onchange = e => hudSet({ spotlight: { hideOnBlur: e.target.checked } });
+$('#rg-show').onchange = e => hudSet({ range: { show: e.target.checked } });
+$('#rg-follow').onchange = e => hudSet({ range: { followSlot: e.target.checked } });
+$('#rg-ads').onchange = e => hudSet({ range: { onlyAds: e.target.checked } });
+$('#rg-side').onchange = e => hudSet({ range: { side: e.target.value } });
+$('#rg-weapon').onchange = e => { e.target.blur(); hudSet({ range: { weapon: e.target.value, followSlot: false } }); };
+$('#rg-scope').onchange = e => { e.target.blur(); const R = hudInfo().range; const id = (S.weapons || []).some(w => w.name === R.weapon) ? S.weapons.find(w => w.name === R.weapon).id : S.cfg.range.weapon; hudSet({ range: { zoomBy: { [id]: +e.target.value } } }); };
+$('#cp-show').onchange = e => hudSet({ compass: { show: e.target.checked } });
+$('#cp-speed').onchange = e => hudSet({ compass: { speed: e.target.value } });
+$('#cp-pick').onclick = () => hudSet({ openSpot: 'Ashland > ' });
+$('#cp-clear').onclick = () => hudSet({ clearRoute: true });
+$('#cp-prev').onclick = () => hudSet({ compass: { leg: Math.max(0, (S.cfg.compass.leg | 0) - 1) } });
+$('#cp-next').onclick = () => hudSet({ compass: { leg: (S.cfg.compass.leg | 0) + 1 } });
+[['sp-op', 'spotlight', 'opacity'], ['rg-gap', 'range', 'gap'], ['rg-fov', 'range', 'fov'], ['rg-cal', 'range', 'calib'], ['rg-scale', 'range', 'scale'], ['rg-op', 'range', 'opacity'], ['cp-top', 'compass', 'top'], ['cp-scale', 'compass', 'scale'], ['cp-op', 'compass', 'opacity']].forEach(([id, sec, key]) => {
+    const el = $('#' + id);
+    el.addEventListener('input', () => { renderHUD(); clearTimeout(el.__t); el.__t = setTimeout(() => xh.hudExtras({ [sec]: { [key]: +el.value } }).then(s => { S = s; }), 80); });
+    el.addEventListener('change', () => hudSet({ [sec]: { [key]: +el.value } }));
+});
+if (xh.onTheme) xh.onTheme(id => { if (S) { S.cfg.theme = id; renderHUD(); } });

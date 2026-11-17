@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'unsafe-inline'">
+<style>
+html,body{margin:0;padding:0;background:transparent;overflow:hidden;font-family:"Segoe UI",Inter,system-ui,sans-serif;color:var(--c-text,#fff)}
+#box{position:absolute;inset:0}
+.hd{position:absolute;left:0;right:0;top:0;box-sizing:border-box;padding:5px 8px;border-radius:10px;background:var(--c-hud,rgba(10,13,18,.78));border:1px solid rgb(var(--t-acc,0 255 136) / .35);overflow:hidden;white-space:nowrap}
+.hd b{font-weight:800;color:var(--c-acc,#00ff88);letter-spacing:.02em}
+.hd .s{color:var(--c-muted,#8b949e);font-size:.85em}
+.hd .l2{display:block;font-size:.8em;color:var(--c-muted,#8b949e);overflow:hidden;text-overflow:ellipsis}
+.area{position:absolute;left:0;right:0}
+.mid{position:absolute;left:0;right:0;top:50%;border-top:1px dashed rgb(var(--t-acc,0 255 136) / .35)}
+.bar{position:absolute;top:50%;transform:translateY(-50%);width:2px;margin-left:-1px;background:currentColor;box-shadow:0 0 0 1px rgba(0,0,0,.55)}
+.bar::before,.bar::after{content:"";position:absolute;left:-5px;width:12px;height:2px;background:currentColor;box-shadow:0 0 0 1px rgba(0,0,0,.45)}
+.bar::before{top:0}.bar::after{bottom:0}
+.bar i{position:absolute;left:-3px;width:8px;height:1px;background:currentColor;opacity:.8}
+.full{color:var(--c-acc,#00ff88)}.drop{color:var(--c-gold,#e5c07b)}.min{color:var(--c-red,#ff4757)}
+.lb{position:absolute;text-align:center;transform:translateX(-50%);line-height:1.05;text-shadow:0 1px 2px #000,0 0 3px #000;white-space:nowrap}
+.lb b{display:block;font-weight:800}
+.lb span{display:block;color:var(--c-text,#fff);opacity:.9}
+.lb em{display:block;font-style:normal;color:var(--c-text,#fff);opacity:.7}
+.ft{position:absolute;left:0;right:0;bottom:0;box-sizing:border-box;padding:2px 6px;border-radius:6px;background:var(--c-hud,rgba(10,13,18,.78));text-align:center;font-size:.72em;color:var(--c-muted,#8b949e);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+</style></head><body><div id="box"></div>
+<script src="ar2-tools.js"></script>
+<script src="range.js"></script>
+</body></html>

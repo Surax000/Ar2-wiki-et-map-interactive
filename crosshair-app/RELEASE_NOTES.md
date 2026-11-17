@@ -1,4 +1,12 @@
-## Nouveautés de la v1.4.0
+## Nouveautés de la v1.5.0
+- **Wiki instantané en overlay (Ctrl+Alt+W)** : une barre de recherche semi-transparente s'ouvre par-dessus Roblox, façon Spotlight / PowerToys Run. Tape 3 lettres (M4A1, Ashland…) : stats clés, TTK, meilleurs spawns ou description du lieu, sans Alt-Tab. Entrée = action principale (arme → télémètre, lieu → cap), Ctrl+Entrée = ouvrir la fiche dans le wiki complet, Échap = fermer. Le wiki complet passe sur **Ctrl+Alt+Maj+W**.
+- **Duel Express** : tape « Holographic Sight vs OCR Sight » (ou deux armes, soins, sacs, chargeurs) et l'appli donne un verdict en gros : « Prends OCR Sight : +1 pt de précision en visée, grossissement 4x ». Aussi sur le site (bouton Duel Express).
+- **Télémètre / mode sniper (Ctrl+Alt+D)** : une jauge translucide à côté du viseur. Chaque trait a la hauteur d'un joueur debout à 75, 100, 150… studs avec ta lunette : compare l'ennemi au trait le plus proche, tu lis sa distance, les dégâts au corps de ton arme à cette distance et la chute de balle. **Ctrl+Alt+Maj+D** change de lunette (1x, 3,4x, 4x, 6x…). L'arme suit ta barre rapide (noms des emplacements) ou se choisit dans le wiki. Calibration et champ de vision réglables.
+- **Boussole / cap de navigation (Ctrl+Alt+K)** : en haut de l'écran, le cap à suivre (ex : 229° S-O vers Regional Airport), la distance et le temps de trajet (marche, sprint, véhicule). Destination choisie dans le wiki instantané (« Ashland > Regional Airport »), sur la carte du wiki (« Afficher la boussole en jeu ») ou depuis un Loot Run complet. **Ctrl+Alt+J** passe à l'étape suivante.
+- **Thèmes visuels (HUD Skins)** : Classique, Nocturne / NVG (noir profond, vert phosphore), Militaire / Olive (kaki et ambre), Minimaliste / E-Sport (anthracite et cyan). Le thème change l'appli, toutes les fenêtres en jeu et le site ouvert dans l'appli.
+- Sauvegarde : nouvelle partie « Thème, télémètre, boussole ».
+
+## Rappel v1.4.0
 - **Wiki AR2 dans l'appli** : tout le site (armes, TTK, build, carte, loot run, balistique, boss, survie, défi, Find Item, crosshair…) s'ouvre dans sa propre fenêtre de l'appli. **Ctrl+Alt+W**, le menu près de l'horloge (« Wiki AR2 (site complet)… ») ou le bouton dans les réglages.
   - Le wiki est chargé en ligne : il est toujours à jour sans réinstaller l'appli. Sans internet, une page « hors ligne » réessaie toute seule (le crosshair, les objectifs et le minuteur marchent quand même).
   - **Envoi direct, sans copier-coller** : dans l'onglet Crosshair du wiki, « Envoyer dans l'appli » ajoute ton crosshair comme nouveau profil et l'active. Le bouton « Envoyer à l'appli » des Objectifs les ajoute direct à l'appli. Le bouton « Appli » en haut ouvre les réglages.

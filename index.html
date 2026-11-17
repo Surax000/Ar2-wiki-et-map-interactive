@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Apocalypse Rising 2 - Base de Données & Comparateur d'Armes</title>
+    <script>try { document.documentElement.setAttribute('data-theme', ({ classic: 1, nvg: 1, olive: 1, esport: 1 })[localStorage.getItem('ar2_theme')] ? localStorage.getItem('ar2_theme') : 'classic'); } catch (e) {}</script>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -13,13 +14,13 @@
                 extend: {
                     colors: {
                         tactical: {
-                            bg: '#0f1115',
-                            card: '#161920',
-                            border: '#2a2f3a',
-                            accent: '#00ff88',
-                            gold: '#e5c07b',
-                            red: '#ff4757',
-                            muted: '#8b949e'
+                            bg: 'rgb(var(--t-bg) / <alpha-value>)',
+                            card: 'rgb(var(--t-card) / <alpha-value>)',
+                            border: 'rgb(var(--t-border) / <alpha-value>)',
+                            accent: 'rgb(var(--t-acc) / <alpha-value>)',
+                            gold: 'rgb(var(--t-gold) / <alpha-value>)',
+                            red: 'rgb(var(--t-red) / <alpha-value>)',
+                            muted: 'rgb(var(--t-muted) / <alpha-value>)'
                         }
                     },
                     fontFamily: {
@@ -35,6 +36,16 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
+        /* ===== Thèmes visuels (HUD skins) : Classique / NVG / Olive / E-Sport ===== */
+        :root, html[data-theme=classic] { --t-bg: 15 17 21; --t-card: 22 25 32; --t-border: 42 47 58; --t-acc: 0 255 136; --t-gold: 229 192 123; --t-red: 255 71 87; --t-muted: 139 148 158; --t-text: 255 255 255; --t-ink: 11 15 20; }
+        html[data-theme=nvg] { --t-bg: 2 5 3; --t-card: 6 16 10; --t-border: 23 58 34; --t-acc: 93 255 122; --t-gold: 184 255 158; --t-red: 255 90 79; --t-muted: 111 158 120; --t-text: 217 255 225; --t-ink: 1 16 4; }
+        html[data-theme=olive] { --t-bg: 20 23 14; --t-card: 29 33 21; --t-border: 59 66 40; --t-acc: 255 176 32; --t-gold: 217 199 125; --t-red: 255 92 58; --t-muted: 160 159 124; --t-text: 239 234 219; --t-ink: 26 20 5; }
+        html[data-theme=esport] { --t-bg: 21 23 27; --t-card: 30 33 39; --t-border: 50 55 67; --t-acc: 0 229 255; --t-gold: 196 181 253; --t-red: 255 77 109; --t-muted: 138 147 166; --t-text: 244 247 251; --t-ink: 4 18 22; }
+        html[data-theme] .text-white { color: rgb(var(--t-text) / var(--tw-text-opacity, 1)); }
+        html[data-theme=nvg] body::after { content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 9999; background: repeating-linear-gradient(0deg, rgba(93,255,122,.035) 0 1px, transparent 1px 3px), radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,.45) 100%); }
+        html[data-theme=nvg] h1, html[data-theme=nvg] h2 { text-shadow: 0 0 10px rgb(var(--t-acc) / .35); }
+        html[data-theme=olive] h1, html[data-theme=olive] h2 { letter-spacing: .04em; }
+        html[data-theme=esport] .rounded-2xl { border-radius: 12px; }
         body.map-mode #compare-bar { display: none !important; }
         .map-label { font: 700 10px 'JetBrains Mono', ui-monospace, monospace; paint-order: stroke; stroke: #0b0f14; stroke-width: 3px; pointer-events: none; }
         .map-label-town { font-size: 12.5px; letter-spacing: .06em; text-transform: uppercase; }
@@ -42,39 +53,39 @@
         .map-grid-label { font: 800 26px ui-sans-serif, system-ui; opacity: .9; pointer-events: none; }
         .map-marker { cursor: pointer; }
         .cr-field { display: flex; flex-direction: column; gap: 4px; }
-        .cr-field > span { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: #8b949e; }
-        .cr-field input, .cr-field select, .cr-field textarea { background: #0f1115; border: 1px solid #2a2f3a; border-radius: 10px; padding: 8px 10px; font-size: 13px; color: #fff; outline: none; width: 100%; }
-        .cr-field input:focus, .cr-field select:focus, .cr-field textarea:focus { border-color: #e5c07b; }
+        .cr-field > span { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: rgb(var(--t-muted)); }
+        .cr-field input, .cr-field select, .cr-field textarea { background: rgb(var(--t-bg)); border: 1px solid rgb(var(--t-border)); border-radius: 10px; padding: 8px 10px; font-size: 13px; color: #fff; outline: none; width: 100%; }
+        .cr-field input:focus, .cr-field select:focus, .cr-field textarea:focus { border-color: rgb(var(--t-gold)); }
         .route-dash { animation: routeflow 1.2s linear infinite; }
         @keyframes routeflow { to { stroke-dashoffset: -32; } }
         .map-route:hover path.route-dash { filter: brightness(1.3); }
-        .xh-h { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .12em; color: #8b949e; margin-bottom: 8px; }
+        .xh-h { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .12em; color: rgb(var(--t-muted)); margin-bottom: 8px; }
         .xh-row { display: flex; flex-direction: column; gap: 6px; font-size: 12px; color: #c9d1d9; margin-bottom: 10px; }
-        .xh-row input[type=range] { width: 100%; accent-color: #00ff88; }
-        .xh-in { background: #0f1115; border: 1px solid #2a2f3a; border-radius: 8px; padding: 6px 8px; color: #fff; outline: none; min-width: 0; }
-        .xh-in:focus { border-color: #00ff88; }
-        .xh-btn { padding: 6px 10px; border-radius: 8px; border: 1px solid #2a2f3a; background: #1a1e25; color: #fff; font-size: 11px; font-weight: 700; white-space: nowrap; }
-        .xh-btn:hover { border-color: #00ff88; }
-        .xh-dl { padding: 9px 14px; border-radius: 10px; border: 1px solid #2a2f3a; background: #1a1e25; color: #fff; font-size: 12px; font-weight: 800; }
-        .xh-dl:hover { border-color: #00ff88; }
-        .xh-dl.primary { background: #00ff88; border-color: #00ff88; color: #0b0f14; }
+        .xh-row input[type=range] { width: 100%; accent-color: rgb(var(--t-acc)); }
+        .xh-in { background: rgb(var(--t-bg)); border: 1px solid rgb(var(--t-border)); border-radius: 8px; padding: 6px 8px; color: #fff; outline: none; min-width: 0; }
+        .xh-in:focus { border-color: rgb(var(--t-acc)); }
+        .xh-btn { padding: 6px 10px; border-radius: 8px; border: 1px solid rgb(var(--t-border)); background: rgb(var(--t-card)); color: #fff; font-size: 11px; font-weight: 700; white-space: nowrap; }
+        .xh-btn:hover { border-color: rgb(var(--t-acc)); }
+        .xh-dl { padding: 9px 14px; border-radius: 10px; border: 1px solid rgb(var(--t-border)); background: rgb(var(--t-card)); color: #fff; font-size: 12px; font-weight: 800; }
+        .xh-dl:hover { border-color: rgb(var(--t-acc)); }
+        .xh-dl.primary { background: rgb(var(--t-acc)); border-color: rgb(var(--t-acc)); color: #0b0f14; }
         .xh-dl.primary:hover { filter: brightness(1.1); }
         .xh-preset { display: flex; align-items: center; gap: 8px; width: 100%; padding: 6px 8px; border-radius: 10px; border: 1px solid transparent; font-size: 12px; color: #c9d1d9; text-align: left; }
-        .xh-preset:hover { background: #0f1115; border-color: #2a2f3a; color: #fff; }
+        .xh-preset:hover { background: rgb(var(--t-bg)); border-color: rgb(var(--t-border)); color: #fff; }
         .xh-preset canvas { width: 26px; height: 26px; background: #0b0f14; border-radius: 6px; flex: none; }
-        .xh-style { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 4px; border-radius: 10px; border: 1px solid #2a2f3a; background: #0f1115; font-size: 10px; color: #c9d1d9; }
+        .xh-style { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 4px; border-radius: 10px; border: 1px solid rgb(var(--t-border)); background: rgb(var(--t-bg)); font-size: 10px; color: #c9d1d9; }
         .xh-style canvas { width: 34px; height: 34px; }
-        .xh-style:hover { border-color: #00ff8899; }
-        .xh-style.active { border-color: #00ff88; background: #00ff8814; color: #fff; }
-        .xh-color { width: 34px; height: 26px; border: 1px solid #2a2f3a; border-radius: 6px; background: none; padding: 0; }
-        .xh-sw { width: 18px; height: 18px; border-radius: 5px; border: 1px solid #2a2f3a; }
-        .cr-kind-btn { padding: 10px 12px; border-radius: 12px; border: 1px solid #2a2f3a; background: #0f1115; color: #8b949e; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; transition: all .15s; }
-        .cr-kind-btn:hover { color: #fff; border-color: #e5c07b88; }
-        .cr-kind-btn.active { background: #e5c07b; color: #0b0f14; border-color: #e5c07b; }
+        .xh-style:hover { border-color: rgb(var(--t-acc) / .6); }
+        .xh-style.active { border-color: rgb(var(--t-acc)); background: rgb(var(--t-acc) / .08); color: #fff; }
+        .xh-color { width: 34px; height: 26px; border: 1px solid rgb(var(--t-border)); border-radius: 6px; background: none; padding: 0; }
+        .xh-sw { width: 18px; height: 18px; border-radius: 5px; border: 1px solid rgb(var(--t-border)); }
+        .cr-kind-btn { padding: 10px 12px; border-radius: 12px; border: 1px solid rgb(var(--t-border)); background: rgb(var(--t-bg)); color: rgb(var(--t-muted)); font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; transition: all .15s; }
+        .cr-kind-btn:hover { color: #fff; border-color: rgb(var(--t-gold) / .53); }
+        .cr-kind-btn.active { background: rgb(var(--t-gold)); color: #0b0f14; border-color: rgb(var(--t-gold)); }
         .fi-item { display: flex; align-items: center; gap: 8px; width: 100%; text-align: left; padding: 7px 10px; border-radius: 10px; border: 1px solid transparent; font-size: 12px; color: #c9d1d9; }
-        .fi-item:hover { background: #0f1115; border-color: #2a2f3a; color: #fff; }
+        .fi-item:hover { background: rgb(var(--t-bg)); border-color: rgb(var(--t-border)); color: #fff; }
         .fi-item.active { background: #38bdf81a; border-color: #38bdf8; color: #fff; }
-        .fi-chip { padding: 4px 9px; border-radius: 999px; border: 1px solid #2a2f3a; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; color: #8b949e; }
+        .fi-chip { padding: 4px 9px; border-radius: 999px; border: 1px solid rgb(var(--t-border)); font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; color: rgb(var(--t-muted)); }
         .fi-chip.active { background: #38bdf8; border-color: #38bdf8; color: #0b0f14; }
         .fi-zone { cursor: pointer; }
         .fi-zone:hover rect.fi-pill { stroke: #fff; }
@@ -83,8 +94,8 @@
         @keyframes mapPulse { 0% { opacity: 1; transform: scale(.6); } 100% { opacity: 0; transform: scale(1.8); } }
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #0f1115;
-            color: #e6edf3;
+            background-color: rgb(var(--t-bg));
+            color: rgb(var(--t-text) / .9);
         }
         .font-mono {
             font-family: 'JetBrains Mono', monospace;
@@ -95,24 +106,24 @@
             height: 8px;
         }
         ::-webkit-scrollbar-track {
-            background: #0f1115;
+            background: rgb(var(--t-bg));
         }
         ::-webkit-scrollbar-thumb {
-            background: #2a2f3a;
+            background: rgb(var(--t-border));
             border-radius: 4px;
         }
         ::-webkit-scrollbar-thumb:hover {
-            background: #3b4252;
+            background: rgb(var(--t-muted) / .6);
         }
         .glow-accent {
-            box-shadow: 0 0 15px rgba(0, 255, 136, 0.15);
+            box-shadow: 0 0 15px rgb(var(--t-acc) / .15);
         }
         .glow-accent-strong {
-            box-shadow: 0 0 25px rgba(0, 255, 136, 0.3);
+            box-shadow: 0 0 25px rgb(var(--t-acc) / .3);
         }
         /* ===== Radar chart styles ===== */
         .radar-label {
-            fill: #8b949e;
+            fill: rgb(var(--t-muted));
             font-family: 'JetBrains Mono', monospace;
             font-size: 12px;
             letter-spacing: 0.5px;
@@ -125,7 +136,7 @@
         .radar-poly {
             filter: drop-shadow(0 0 6px currentColor);
         }
-        .stat-active{border-color:#e5c07b !important;background:rgba(229,192,123,.12) !important}
+        .stat-active{border-color:rgb(var(--t-gold)) !important;background:rgb(var(--t-gold) / .12) !important}
         /* affiché seulement quand le site est ouvert dans l'appli AR2 Crosshair */
         html:not(.in-app) .in-app-only { display: none !important; }
         html.in-app .web-only { display: none !important; }
@@ -135,7 +146,7 @@
 
     <!-- Header / Navbar -->
     <header class="border-b border-tactical-border bg-tactical-card/80 backdrop-blur-md sticky top-0 z-30">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 min-h-[5rem] py-2 flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
             <div class="flex items-center space-x-3">
                 <div class="w-10 h-10 rounded-lg bg-tactical-accent/10 border border-tactical-accent flex items-center justify-center text-tactical-accent">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -146,16 +157,16 @@
                     <h1 class="text-xl font-extrabold tracking-wider text-white uppercase flex items-center gap-2 whitespace-nowrap">
                         AR2 <span class="hidden sm:inline text-tactical-accent font-mono text-sm tracking-normal px-2 py-0.5 rounded bg-tactical-accent/10 border border-tactical-accent/30">ARMORY v47</span>
                     </h1>
-                    <p class="text-xs text-tactical-muted hidden sm:block">Apocalypse Rising 2 - Base de Données Tactique & Comparateur</p>
+                    <p class="text-xs text-tactical-muted hidden sm:block xl:max-w-[16rem] leading-snug">Apocalypse Rising 2 - Base de Données Tactique & Comparateur</p>
                 </div>
             </div>
 
             <!-- Stats rapides + Aide -->
-            <div class="flex items-center gap-2 sm:gap-6">
+            <div class="flex flex-wrap items-center gap-2 lg:gap-3">
                 <div class="flex items-center gap-2 text-xs font-mono">
                     <button id="stat-total-btn" type="button" title="Afficher tout le catalogue (réinitialise les filtres)" class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg border border-transparent hover:border-tactical-accent/60 hover:bg-tactical-accent/5 transition-all">
                         <span class="w-2 h-2 rounded-full bg-tactical-accent animate-pulse"></span>
-                        <span class="text-tactical-muted hidden sm:inline">Total Objets:</span>
+                        <span class="text-tactical-muted hidden 2xl:inline whitespace-nowrap">Total Objets:</span>
                         <span class="text-white font-bold" id="total-weapons-count">…</span>
                     </button>
                     <div class="border-l border-tactical-border h-4"></div>
@@ -163,6 +174,18 @@
                         <span class="text-tactical-muted whitespace-nowrap">S-Tier:</span>
                         <span class="text-tactical-gold font-bold" id="stier-count">…</span>
                     </button>
+                </div>
+                <!-- Duel Express + thèmes d'interface (HUD skins) -->
+                <button id="duel-btn" type="button" title="Duel Express : compare 2 objets trouvés par terre et obtiens un verdict immédiat" class="flex items-center gap-2 whitespace-nowrap px-3.5 py-2 text-xs font-bold uppercase tracking-wider text-tactical-muted border border-tactical-border rounded-xl hover:text-tactical-accent hover:border-tactical-accent/60 transition-all">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M14.5 17.5L3 6V3h3l11.5 11.5M13 19l6-6M16 16l4 4M19 21l2-2M9.5 6.5L13 3h3v3l-3.5 3.5M5 14l4 4M7 17l-3 3M3 19l2 2"/></svg>
+                    <span class="hidden sm:inline">Duel</span>
+                </button>
+                <div class="relative">
+                    <button id="theme-btn" type="button" title="Thème visuel du site et des overlays de l'appli" aria-haspopup="true" aria-expanded="false" class="flex items-center gap-2 whitespace-nowrap px-3.5 py-2 text-xs font-bold uppercase tracking-wider text-tactical-muted border border-tactical-border rounded-xl hover:text-tactical-accent hover:border-tactical-accent/60 transition-all">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M12 22a10 10 0 110-20c5.5 0 10 4 10 9a5 5 0 01-5 5h-1.8a1.7 1.7 0 00-1.2 2.9A1.8 1.8 0 0112 22z"/><circle cx="7.5" cy="10.5" r="1.2" fill="currentColor"/><circle cx="12" cy="7.5" r="1.2" fill="currentColor"/><circle cx="16.5" cy="10.5" r="1.2" fill="currentColor"/></svg>
+                        <span class="hidden sm:inline">Thème</span>
+                    </button>
+                    <div id="theme-pop" class="hidden absolute right-0 top-full mt-2 w-[290px] bg-tactical-card border border-tactical-border rounded-2xl shadow-2xl p-2 z-50"></div>
                 </div>
                 <!-- Objectifs (liste à cocher) -->
                 <button id="ck-btn" title="Ma liste d'objectifs" class="relative flex items-center gap-2 px-3.5 py-2 text-xs font-bold uppercase tracking-wider text-tactical-muted border border-tactical-border rounded-xl hover:text-tactical-accent hover:border-tactical-accent/60 transition-all">
@@ -210,7 +233,8 @@
                     </div>
                     <input type="text" id="search-input" 
                         placeholder="Rechercher un objet, un effet ou un lieu de loot (ex: Kobra, Silencieux, Magnolia, Hôpitaux)..." 
-                        class="w-full pl-11 pr-4 py-3 bg-tactical-card border border-tactical-border rounded-xl text-white placeholder-tactical-muted focus:outline-none focus:border-tactical-accent transition-all text-sm">
+                        class="w-full pl-11 pr-4 sm:pr-36 py-3 bg-tactical-card border border-tactical-border rounded-xl text-white placeholder-tactical-muted focus:outline-none focus:border-tactical-accent transition-all text-sm">
+                    <button id="qk-open" type="button" title="Recherche instantanée : stats clés, spawns, Duel Express (A vs B) et cap (A > B)" class="hidden sm:flex absolute inset-y-0 right-2 my-auto h-8 items-center gap-1.5 px-2.5 rounded-lg border border-tactical-border bg-tactical-bg text-[11px] font-bold text-tactical-muted hover:text-tactical-accent hover:border-tactical-accent/60 transition-all">Instantané <kbd class="font-mono text-[10px] px-1 rounded border border-tactical-border">Ctrl K</kbd></button>
                 </div>
 
                 <!-- Sort Dropdown -->
@@ -310,7 +334,7 @@
                 <div>
                     <h2 class="text-2xl font-extrabold text-white tracking-tight">Crosshair</h2>
                     <p class="text-xs text-tactical-muted mt-1 max-w-3xl">Installe <b class="text-white">AR2 Crosshair</b>, une petite appli Windows qui affiche un viseur personnalisé par-dessus Roblox. Crée ton crosshair ci-dessous, copie son code et colle-le dans l'appli (bouton « Importer »).</p>
-                    <p class="text-[11px] text-tactical-muted mt-2 max-w-3xl"><b class="text-[#00ff88]">Nouveau en 1.1 :</b> mises à jour automatiques (la version installée se met à jour toute seule) et changement d'arme automatique : associe chaque emplacement 1 à 8 de ta barre à un profil de crosshair, l'appli change de viseur quand tu changes d'arme (touches 1 à 8), le cache quand tu ranges ton arme (V) et peut le cacher pendant la visée (clic droit). Elle lit uniquement tes touches, jamais le jeu. Si tu as la 1.0.0, réinstalle une fois avec l'installeur.</p>
+                    <p class="text-[11px] text-tactical-muted mt-2 max-w-3xl"><b class="text-tactical-accent">Nouveau en 1.1 :</b> mises à jour automatiques (la version installée se met à jour toute seule) et changement d'arme automatique : associe chaque emplacement 1 à 8 de ta barre à un profil de crosshair, l'appli change de viseur quand tu changes d'arme (touches 1 à 8), le cache quand tu ranges ton arme (V) et peut le cacher pendant la visée (clic droit). Elle lit uniquement tes touches, jamais le jeu. Si tu as la 1.0.0, réinstalle une fois avec l'installeur.</p>
                 </div>
                 <div class="flex flex-wrap gap-2">
                     <a id="xh-dl-setup" href="https://github.com/Surax000/Ar2-wiki-et-map-interactive/releases/latest/download/AR2-Crosshair-Setup.exe" class="xh-dl primary">Télécharger l'installeur (.exe)</a>
@@ -328,7 +352,7 @@
                         <input id="xh-code" readonly class="xh-in flex-1 font-mono text-[11px]">
                         <button id="xh-copy" class="xh-btn">Copier</button>
                     </div>
-                    <button id="xh-toapp" type="button" class="xh-btn in-app-only w-full mb-2" style="background:#00ff88;color:#000;border-color:#00ff88">Envoyer dans l'appli (nouveau profil)</button>
+                    <button id="xh-toapp" type="button" class="xh-btn in-app-only w-full mb-2" style="background:rgb(var(--t-acc));color:rgb(var(--t-ink));border-color:rgb(var(--t-acc))">Envoyer dans l'appli (nouveau profil)</button>
                     <div class="flex gap-2">
                         <input id="xh-code-in" placeholder="Colle un code AR2X-..." class="xh-in flex-1 font-mono text-[11px]">
                         <button id="xh-import" class="xh-btn">Charger</button>
@@ -776,7 +800,7 @@
                     TTK &amp; portée
                 </button>
                 <label id="cmp-diff-wrap" class="ml-auto flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-white cursor-pointer bg-tactical-card border border-tactical-border rounded-xl px-3 py-2">
-                    <input type="checkbox" id="cmp-diff-toggle" style="accent-color:#00ff88"> Afficher les écarts (+/-)
+                    <input type="checkbox" id="cmp-diff-toggle" style="accent-color:rgb(var(--t-acc))"> Afficher les écarts (+/-)
                 </label>
             </div>
 
@@ -2338,7 +2362,7 @@
                         <label class="text-xs font-bold uppercase tracking-wider text-white" for="ttk-dist">Distance de la cible</label>
                         <span class="font-mono text-lg font-extrabold text-tactical-accent" id="ttk-dist-val">${ttkDist} studs</span>
                     </div>
-                    <input id="ttk-dist" type="range" min="0" max="${TTK_MAX_DIST}" step="5" value="${ttkDist}" class="w-full" style="accent-color:#00ff88">
+                    <input id="ttk-dist" type="range" min="0" max="${TTK_MAX_DIST}" step="5" value="${ttkDist}" class="w-full" style="accent-color:rgb(var(--t-acc))">
                     <div class="flex justify-between text-[10px] font-mono text-tactical-muted"><span>0</span><span>200</span><span>400</span><span>600</span><span>${TTK_MAX_DIST}</span></div>
                     <div class="flex flex-wrap gap-4 pt-1">
                         <label class="flex items-center gap-2 text-xs text-white">Booster de la cible
@@ -3597,7 +3621,7 @@
             if (!Object.keys(tags).length) tags.civ = 1;
             return tags;
         }
-        function fiCompute(item) {
+        function fiCompute(item, listOnly) {
             const pts = [];   // {x,y,w,key,label,kind,island}
             const tags = fiItemTags(item);
             const lootPlain = fiPlain(item.loot);
@@ -3659,6 +3683,7 @@
             });
             const total = pts.reduce((a, p) => a + p.w, 0) || 1;
             const list = Object.values(zones).map(z => ({ ...z, pct: z.w / total * 100 })).sort((a, b) => b.w - a.w);
+            if (listOnly) return { list };
             // grille de chaleur
             const C = 20, S = 26, cols = Math.ceil(MAP_W / C), rows = Math.ceil(MAP_H / C), cells = [];
             let max = 0;
@@ -3971,9 +3996,9 @@
             const ext = C.extent(s), k = Math.min(1.4, (size / 2 - 2) / Math.max(ext / 1.5, 1));
             ctx.translate(size / 2, size / 2); ctx.scale(k, k); C.draw(ctx, 0, 0, s);
         }
-        const slider = (key, label, min, max, step, unit) => `<label class="xh-row"><span class="flex justify-between"><span>${label}</span><b data-v="${key}" class="font-mono text-[#00ff88]"></b></span><input type="range" data-k="${key}" min="${min}" max="${max}" step="${step}" data-u="${unit || ''}"></label>`;
+        const slider = (key, label, min, max, step, unit) => `<label class="xh-row"><span class="flex justify-between"><span>${label}</span><b data-v="${key}" class="font-mono text-tactical-accent"></b></span><input type="range" data-k="${key}" min="${min}" max="${max}" step="${step}" data-u="${unit || ''}"></label>`;
         const color = (key, label) => `<div class="xh-row"><span>${label}</span><div class="flex flex-wrap items-center gap-1.5"><input type="color" data-k="${key}" class="xh-color">${SW.map(c => `<button class="xh-sw" data-sw="${key}" data-c="${c}" style="background:${c}"></button>`).join('')}</div></div>`;
-        const check = (key, label) => `<label class="inline-flex items-center gap-1.5 text-xs text-tactical-text mr-3"><input type="checkbox" data-k="${key}" class="accent-[#00ff88]">${label}</label>`;
+        const check = (key, label) => `<label class="inline-flex items-center gap-1.5 text-xs text-tactical-text mr-3"><input type="checkbox" data-k="${key}" class="accent-tactical-accent">${label}</label>`;
         function build() {
             $('xh-presets').innerHTML = C.PRESETS.map((p, i) => `<button class="xh-preset" data-p="${i}"><canvas></canvas><span>${p.name}</span></button>`).join('');
             document.querySelectorAll('#xh-presets canvas').forEach((cv, i) => mini(cv, C.withDefaults(C.PRESETS[i].s), 26));
@@ -3998,7 +4023,7 @@
             document.querySelectorAll('#xh-bgs [data-zoom]').forEach(b => b.classList.toggle('active', +b.dataset.zoom === zoom));
             preview();
         }
-        const msg = (t, ok) => { const m = $('xh-msg'); m.textContent = t; m.style.color = ok ? '#00ff88' : '#f87171'; setTimeout(() => { if (m.textContent === t) m.textContent = ''; }, 3000); };
+        const msg = (t, ok) => { const m = $('xh-msg'); m.textContent = t; m.style.color = ok ? 'rgb(var(--t-acc))' : '#f87171'; setTimeout(() => { if (m.textContent === t) m.textContent = ''; }, 3000); };
         function wire() {
             const sec = $('crosshair-section');
             sec.addEventListener('input', e => { const k = e.target.dataset && e.target.dataset.k; if (!k) return; S[k] = e.target.type === 'checkbox' ? e.target.checked : e.target.type === 'color' ? e.target.value : parseFloat(e.target.value); save(); sync(); });
@@ -4457,7 +4482,7 @@
                 bdDrag.tx = tx; bdDrag.ty = ty;
                 const ok = bdFits(tx, ty, w, h, bdDrag.i), gh = document.getElementById('bd-ghost');
                 gh.classList.remove('hidden');
-                Object.assign(gh.style, { left: tx * BD_CELL + 'px', top: ty * BD_CELL + 'px', width: w * BD_CELL - 2 + 'px', height: h * BD_CELL - 2 + 'px', background: ok ? '#00ff8833' : '#ff475733', border: '2px dashed ' + (ok ? '#00ff88' : '#ff4757'), zIndex: 20 });
+                Object.assign(gh.style, { left: tx * BD_CELL + 'px', top: ty * BD_CELL + 'px', width: w * BD_CELL - 2 + 'px', height: h * BD_CELL - 2 + 'px', background: ok ? 'rgb(var(--t-acc) / .2)' : '#ff475733', border: '2px dashed ' + (ok ? '#00ff88' : '#ff4757'), zIndex: 20 });
                 const el = grid.querySelector(`[data-bd-item="${bdDrag.i}"]`); if (el) el.style.opacity = '.45';
             });
             const end = () => {
@@ -4517,7 +4542,7 @@
             const inRoute = new Set(lrPts.map(p => p.uid).filter(Boolean));
             const locs = MAP_DATA.locations.filter(l => !l.hidden).map(l => { const c = MAP_CATS[l.cat] ? MAP_CATS[l.cat].color : '#8b949e'; return `<g class="lr-loc"><circle cx="${l.x}" cy="${l.y}" r="${inRoute.has(l.uid) ? 0 : 5}" fill="${c}" opacity=".85" stroke="#0b0f14" stroke-width="1.5"/><text x="${l.x}" y="${l.y - 9}" text-anchor="middle" class="lr-lbl">${l.name.replace(/\s*\(.*?\)\s*/g, '')}</text><title>${bdPlain(l.name)}</title></g>`; }).join('');
             const path = lrPts.length > 1 ? `<path d="${lrPts.map((p, i) => `${i ? 'L' : 'M'}${p.x} ${p.y}`).join('')}" fill="none" stroke="#f97316" stroke-width="5" stroke-linejoin="round" stroke-linecap="round" opacity=".9"/><path d="${lrPts.map((p, i) => `${i ? 'L' : 'M'}${p.x} ${p.y}`).join('')}" fill="none" stroke="#fff" stroke-width="1.5" stroke-dasharray="6 8" opacity=".8"/>` : '';
-            const marks = lrPts.map((p, i) => `<g transform="translate(${p.x},${p.y})"><circle r="13" fill="${i === 0 ? '#00ff88' : i === lrPts.length - 1 && i > 0 ? '#ff4757' : '#f97316'}" stroke="#0b0f14" stroke-width="2.5"/><text y="4.5" text-anchor="middle" class="lr-num">${i + 1}</text></g>`).join('');
+            const marks = lrPts.map((p, i) => `<g transform="translate(${p.x},${p.y})"><circle r="13" fill="${i === 0 ? 'rgb(var(--t-acc))' : i === lrPts.length - 1 && i > 0 ? '#ff4757' : '#f97316'}" stroke="#0b0f14" stroke-width="2.5"/><text y="4.5" text-anchor="middle" class="lr-num">${i + 1}</text></g>`).join('');
             box.innerHTML = `<svg id="lr-svg" viewBox="0 0 ${MAP_W} ${MAP_H}" class="w-full h-full block select-none" role="img" aria-label="Carte de l'archipel pour tracer un itinéraire">
                 <style>.lr-lbl{font:700 11px Inter,sans-serif;fill:#e6edf3;paint-order:stroke;stroke:#0b0f14;stroke-width:3px;pointer-events:none}.lr-num{font:800 13px 'JetBrains Mono',monospace;fill:#0b0f14;pointer-events:none}</style>
                 <rect width="${MAP_W}" height="${MAP_H}" fill="${P.ocean}"/>${grid.join('')}
@@ -4584,7 +4609,7 @@
                 <div class="space-y-1 max-h-[260px] overflow-y-auto pr-1">
                     ${lrPts.length ? lrPts.map((p, i) => `
                         <div class="flex items-center gap-2 bg-tactical-bg border border-tactical-border rounded-lg px-2 py-1.5">
-                            <span class="w-5 h-5 rounded-full text-[10px] font-extrabold flex items-center justify-center shrink-0" style="background:${i === 0 ? '#00ff88' : i === lrPts.length - 1 && i > 0 ? '#ff4757' : '#f97316'};color:#0b0f14">${i + 1}</span>
+                            <span class="w-5 h-5 rounded-full text-[10px] font-extrabold flex items-center justify-center shrink-0" style="background:${i === 0 ? 'rgb(var(--t-acc))' : i === lrPts.length - 1 && i > 0 ? '#ff4757' : '#f97316'};color:#0b0f14">${i + 1}</span>
                             <span class="text-xs text-white truncate flex-1">${crEsc(lrName(p))}</span>
                             ${i ? `<span class="text-[10px] font-mono text-tactical-muted shrink-0">+${Math.round(legs[i - 1]).toLocaleString('fr-FR')} • ${lrFmtTime(legs[i - 1] / sprint)}</span>` : '<span class="text-[10px] font-mono text-tactical-accent shrink-0">départ</span>'}
                             <button type="button" data-lr-rm="${i}" class="text-tactical-muted hover:text-tactical-red text-xs shrink-0" aria-label="Retirer ce point">✕</button>
@@ -5247,7 +5272,7 @@
                     <span class="text-[10px] font-bold uppercase tracking-widest text-white flex-1">Liste de loot <span class="text-tactical-muted">${done}/${wish.length}</span></span>
                     <span class="text-tactical-muted text-xs">${wishOpen ? '▾' : '▸'}</span></div>
                 ${wishOpen ? `<div class="px-2 pb-2 space-y-1">${wish.map((w, i) => `<div class="flex items-center gap-2 bg-tactical-bg border border-tactical-border rounded-lg px-2 py-1.5">
-                        <input type="checkbox" data-wish-done="${i}" ${w.d ? 'checked' : ''} class="accent-[#00ff88] shrink-0" title="Trouvé en jeu">
+                        <input type="checkbox" data-wish-done="${i}" ${w.d ? 'checked' : ''} class="accent-tactical-accent shrink-0" title="Trouvé en jeu">
                         <button type="button" data-wish-open="${i}" class="flex-1 min-w-0 text-left text-xs truncate ${w.d ? 'line-through text-tactical-muted' : 'text-white'}" title="${w.id ? 'Où le trouver (Find Item)' : hx(w.n)}">${hx(w.n)}</button>
                         <button type="button" data-wish-rm="${i}" class="text-tactical-muted hover:text-red-300 text-xs shrink-0" title="Retirer">✕</button></div>`).join('')}
                     ${msg ? `<p class="text-[10px] text-amber-300 px-1">${hx(msg)}</p>` : ''}
@@ -5808,7 +5833,7 @@
                 <div class="h-1 bg-tactical-border/50"><div class="h-full bg-tactical-accent transition-all" style="width:${ck.items.length ? done / ck.items.length * 100 : 0}%"></div></div>
                 <div class="overflow-y-auto flex-1 p-2 space-y-1">
                     ${items.length ? items.map(([it, i]) => `<div class="group flex items-start gap-1.5 rounded-lg px-1.5 py-1 hover:bg-white/5">
-                        <input type="checkbox" data-ck-done="${i}" ${it.done ? 'checked' : ''} style="accent-color:#00ff88" class="shrink-0 mt-0.5">
+                        <input type="checkbox" data-ck-done="${i}" ${it.done ? 'checked' : ''} style="accent-color:rgb(var(--t-acc))" class="shrink-0 mt-0.5">
                         <textarea data-ck-text="${i}" rows="1" maxlength="120" title="${esc(it.text)}" style="field-sizing:content;resize:none;overflow:hidden" class="flex-1 min-w-0 bg-transparent text-xs leading-snug outline-none ${it.done ? 'line-through text-tactical-muted' : 'text-white'}">${esc(it.text)}</textarea>
                         <button type="button" data-ck-up="${i}" class="opacity-0 group-hover:opacity-100 text-[11px] text-tactical-muted hover:text-white" title="Monter">↑</button>
                         <button type="button" data-ck-down="${i}" class="opacity-0 group-hover:opacity-100 text-[11px] text-tactical-muted hover:text-white" title="Descendre">↓</button>
@@ -5887,6 +5912,8 @@
     </script>
     <script src="crosshair-app/src/autocolor.js"></script>
     <script src="crosshair-app/src/aimtrainer.js"></script>
+    <script src="crosshair-app/src/ar2-tools.js"></script>
+    <script src="crosshair-app/src/ar2-quick.js"></script>
     <script>
     /* ===== Mini entraînement de visée (onglet Crosshair) ===== */
     (function () {
@@ -6070,7 +6097,7 @@
                 </div></div>`;
             document.body.appendChild(m);
             const cnt = {}; keys().forEach(k => { const g = groupOf(k); cnt[g] = (cnt[g] || 0) + 1; });
-            document.getElementById('bk-g').innerHTML = GROUPS.map(([id, l]) => `<label class="flex items-center gap-2 text-xs ${cnt[id] ? 'text-white' : 'text-tactical-muted'}"><input type="checkbox" data-bkg="${id}" ${sel.includes(id) ? 'checked' : ''} style="accent-color:#00ff88"> ${l} ${cnt[id] ? '' : '<span class="text-[10px]">(vide)</span>'}</label>`).join('');
+            document.getElementById('bk-g').innerHTML = GROUPS.map(([id, l]) => `<label class="flex items-center gap-2 text-xs ${cnt[id] ? 'text-white' : 'text-tactical-muted'}"><input type="checkbox" data-bkg="${id}" ${sel.includes(id) ? 'checked' : ''} style="accent-color:rgb(var(--t-acc))"> ${l} ${cnt[id] ? '' : '<span class="text-[10px]">(vide)</span>'}</label>`).join('');
             const out = (t, ok = true) => { const o = document.getElementById('bk-out'); o.textContent = t; o.className = 'text-xs ' + (ok ? 'text-green-300' : 'text-tactical-red'); };
             const close = () => m.remove();
             m.addEventListener('click', e => { if (e.target === m) close(); });
@@ -6102,6 +6129,361 @@
         const b = document.getElementById('bk-btn'); if (b) b.addEventListener('click', open);
         document.addEventListener('keydown', e => { if (e.key === 'Escape') { const m = document.getElementById('bk-modal'); if (m) m.remove(); } });
         window.ar2BackupOpen = open;
+    })();
+    </script>
+    <!-- ===== v1.5 : thèmes HUD, Duel Express, recherche instantanée, cap de navigation (partagé avec l'appli) ===== -->
+    <style>
+        .ar2-modal { position: fixed; inset: 0; z-index: 70; display: flex; align-items: flex-start; justify-content: center; padding: 9vh 14px 14px; background: rgb(0 0 0 / .62); backdrop-filter: blur(4px); }
+        .ar2-modal.hidden { display: none; }
+        #qk-box { width: min(820px, 100%); height: min(560px, 80vh); }
+        #duel-box { width: min(760px, 100%); max-height: 84vh; overflow-y: auto; background: rgb(var(--t-bg)); border: 1px solid rgb(var(--t-acc) / .45); border-radius: 18px; box-shadow: 0 18px 60px rgba(0,0,0,.6); }
+        .duel-in { width: 100%; background: rgb(var(--t-card)); border: 1px solid rgb(var(--t-border)); border-radius: 12px; padding: 12px 14px; color: rgb(var(--t-text)); font-size: 16px; font-weight: 700; outline: 0; }
+        .duel-in:focus { border-color: rgb(var(--t-acc)); }
+        .duel-sug { position: absolute; left: 0; right: 0; top: calc(100% + 4px); z-index: 5; background: rgb(var(--t-card)); border: 1px solid rgb(var(--t-border)); border-radius: 12px; padding: 4px; box-shadow: 0 12px 30px rgba(0,0,0,.5); }
+        .duel-sug button { display: flex; width: 100%; align-items: center; gap: 8px; text-align: left; padding: 7px 9px; border-radius: 8px; font-size: 13px; font-weight: 600; color: rgb(var(--t-text)); }
+        .duel-sug button:hover, .duel-sug button.sel { background: rgb(var(--t-acc) / .12); }
+        .duel-sug small { margin-left: auto; color: rgb(var(--t-muted)); font: 600 10px ui-monospace, Consolas, monospace; }
+        .theme-opt { display: flex; width: 100%; align-items: center; gap: 10px; padding: 8px; border-radius: 12px; border: 1px solid transparent; text-align: left; }
+        .theme-opt:hover { background: rgb(var(--t-bg)); }
+        .theme-opt.on { border-color: rgb(var(--t-acc)); background: rgb(var(--t-acc) / .08); }
+        .theme-sw { flex: none; width: 46px; height: 32px; border-radius: 8px; border: 1px solid rgb(255 255 255 / .12); position: relative; overflow: hidden; }
+        .theme-sw i { position: absolute; }
+        .cap-box { margin-top: 14px; padding: 12px; border-radius: 14px; border: 1px solid rgb(var(--t-border)); background: rgb(var(--t-bg)); }
+    </style>
+    <div id="qk-modal" class="ar2-modal hidden" role="dialog" aria-modal="true" aria-label="Recherche instantanée"><div id="qk-box"></div></div>
+    <div id="duel-modal" class="ar2-modal hidden" role="dialog" aria-modal="true" aria-label="Duel Express">
+        <div id="duel-box">
+            <div class="flex items-center justify-between gap-3 px-5 pt-4">
+                <div>
+                    <div class="text-[10px] font-mono font-bold uppercase tracking-[.18em] text-tactical-accent">Duel Express</div>
+                    <h2 class="text-lg font-extrabold text-white">Lequel je garde ?</h2>
+                </div>
+                <button id="duel-close" type="button" class="text-tactical-muted hover:text-white text-sm px-2 py-1" aria-label="Fermer">✕</button>
+            </div>
+            <div class="grid grid-cols-[1fr_auto_1fr] items-center gap-2 px-5 pt-3">
+                <div class="relative"><input id="duel-a" class="duel-in" placeholder="Objet A (ex : Holo)" autocomplete="off" spellcheck="false"><div class="duel-sug hidden" data-for="a"></div></div>
+                <button id="duel-swap" type="button" title="Inverser" class="w-9 h-9 rounded-full border border-tactical-border text-tactical-muted hover:text-tactical-accent hover:border-tactical-accent font-mono text-xs font-black">VS</button>
+                <div class="relative"><input id="duel-b" class="duel-in" placeholder="Objet B (ex : OCR)" autocomplete="off" spellcheck="false"><div class="duel-sug hidden" data-for="b"></div></div>
+            </div>
+            <div id="duel-ex" class="flex flex-wrap gap-1.5 px-5 pt-3"></div>
+            <div id="duel-out" class="px-1 pb-3"></div>
+        </div>
+    </div>
+    <script>
+    (function () {
+        'use strict';
+        const T = window.AR2Tools, Q = window.AR2Quick;
+        if (!T || !Q) return;
+        const inApp = !!(window.ar2App && window.ar2App.inApp);
+        const app = window.ar2App || {};
+        const plain = s => String(s == null ? '' : s).replace(/<[^>]+>/g, ' ').replace(/&#39;/g, "'").replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/\s+/g, ' ').trim();
+        const cut = (s, n) => { s = plain(s); return s.length > n ? s.slice(0, n - 1).replace(/\s+\S*$/, '') + '…' : s; };
+
+        // ============================================================
+        // INDEX partagé (site + appli) : stats clés, spawns, lieux
+        // ============================================================
+        function spawnsOf(item) {
+            try {
+                const r = fiCompute(item, true);
+                return r.list.filter(z => z.kind === 'loc' || z.kind === 'inf' || z.kind === 'event').slice(0, 4).map(z => ({ n: plain(z.label), p: Math.round(z.pct * 10) / 10, i: z.island || '' }));
+            } catch (e) { return []; }
+        }
+        function buildIndex() {
+            const items = [];
+            WEAPONS_DATA.forEach(w => items.push({ id: w.id, name: plain(w.name), type: 'weapon', cat: w.category, cal: w.caliber, cap: +w.capacity || 0, mode: w.fireMode, att: plain(w.attach),
+                lim: +w.limbDamage || 0, bod: +w.bodyDamage || 0, hd: +w.headDamage || 0, rof: +w.rof || 0, fdr: +w.range || 0, mdr: +w.minRange || 0, mf: ttkMinFactor(w), vel: +w.velocity || 0,
+                hip: w.hipfire, acc: w.accuracy, rec: w.recoil, rel: +w.reloadTime || 0, tier: w.tier, rarity: w.rarity, size: w.size, est: !!w.estimated,
+                builtin: (typeof BAL_BUILTIN !== 'undefined' && BAL_BUILTIN[w.id]) || 0, optic: /Viseur/.test(w.attach || ''), desc: cut(w.description, 200), loot: cut(w.loot, 160), spawn: spawnsOf(w) }));
+            ATTACHMENTS_DATA.forEach(a => items.push({ id: a.id, name: plain(a.name), type: 'attachment', cat: "Accessoire", slot: a.slot, zoom: a.zoom, zoomN: parseFloat(a.zoom) || 1,
+                aimSpeed: a.aimSpeed || 0, recoilCtrl: a.recoilCtrl || 0, hipfire: a.hipfire || 0, aimAcc: a.aimAcc || 0, silent: !!a.silent, rarity: a.rarity, est: !!a.estimated, desc: cut(a.description, 180), spawn: spawnsOf(a) }));
+            HEAL_ITEMS_DATA.forEach(h => items.push({ id: h.id, name: plain(h.name), type: 'heal', cat: h.category, heal: +h.healAmount || 0, use: +h.useTime || 0, slows: !!h.slows, temp: +h.tempHealth || 0,
+                size: h.size, rarity: h.rarity, effect: plain(h.effect), desc: cut(h.description, 180), spawn: spawnsOf(h) }));
+            FOOD_DATA.forEach(f => items.push({ id: f.id, name: plain(f.name), type: 'food', cat: f.kind || f.category, energy: +f.energy || 0, hydration: +f.hydration || 0, size: f.size, rarity: f.rarity, desc: cut(f.description, 160), spawn: spawnsOf(f) }));
+            BACKPACKS_DATA.forEach(b => items.push({ id: b.id, name: plain(b.name), type: 'backpack', cat: 'Sac à dos', grid: b.grid, slots: +b.slots || 0, size: b.size, rarity: b.rarity, desc: cut(b.description, 160), loot: cut(b.loot, 120), spawn: spawnsOf(b) }));
+            if (typeof BD_MAGS !== 'undefined') BD_MAGS.forEach(m => items.push({ id: 'mag:' + m.id, name: plain(m.name), type: 'mag', cat: 'Chargeur', cap: m.cap, w: m.w, h: m.h, size: m.w + 'x' + m.h, ws: m.ws }));
+            if (typeof BOSS_DATA !== 'undefined') BOSS_DATA.forEach(b => items.push({ id: 'boss:' + b.id, name: plain(b.name), type: 'boss', cat: 'Boss', fr: plain(b.fr), kind: b.type, hp: b.hp, dmg: b.dmg, speed: b.speed, spawnTxt: cut(b.spawn, 200), alias: [plain(b.fr)] }));
+            const locs = [];
+            MAP_DATA.locations.forEach(l => locs.push({ id: l.uid, name: plain(l.name), cat: l.cat, catLabel: (MAP_CATS[l.cat] || {}).label || '', island: l.island || '', x: l.x, y: l.y, grid: gridSquare(l.x, l.y), desc: cut(l.desc, 240), world: 'halsey', hidden: !!l.hidden }));
+            if (typeof KF_POINTS !== 'undefined') KF_POINTS.forEach(l => locs.push({ id: l.uid, name: plain(l.name), cat: l.cat, catLabel: (MAP_CATS[l.cat] || {}).label || '', island: 'Kin Flats', x: l.x, y: l.y, grid: '', desc: cut(l.desc, 240), world: 'kf' }));
+            return { app: 'ar2-index', format: 1, generated: new Date().toISOString(), items, locs,
+                scale: { halsey: LR_STUDS_PER_UNIT, kf: typeof KF_STUDS_PER_UNIT !== 'undefined' ? KF_STUDS_PER_UNIT : LR_STUDS_PER_UNIT }, speeds: T.SPEEDS };
+        }
+        let INDEX = null;
+        const idx = () => INDEX || (INDEX = T.prep(buildIndex()));
+        window.ar2ExportIndex = () => { const ix = buildIndex(); return JSON.parse(JSON.stringify(ix)); };
+        const locById = id => idx()._byId['loc:' + id] || null;
+
+        // ============================================================
+        // THÈMES VISUELS (HUD skins) — site + overlays de l'appli
+        // ============================================================
+        const THEME_KEY = 'ar2_theme';
+        const DESC = { classic: "Le design d'origine, vert néon.", nvg: 'Noir profond et vert phosphore, façon jumelles de vision nocturne.', olive: 'Kaki sombre et ambre, ambiance militaire.', esport: 'Gris anthracite et cyan électrique, épuré.' };
+        const ORIG = { armes: '#00ff88', crosshair: '#00ff88', ville: '#00ff88', normal: '#00ff88', spawnVille: '#00ff88', radar0: '#00ff88' };
+        let theme = T.THEMES[localStorage.getItem(THEME_KEY)] ? localStorage.getItem(THEME_KEY) : 'classic';
+        function retint(acc) {
+            try { GROUPS.forEach(g => { if (g.id === 'armes' || g.id === 'crosshair') g.color = acc; }); } catch (e) {}
+            try { MAP_CATS.ville.color = acc; MAP_MODES.normal.color = acc; } catch (e) {}
+            try { SPAWN_CATS.ville.color = acc; } catch (e) {}
+            try { RADAR_COLORS[0] = acc; } catch (e) {}
+        }
+        function rerender() {
+            try { renderMainTabs(); } catch (e) {}
+            try { if (typeof renderGrid === 'function' && !['carte', 'lootrun', 'balistique', 'build', 'finditem'].includes(currentGroup)) renderGrid(); } catch (e) {}
+            try { if (currentGroup === 'carte') { renderMapLegend(); renderMapModes(); drawMap(); renderMapInfo(); } } catch (e) {}
+            try { if (currentGroup === 'lootrun') lrRender(); } catch (e) {}
+        }
+        function setTheme(id, opts) {
+            opts = opts || {};
+            if (!T.THEMES[id]) id = 'classic';
+            theme = id;
+            T.applyTheme(id, document);
+            try { localStorage.setItem(THEME_KEY, id); } catch (e) {}
+            retint(T.THEMES[id].acc);
+            if (!opts.init) rerender();
+            renderThemePop();
+            if (inApp && app.setTheme && !opts.fromApp && !opts.init) app.setTheme(id).catch(() => {});
+        }
+        window.ar2SetTheme = (id) => setTheme(id, { fromApp: true });
+        function swatch(t) {
+            return `<span class="theme-sw" style="background:${t.bg}"><i style="left:0;top:0;bottom:0;width:30%;background:${t.card};border-right:1px solid ${t.border}"></i><i style="left:38%;top:9px;width:44%;height:4px;border-radius:2px;background:${t.acc};box-shadow:0 0 6px ${t.acc}"></i><i style="left:38%;top:18px;width:26%;height:4px;border-radius:2px;background:${t.gold}"></i></span>`;
+        }
+        function renderThemePop() {
+            const pop = document.getElementById('theme-pop'); if (!pop) return;
+            pop.innerHTML = `<div class="px-2 pt-1 pb-2 text-[10px] font-mono font-bold uppercase tracking-widest text-tactical-muted">Thème HUD ${inApp ? '(site + overlays)' : ''}</div>` +
+                T.THEME_ORDER.map(id => { const t = T.THEMES[id]; return `<button type="button" class="theme-opt ${id === theme ? 'on' : ''}" data-theme-id="${id}">${swatch(t)}<span class="min-w-0"><span class="block text-sm font-extrabold text-white">${t.name}</span><span class="block text-[11px] leading-snug text-tactical-muted">${t.desc || ''}</span></span></button>`; }).join('') +
+                `<p class="px-2 pt-2 pb-1 text-[10px] text-tactical-muted leading-snug">${inApp ? "Appliqué aussi au Wiki instantané, au télémètre, à la boussole et au chrono de l'appli." : "Avec l'appli AR2 Crosshair, le thème s'applique aussi aux overlays en jeu."}</p>`;
+        }
+
+        // ============================================================
+        // OUVRIR UN RÉSULTAT DANS LE WIKI
+        // ============================================================
+        const GROUP_OF = { weapon: 'armes', attachment: 'accessoires', backpack: 'sacs', heal: 'nourriture', food: 'nourriture' };
+        function openInWiki(o) {
+            if (!o) return;
+            closeQuick(); closeDuel();
+            if (o.type === 'loc') { toolGoTab('carte'); setTimeout(() => selectPoint(o.id), 80); return; }
+            if (o.type === 'boss') { toolGoTab('boss'); return; }
+            if (o.type === 'mag') { toolGoTab('build'); return; }
+            const g = GROUP_OF[o.type]; if (!g) return;
+            tierFilter = null;
+            toolGoTab(g);
+            const si = document.getElementById('search-input');
+            if (si) { si.value = o.name; si.dispatchEvent(new Event('input', { bubbles: true })); }
+            const grid = document.getElementById('weapons-grid'); if (grid) setTimeout(() => grid.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60);
+        }
+        // Liens profonds depuis l'appli : #q=M4A1 ou #lieu=l12
+        function deepLink() {
+            const h = decodeURIComponent(location.hash || '');
+            if (h.startsWith('#q=')) { const o = T.best(idx(), h.slice(3)); if (o) openInWiki(o); return true; }
+            if (h.startsWith('#lieu=')) { const o = locById(h.slice(6)); if (o) openInWiki(o); return true; }
+            if (h === '#duel') { openDuel(); return true; }
+            return false;
+        }
+
+        // ============================================================
+        // CAP DE NAVIGATION (départ -> destination)
+        // ============================================================
+        const ORIGIN_KEY = 'ar2_cap_origin';
+        let origin = localStorage.getItem(ORIGIN_KEY) || '';
+        const getOrigin = () => origin ? locById(origin) : null;
+        const setOrigin = o => { origin = o ? o.id : ''; try { localStorage.setItem(ORIGIN_KEY, origin); } catch (e) {} };
+        function sendCompass(points, title) {
+            const pts = points.map(p => ({ id: p.id || p.uid || '', name: p.name, x: p.x, y: p.y, world: p.world || 'halsey' }));
+            if (!inApp || !app.setRoute) return Promise.resolve(false);
+            return app.setRoute({ title: title || pts.map(p => p.name).join(' → '), points: pts }).then(() => true);
+        }
+        function showRouteOnMap(points) {
+            closeQuick();
+            try {
+                lrPts = points.filter(p => (p.world || 'halsey') === 'halsey').map(p => ({ uid: p.id, x: p.x, y: p.y }));
+                toolGoTab('lootrun'); lrRender();
+            } catch (e) {}
+        }
+        function capHTML(a, b, withBtn) {
+            const l = T.leg(idx(), a, b);
+            return `<div class="flex items-center gap-3">${Q.dial(l.deg)}<div class="min-w-0">
+                    <div class="font-mono font-black text-2xl text-tactical-accent leading-none">${Math.round(l.deg)}° <span class="text-base text-white">${l.card}</span></div>
+                    <div class="text-[11px] font-mono text-tactical-muted mt-1">${T.fmtDist(l.studs)} (≈ ${T.fr(l.meters)} m)</div></div></div>
+                <div class="grid grid-cols-3 gap-1.5 mt-2 text-center">${[['Marche', l.walk], ['Sprint', l.sprint], ['Véhicule ≈', l.vehicle]].map(([k, v], i) => `<div class="rounded-lg border border-tactical-border bg-tactical-card px-1 py-1.5"><div class="text-[9px] uppercase tracking-widest text-tactical-muted">${k}</div><div class="font-mono font-extrabold text-xs ${i === 1 ? 'text-tactical-accent' : 'text-white'}">${T.sec(v)}</div></div>`).join('')}</div>
+                ${withBtn ? (inApp ? `<button type="button" data-cap-send class="mt-3 w-full text-xs font-extrabold uppercase tracking-wider px-3 py-2 rounded-lg bg-tactical-accent text-tactical-bg hover:brightness-110">Afficher la boussole en jeu (Ctrl+Alt+K)</button>`
+                    : `<p class="text-[10px] text-tactical-muted mt-2">Avec l'appli AR2 Crosshair, ce cap s'affiche en overlay tout en haut de l'écran pendant que tu joues.</p>`) : ''}`;
+        }
+        function mapCapBlock() {
+            const p = mapSelected; const box = document.getElementById('map-info');
+            if (!box || !p || p.kind === 'route' || p.x == null) return;
+            const here = { id: p.uid, name: plain(p.name), x: p.x, y: p.y, world: p.world || 'halsey' };
+            const o = getOrigin();
+            const same = o && o.id === here.id, sameWorld = o && (o.world || 'halsey') === here.world;
+            const div = document.createElement('div');
+            div.className = 'cap-box';
+            div.innerHTML = `<div class="flex items-center justify-between gap-2 mb-2"><div class="text-[10px] font-bold uppercase tracking-widest text-tactical-muted">Cap de navigation</div>
+                    <button type="button" data-cap-origin class="text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-md border ${same ? 'border-tactical-accent text-tactical-accent' : 'border-tactical-border text-tactical-muted hover:text-white'}">${same ? '✓ Départ' : 'Je suis ici'}</button></div>
+                ${!o ? `<p class="text-[11px] text-tactical-muted">Clique sur « Je suis ici » à ton point de départ, puis sélectionne ta destination : tu obtiens le cap (ex : N-O, 315°) et le temps de trajet.</p>`
+                    : same ? `<p class="text-[11px] text-tactical-muted">Départ : <b class="text-white">${here.name}</b>. Sélectionne maintenant une destination sur la carte.</p>`
+                    : !sameWorld ? `<p class="text-[11px] text-tactical-muted">Le départ (${o.name}) est sur une autre carte.</p>`
+                    : `<div class="text-[11px] text-tactical-muted mb-2">Depuis <b class="text-white">${o.name}</b> vers <b class="text-tactical-accent">${here.name}</b></div>${capHTML(o, here, true)}`}`;
+            box.appendChild(div);
+            div.addEventListener('click', e => {
+                if (e.target.closest('[data-cap-origin]')) { setOrigin(same ? null : here); renderMapInfo(); return; }
+                if (e.target.closest('[data-cap-send]')) { const b = e.target.closest('[data-cap-send]'); sendCompass([o, here]).then(ok => { b.textContent = ok ? 'Boussole affichée en jeu ✓' : "Ouvre le wiki depuis l'appli"; }).catch(err => { b.textContent = 'Échec : ' + (err && err.message || err); }); }
+            });
+        }
+        const _rmi2 = renderMapInfo;
+        renderMapInfo = function () { _rmi2.apply(this, arguments); try { mapCapBlock(); } catch (e) { console.warn(e); } };
+
+        // Loot Run : cap de chaque étape + envoi à la boussole
+        const _lrs = lrRenderSummary;
+        lrRenderSummary = function () {
+            _lrs.apply(this, arguments);
+            const box = document.getElementById('lr-summary'); if (!box || lrPts.length < 2) return;
+            const pts = lrPts.map((p, i) => ({ id: p.uid || 'p' + i, name: plain(lrName(p)), x: p.x, y: p.y, world: 'halsey' }));
+            const legs = T.route(idx(), pts).legs;
+            const div = document.createElement('div');
+            div.className = 'cap-box';
+            div.innerHTML = `<div class="text-[10px] font-bold uppercase tracking-widest text-tactical-muted mb-2">Caps à suivre</div>
+                <div class="space-y-1">${legs.map((l, i) => `<div class="flex items-center gap-2 text-[11px] font-mono"><span class="w-12 shrink-0 font-black text-tactical-accent">${Math.round(l.deg)}°</span><span class="w-9 shrink-0 text-white font-bold">${l.card}</span><span class="truncate text-tactical-muted">${i + 1}. ${crEsc(l.to.name)}</span></div>`).join('')}</div>
+                ${inApp ? `<button type="button" data-lr-compass class="mt-3 w-full text-xs font-extrabold uppercase tracking-wider px-3 py-2 rounded-lg bg-tactical-accent text-tactical-bg hover:brightness-110">Envoyer à la boussole en jeu</button><p class="text-[10px] text-tactical-muted mt-1.5">Ctrl+Alt+K affiche / masque la boussole, Ctrl+Alt+J passe à l'étape suivante.</p>`
+                    : `<p class="text-[10px] text-tactical-muted mt-2">Avec l'appli AR2 Crosshair, ce Loot Run s'affiche en boussole tout en haut de l'écran (étape par étape).</p>`}`;
+            box.appendChild(div);
+            const b = div.querySelector('[data-lr-compass]');
+            if (b) b.onclick = () => sendCompass(pts, 'Loot Run').then(ok => { b.textContent = ok ? 'Loot Run envoyé à la boussole ✓' : "Ouvre le wiki depuis l'appli"; }).catch(err => { b.textContent = 'Échec : ' + (err && err.message || err); });
+        };
+
+        // Balistique : stadiamètre + envoi au télémètre de l'appli
+        if (typeof balRender === 'function') {
+            const _br = balRender;
+            balRender = function () {
+                _br.apply(this, arguments);
+                const box = document.getElementById('bal-stats'); if (!box) return;
+                const w = WEAPONS_DATA.find(x => x.id === bal.w); if (!w) return;
+                const sc = balScopes(w).find(s => s.id === bal.scope) || { z: 1, name: '1x' };
+                const H = Math.round((window.screen && window.screen.height || 1080) * (window.devicePixelRatio || 1));
+                const d = bal.m / bal.stud, px = T.charPx(d, sc.z, H, BAL_FOV);
+                const div = document.createElement('div');
+                div.className = 'cap-box';
+                div.innerHTML = `<div class="text-[10px] font-bold uppercase tracking-widest text-tactical-muted mb-1">Télémètre (stadiamètre)</div>
+                    <p class="text-xs text-gray-300">À ${Math.round(d)} studs, un personnage debout mesure ≈ <b class="text-tactical-accent font-mono">${Math.round(px)} px</b> de haut dans cette visée (${sc.z}x, écran ${H} px).</p>
+                    ${inApp ? `<button type="button" data-bal-range class="mt-3 w-full text-xs font-extrabold uppercase tracking-wider px-3 py-2 rounded-lg bg-tactical-accent text-tactical-bg hover:brightness-110">Équiper dans le télémètre (Ctrl+Alt+D)</button>`
+                        : `<p class="text-[10px] text-tactical-muted mt-1.5">Dans l'appli AR2 Crosshair, Ctrl+Alt+D affiche cette jauge à côté du viseur : compare la taille de l'ennemi aux repères pour lire la distance et les dégâts restants.</p>`}`;
+                box.appendChild(div);
+                const b = div.querySelector('[data-bal-range]');
+                if (b) b.onclick = () => app.setRange({ weapon: w.id, zoom: sc.z, scope: sc.name }).then(() => { b.textContent = `${plain(w.name)} équipé au télémètre ✓`; }).catch(err => { b.textContent = 'Échec : ' + (err && err.message || err); });
+            };
+        }
+
+        // ============================================================
+        // RECHERCHE INSTANTANÉE (Ctrl+K) — même panneau que l'overlay Ctrl+Alt+W de l'appli
+        // ============================================================
+        let quick = null;
+        const qkModal = document.getElementById('qk-modal');
+        function openQuick(text) {
+            if (!quick) {
+                quick = Q.mount(document.getElementById('qk-box'), {
+                    host: 'site', index: idx(), getOrigin, setOrigin,
+                    actions: {
+                        openWiki: openInWiki,
+                        close: closeQuick,
+                        showRoute: showRouteOnMap,
+                        compass: inApp ? (pts => sendCompass(pts).then(() => quick.message('Boussole affichée en jeu.'))) : null,
+                        equipRange: inApp && app.setRange ? (w => app.setRange({ weapon: w.id }).then(() => quick.message(`${w.name} équipé au télémètre (Ctrl+Alt+D).`))) : null
+                    }
+                });
+            }
+            qkModal.classList.remove('hidden');
+            if (text != null) quick.set(text);
+            setTimeout(() => quick.focus(true), 10);
+        }
+        function closeQuick() { qkModal.classList.add('hidden'); }
+        qkModal.addEventListener('mousedown', e => { if (e.target === qkModal) closeQuick(); });
+        window.ar2OpenQuick = openQuick;
+
+        // ============================================================
+        // DUEL EXPRESS
+        // ============================================================
+        const dm = document.getElementById('duel-modal'), dA = document.getElementById('duel-a'), dB = document.getElementById('duel-b'), dOut = document.getElementById('duel-out');
+        const pick = { a: null, b: null };
+        const DUEL_EX = [['Holographic Sight', 'OCR Sight'], ['Small MedKit', 'Military Field Dressing'], ['M4A1', 'AK-47'], ['Short Foregrip', 'Straight Foregrip'], ['AK 30rd Magazine', 'AK 40rd Magazine'], ['MRE', 'Canned Beans']];
+        document.getElementById('duel-ex').innerHTML = '<span class="text-[10px] font-mono uppercase tracking-widest text-tactical-muted self-center mr-1">Exemples</span>' +
+            DUEL_EX.map(([a, b], i) => `<button type="button" data-dx="${i}" class="text-[11px] font-semibold px-2.5 py-1 rounded-full border border-tactical-border text-gray-300 hover:text-tactical-accent hover:border-tactical-accent/60">${a} vs ${b}</button>`).join('');
+        function duelRender() {
+            Q.ensureCSS();
+            if (!pick.a || !pick.b) { dOut.innerHTML = `<p class="px-4 pt-4 text-sm text-tactical-muted">Tape le nom des 2 objets trouvés par terre (3 lettres suffisent) : armes, viseurs, poignées, chargeurs, soins, nourriture ou sacs.</p>`; return; }
+            const d = T.duel(idx(), pick.a, pick.b);
+            dOut.innerHTML = `<div class="aq" style="height:auto;background:transparent;border:0;box-shadow:none"><div class="aq-verd">${Q.duelHTML(d)}
+                <div class="aq-acts"><button class="aq-btn" data-dw="a">Fiche ${T.esc(d.a.name)}</button><button class="aq-btn" data-dw="b">Fiche ${T.esc(d.b.name)}</button></div></div></div>`;
+            dOut.querySelectorAll('[data-dw]').forEach(b => b.onclick = () => openInWiki(d[b.dataset.dw]));
+        }
+        function sugFor(input, key) {
+            const box = input.parentElement.querySelector('.duel-sug');
+            let list = [], sel = 0;
+            const draw = () => {
+                if (!list.length) { box.classList.add('hidden'); return; }
+                box.innerHTML = list.map((o, i) => `<button type="button" class="${i === sel ? 'sel' : ''}" data-i="${i}"><span class="aq-ic" style="color:${Q.CAT_COLOR[o.type]};width:34px;text-align:center;font:800 9px ui-monospace,Consolas,monospace;padding:3px 0;border:1px solid currentColor;border-radius:6px">${Q.ICON[o.type]}</span>${T.esc(o.name)}<small>${T.esc(o.slot || o.cal || o.cat || '')}</small></button>`).join('');
+                box.classList.remove('hidden');
+            };
+            const choose = o => { pick[key] = o; input.value = o.name; list = []; draw(); duelRender(); if (key === 'a' && !pick.b) dB.focus(); };
+            input.addEventListener('input', () => {
+                const q = input.value.trim(); pick[key] = null;
+                const other = pick[key === 'a' ? 'b' : 'a'];
+                list = q.length ? T.search(idx(), q, 7, o => o.type !== 'loc' && o.type !== 'boss' && (!other || o.id !== other.id)) : [];
+                if (other) list.sort((x, y) => (y.type === other.type) - (x.type === other.type));
+                sel = 0; draw();
+                if (list[0] && T.norm(list[0].name) === T.norm(q)) { pick[key] = list[0]; duelRender(); }
+            });
+            input.addEventListener('keydown', e => {
+                if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { if (list.length) { e.preventDefault(); sel = (sel + (e.key === 'ArrowDown' ? 1 : -1) + list.length) % list.length; draw(); } }
+                else if (e.key === 'Enter' || (e.key === 'Tab' && list.length && !e.shiftKey)) { if (list[sel]) { e.preventDefault(); choose(list[sel]); } }
+                else if (e.key === 'Escape') { if (list.length) { e.stopPropagation(); list = []; draw(); } }
+            });
+            input.addEventListener('blur', () => setTimeout(() => { list = []; draw(); }, 150));
+            box.addEventListener('mousedown', e => { const b = e.target.closest('[data-i]'); if (b) { e.preventDefault(); choose(list[+b.dataset.i]); } });
+        }
+        sugFor(dA, 'a'); sugFor(dB, 'b');
+        function setDuel(a, b) {
+            const f = q => typeof q === 'object' ? q : T.best(idx(), q, o => o.type !== 'loc' && o.type !== 'boss');
+            pick.a = a ? f(a) : null; pick.b = b ? f(b) : null;
+            dA.value = pick.a ? pick.a.name : ''; dB.value = pick.b ? pick.b.name : '';
+            duelRender();
+        }
+        function openDuel(a, b) {
+            dm.classList.remove('hidden');
+            if (a || b) setDuel(a, b); else duelRender();
+            setTimeout(() => (pick.a ? dB : dA).focus(), 10);
+        }
+        function closeDuel() { dm.classList.add('hidden'); }
+        window.ar2OpenDuel = openDuel;
+        document.getElementById('duel-close').onclick = closeDuel;
+        document.getElementById('duel-swap').onclick = () => { setDuel(pick.b, pick.a); };
+        document.getElementById('duel-ex').addEventListener('click', e => { const b = e.target.closest('[data-dx]'); if (b) { const [x, y] = DUEL_EX[+b.dataset.dx]; setDuel(x, y); } });
+        dm.addEventListener('mousedown', e => { if (e.target === dm) closeDuel(); });
+
+        // ============================================================
+        // BRANCHEMENTS
+        // ============================================================
+        document.addEventListener('keydown', e => {
+            const k = (e.key || '').toLowerCase();
+            if ((e.ctrlKey || e.metaKey) && !e.altKey && k === 'k') { e.preventDefault(); qkModal.classList.contains('hidden') ? openQuick() : closeQuick(); return; }
+            if (e.key === 'Escape') { if (!dm.classList.contains('hidden')) { closeDuel(); } if (!qkModal.classList.contains('hidden')) closeQuick(); }
+        });
+        const tb = document.getElementById('theme-btn'), tp = document.getElementById('theme-pop');
+        if (tb) tb.onclick = e => { e.stopPropagation(); renderThemePop(); tp.classList.toggle('hidden'); tb.setAttribute('aria-expanded', String(!tp.classList.contains('hidden'))); };
+        if (tp) tp.addEventListener('click', e => { const b = e.target.closest('[data-theme-id]'); e.stopPropagation(); if (b) { setTheme(b.dataset.themeId); tp.classList.add('hidden'); tb.setAttribute('aria-expanded', 'false'); } });
+        document.addEventListener('click', () => { if (tp && !tp.classList.contains('hidden')) { tp.classList.add('hidden'); tb.setAttribute('aria-expanded', 'false'); } });
+        const db = document.getElementById('duel-btn'); if (db) db.onclick = () => openDuel();
+        const qb = document.getElementById('qk-open'); if (qb) qb.onclick = () => openQuick();
+
+        setTheme(theme, { init: true });
+        const boot = () => {
+            rerender();
+            if (!deepLink()) {}
+            window.addEventListener('hashchange', deepLink);
+            // Dans l'appli : synchronise le thème et transmet l'index du wiki (Wiki instantané, télémètre, boussole)
+            if (inApp) {
+                if (app.getTheme) app.getTheme().then(t => { if (t && T.THEMES[t] && t !== theme) setTheme(t, { fromApp: true }); }).catch(() => {});
+                if (app.pushIndex) setTimeout(() => { try { app.pushIndex(window.ar2ExportIndex()).catch(() => {}); } catch (e) {} }, 1200);
+            }
+        };
+        if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => setTimeout(boot, 30)); else setTimeout(boot, 30);
     })();
     </script>
 </body>

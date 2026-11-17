@@ -62,6 +62,7 @@ jobs:
           if (-not $j.switchOk) { throw "changement d'arme automatique KO" }
           if ($j.update.state -eq "error") { Write-Warning "mise à jour: $($j.update.error)" }
           if (-not $j.wikiOk) { Write-Warning "wiki AR2: $($j.wiki | ConvertTo-Json -Compress)" }
+          if (-not $j.hudOk) { Write-Warning "HUD v1.5: $($j.hud | ConvertTo-Json -Compress) $($j.hudError)" }
           "AUTO-TEST OK"
 
   release:

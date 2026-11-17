@@ -8,6 +8,7 @@ const core = require('./crosshair-core.js');
 const updater = require('./updater.js');
 const ws = require('./weaponswitch.js');
 const ac = require('./autocolor.js');
+const hud = require('./hud.js');
 
 const ARGS = process.argv.slice(1);
 const SELFTEST = (ARGS.find(a => a.startsWith('--selftest=')) || '').split('=').slice(1).join('=') || null;
@@ -22,7 +23,10 @@ const DEFAULT_HOTKEYS = {
     up: 'Control+Alt+Up', down: 'Control+Alt+Down', left: 'Control+Alt+Left', right: 'Control+Alt+Right',
     autoColor: 'Control+Alt+A', checklist: 'Control+Alt+O', checkNext: 'Control+Alt+N',
     timer: 'Control+Alt+T', timer1: 'Control+Alt+F1', timer2: 'Control+Alt+F2', timer3: 'Control+Alt+F3', timerStop: 'Control+Alt+R',
-    wiki: 'Control+Alt+W'
+    spotlight: 'Control+Alt+W', wiki: 'Control+Alt+Shift+W',
+    range: 'Control+Alt+D', rangeZoom: 'Control+Alt+Shift+D',
+    compass: 'Control+Alt+K', compassNext: 'Control+Alt+J', compassPrev: 'Control+Alt+Shift+J',
+    themeNext: ''
 };
 
 let cfgPath, cfg, overlay = null, settingsWin = null, tray = null, visible = true;
@@ -72,6 +76,8 @@ function loadConfig() {
         const d = defaultConfig();
         cfg = Object.assign(d, c);
         cfg.hotkeys = Object.assign({ ...DEFAULT_HOTKEYS }, c.hotkeys || {});
+        // v1.5 : Ctrl+Alt+W ouvre maintenant le wiki instantané, le wiki complet passe sur Ctrl+Alt+Maj+W
+        if (c.hotkeys && !('spotlight' in c.hotkeys) && c.hotkeys.wiki === 'Control+Alt+W') { cfg.hotkeys.wiki = DEFAULT_HOTKEYS.wiki; cfg.hotkeys.spotlight = DEFAULT_HOTKEYS.spotlight; }
         if (!Array.isArray(cfg.profiles) || !cfg.profiles.length) cfg.profiles = d.profiles;
         cfg.profiles.forEach(p => { p.settings = core.withDefaults(p.settings); if (!p.id) p.id = uid(); });
         cfg.autoSwitch = Object.assign(JSON.parse(JSON.stringify(DEFAULT_AUTO)), c.autoSwitch || {});
@@ -94,6 +100,7 @@ function normalizeExtras(c) {
     if (!Array.isArray(cfg.checklist.items)) cfg.checklist.items = [];
     cfg.checklist.items = cfg.checklist.items.filter(i => i && i.text).map(i => ({ id: i.id || uid(), text: String(i.text).slice(0, 120), done: !!i.done }));
     normalizeTimer(c.timer || cfg.timer);
+    hud.normalize(cfg, c);
 }
 function normalizeTimer(t) {
     const d = DEFAULT_TIMER(), o = Object.assign(d, t || {});
@@ -178,7 +185,7 @@ const shown = () => visible && !autoHidden.holster && !autoHidden.ads && !autoHi
 function applyVisibility() {
     if (!overlay) return;
     if (shown()) { placeOverlay(); overlay.showInactive(); } else overlay.hide();
-    acSync(); placeChecklist(); placeTimer();
+    acSync(); placeChecklist(); placeTimer(); hud.refresh();
 }
 function setVisible(v) {
     visible = v;
@@ -201,7 +208,7 @@ function onSlot(n) {
     if (id === '__hide') { autoHidden.holster = true; applyVisibility(); broadcast(); return; }
     const idx = id ? cfg.profiles.findIndex(p => p.id === id) : -1;
     if (idx >= 0 && idx !== cfg.active) { cfg.active = idx; placeOverlay(); saveConfig(); refreshTray(); }
-    applyVisibility(); broadcast();
+    applyVisibility(); broadcast(); hud.onSlot(n);
 }
 function onHolster() {
     if (!cfg.autoSwitch.holsterHide) return;
@@ -209,6 +216,7 @@ function onHolster() {
     applyVisibility(); broadcast();
 }
 function onAds(down) {
+    hud.onAds(!!down);
     const a = cfg.autoSwitch; if (!a.adsHide) { if (autoHidden.ads) { autoHidden.ads = false; applyVisibility(); } return; }
     if (a.adsMode === 'toggle') { if (down) { autoHidden.ads = !autoHidden.ads; applyVisibility(); } }
     else if (autoHidden.ads !== down) { autoHidden.ads = down; applyVisibility(); }
@@ -236,6 +244,13 @@ function registerHotkeys() {
     reg(h.timer1, () => timerStart(0)); reg(h.timer2, () => timerStart(1)); reg(h.timer3, () => timerStart(2));
     reg(h.timerStop, () => timerStop('all'));
     reg(h.wiki, () => toggleWiki());
+    reg(h.spotlight, () => hud.toggleSpot());
+    reg(h.range, () => hud.toggleRange());
+    reg(h.rangeZoom, () => hud.cycleZoom(1));
+    reg(h.compass, () => hud.toggleCompass());
+    reg(h.compassNext, () => hud.compassStep(1));
+    reg(h.compassPrev, () => hud.compassStep(-1));
+    reg(h.themeNext, () => hud.cycleTheme());
     reg(h.up, () => nudge(0, -1)); reg(h.down, () => nudge(0, 1)); reg(h.left, () => nudge(-1, 0)); reg(h.right, () => nudge(1, 0));
     return fails;
 }
@@ -244,8 +259,11 @@ function broadcast() {
     if (settingsWin) settingsWin.webContents.send('state', state());
     if (aimWin) aimWin.webContents.send('state', state());
 }
+// petits rafraîchissements groupés (le HUD appelle souvent broadcast)
+let bcTimer = null;
+function broadcastSoon() { clearTimeout(bcTimer); bcTimer = setTimeout(broadcast, 60); }
 function state() {
-    return { cfg, visible, shown: shown(), autoHidden, lastSlot, hook: { started: ws.state.started, error: ws.state.error }, update: updater.status, installed: updater.isInstalled(), displays: screen.getAllDisplays().map((d, i) => ({ i, label: `Écran ${i + 1} – ${d.size.width}×${d.size.height}${d.id === screen.getPrimaryDisplay().id ? ' (principal)' : ''}` })), version: app.getVersion(), autoColor: acState, fgTitle: wlTitle, now: Date.now(), presets: Object.fromEntries(Object.entries(CHECK_PRESETS).map(([k, v]) => [k, v.name])) };
+    return { cfg, visible, shown: shown(), autoHidden, lastSlot, hook: { started: ws.state.started, error: ws.state.error }, update: updater.status, installed: updater.isInstalled(), displays: screen.getAllDisplays().map((d, i) => ({ i, label: `Écran ${i + 1} – ${d.size.width}×${d.size.height}${d.id === screen.getPrimaryDisplay().id ? ' (principal)' : ''}` })), hud: hud.stateInfo(), weapons: hudWeapons(), version: app.getVersion(), autoColor: acState, fgTitle: wlTitle, now: Date.now(), presets: Object.fromEntries(Object.entries(CHECK_PRESETS).map(([k, v]) => [k, v.name])) };
 }
 
 function trayIcon() {
@@ -259,7 +277,16 @@ function refreshTray() {
         ...(updater.status.state === 'ready' ? [{ label: `Installer la mise à jour v${updater.status.version} et redémarrer`, click: () => updater.install() }, { type: 'separator' }] : updater.status.state === 'available' ? [{ label: `Télécharger la version v${updater.status.version}…`, click: () => updater.install() }, { type: 'separator' }] : []),
         { label: visible ? 'Masquer le crosshair' : 'Afficher le crosshair', accelerator: cfg.hotkeys.toggle, click: () => setVisible(!visible) },
         { label: 'Réglages…', accelerator: cfg.hotkeys.settings, click: () => createSettings() },
+        { label: 'Wiki instantané…', accelerator: cfg.hotkeys.spotlight, click: () => hud.showSpot() },
         { label: 'Wiki AR2 (site complet)…', accelerator: cfg.hotkeys.wiki, click: () => openWiki() },
+        { label: 'Télémètre (distance au viseur)', type: 'checkbox', checked: !!cfg.range.show, accelerator: cfg.hotkeys.range, click: m => hud.toggleRange(m.checked) },
+        { label: 'Boussole / cap', submenu: [
+            { label: 'Afficher la boussole', type: 'checkbox', checked: !!cfg.compass.show, accelerator: cfg.hotkeys.compass, click: m => hud.toggleCompass(m.checked) },
+            { label: 'Étape suivante', accelerator: cfg.hotkeys.compassNext, enabled: !!cfg.compass.route, click: () => hud.compassStep(1) },
+            { label: 'Étape précédente', accelerator: cfg.hotkeys.compassPrev, enabled: !!cfg.compass.route, click: () => hud.compassStep(-1) },
+            { label: 'Effacer la destination', enabled: !!cfg.compass.route, click: () => { cfg.compass.route = null; cfg.compass.leg = 0; saveConfig(); hud.refresh(); refreshTray(); broadcast(); } }
+        ] },
+        { label: 'Thème', submenu: hud.T.THEME_ORDER.map(id => ({ label: hud.T.THEMES[id].name, type: 'radio', checked: cfg.theme === id, click: () => hud.setTheme(id) })) },
         { type: 'separator' },
         { label: 'Profil', submenu: cfg.profiles.map((p, i) => ({ label: p.name, type: 'radio', checked: i === cfg.active, click: () => setActive(i) })) },
         { label: 'Changement d\'arme automatique', type: 'checkbox', checked: !!cfg.autoSwitch.enabled, click: m => { cfg.autoSwitch.enabled = m.checked; autoHidden = { holster: false, ads: false, wl: autoHidden.wl }; applyVisibility(); saveConfig(); broadcast(); } },
@@ -605,9 +632,38 @@ function wikiReload(hard) {
 function wikiGo(tab) { if (wikiWin && !wikiOffline) wikiWin.webContents.executeJavaScript(`window.toolGoTab && window.toolGoTab(${JSON.stringify(String(tab))})`).catch(() => {}); }
 function toggleWiki() { if (wikiWin && wikiWin.isFocused()) wikiWin.minimize(); else openWiki(); }
 const fromWiki = e => wikiWin && e.sender === wikiWin.webContents;
+// ouvre le wiki complet sur un lien direct (#q=M4A1, #lieu=l13…) : utilisé par le wiki instantané
+function openWikiHash(hash) {
+    const had = !!wikiWin && !wikiOffline && !wikiWin.webContents.isLoading();
+    const w = openWiki(); if (!w) return;
+    const go = () => { if (wikiWin && !wikiOffline) wikiWin.webContents.executeJavaScript(`history.replaceState(null, '', location.pathname + location.search); location.hash = ${JSON.stringify(String(hash))};`).catch(() => {}); };
+    if (had) go(); else w.webContents.once('did-finish-load', () => setTimeout(go, 900));
+}
+function hudWeapons() { return hud.weaponList(); }
+hud.init({
+    cfg: () => cfg, save: () => saveConfig(), broadcast: () => broadcastSoon(), refreshTray: () => refreshTray(),
+    display: () => targetDisplay(), visible: () => visible, wlHidden: () => !!autoHidden.wl, lastSlot: () => lastSlot,
+    center: () => { const b = targetDisplay().bounds, s = current(); return { x: b.x + b.width / 2 + (s.offsetX || 0), y: b.y + b.height / 2 + (s.offsetY || 0) }; },
+    keyLabel: a => keyLabel(a), userData: () => app.getPath('userData'), wikiUrl: WIKI_URL,
+    fromWiki: e => fromWiki(e), wikiWin: () => (wikiWin && !wikiOffline ? wikiWin : null), openWikiHash: h => openWikiHash(h),
+    themeTargets: () => [settingsWin, aimWin, checkWin, timerWin].filter(Boolean)
+});
+ipcMain.handle('hud-extras', (e, p = {}) => {
+    const c = {};
+    if (p.range) c.range = Object.assign({}, cfg.range, p.range, { zoomBy: Object.assign({}, cfg.range.zoomBy, (p.range && p.range.zoomBy) || {}) });
+    if (p.compass) c.compass = Object.assign({}, cfg.compass, p.compass);
+    if (p.spotlight) c.spotlight = Object.assign({}, cfg.spotlight, p.spotlight);
+    if ('clearRoute' in p) c.compass = Object.assign({}, c.compass || cfg.compass, { route: null, leg: 0 });
+    hud.normalize(cfg, Object.assign({ theme: cfg.theme }, c));
+    if (p.theme) hud.setTheme(p.theme);
+    if (p.openSpot) hud.showSpot(p.openSpot === true ? '' : String(p.openSpot));
+    if (p.refreshIndex) hud.refreshIndex(true);
+    saveConfig(); hud.refresh(); refreshTray();
+    return state();
+});
 ipcMain.handle('wiki-open', (e, tab) => { openWiki(tab); return true; });
 ipcMain.handle('wiki-retry', () => { wikiReload(true); return true; });
-ipcMain.handle('wiki-info', e => ({ inApp: true, version: app.getVersion(), profiles: cfg.profiles.map(p => p.name), active: cfg.active, hotkeys: { wiki: cfg.hotkeys.wiki, settings: cfg.hotkeys.settings } }));
+ipcMain.handle('wiki-info', e => ({ inApp: true, version: app.getVersion(), profiles: cfg.profiles.map(p => p.name), active: cfg.active, theme: cfg.theme, hotkeys: { wiki: cfg.hotkeys.wiki, settings: cfg.hotkeys.settings, spotlight: cfg.hotkeys.spotlight, range: cfg.hotkeys.range, compass: cfg.hotkeys.compass } }));
 // le site envoie un crosshair (code AR2X-) ou une sauvegarde AR2SAVE- : import direct, sans copier-coller
 ipcMain.handle('wiki-import', (e, { text, name, sections } = {}) => {
     if (!fromWiki(e)) throw new Error('refusé');
@@ -632,7 +688,7 @@ function openAim() {
 ipcMain.handle('aim-open', () => { openAim(); return true; });
 
 // ---------- Sauvegarde : import / export de TOUT ----------
-const BACKUP_SECTIONS = ['profiles', 'autoSwitch', 'autoColor', 'whitelist', 'checklist', 'timer', 'hotkeys', 'general'];
+const BACKUP_SECTIONS = ['profiles', 'autoSwitch', 'autoColor', 'whitelist', 'checklist', 'timer', 'hud', 'hotkeys', 'general'];
 function buildBackup(sections) {
     const sec = (sections && sections.length ? sections : BACKUP_SECTIONS);
     const d = {};
@@ -642,6 +698,7 @@ function buildBackup(sections) {
     if (sec.includes('whitelist')) d.whitelist = cfg.whitelist;
     if (sec.includes('checklist')) d.checklist = cfg.checklist;
     if (sec.includes('timer')) d.timer = Object.assign({}, cfg.timer, { running: [] });
+    if (sec.includes('hud')) d.hud = { theme: cfg.theme, range: cfg.range, compass: Object.assign({}, cfg.compass, { show: false }), spotlight: cfg.spotlight };
     if (sec.includes('hotkeys')) d.hotkeys = cfg.hotkeys;
     if (sec.includes('general')) d.general = { display: cfg.display, startHidden: cfg.startHidden, launchAtStartup: cfg.launchAtStartup, moveStep: cfg.moveStep, autoUpdate: cfg.autoUpdate };
     return { app: 'ar2-crosshair', format: 1, version: app.getVersion(), exported: new Date().toISOString(), sections: Object.keys(d).filter(k => k !== 'active'), data: JSON.parse(JSON.stringify(d)) };
@@ -693,6 +750,12 @@ function applyBackup(o, mode, sections) {
     }
     if (sec.includes('timer') && d.timer) { normalizeTimer(Object.assign({}, replace ? {} : cfg.timer, d.timer, { running: cfg.timer.running })); placeTimer(); done.push('minuteur'); }
     if (Object.keys(extras).length) normalizeExtras(Object.assign({ autoColor: cfg.autoColor, whitelist: cfg.whitelist, checklist: cfg.checklist }, extras));
+    if (sec.includes('hud') && d.hud) {
+        const h = d.hud;
+        hud.normalize(cfg, { theme: h.theme || cfg.theme, range: Object.assign({}, replace ? {} : cfg.range, h.range || {}), compass: Object.assign({}, replace ? {} : cfg.compass, h.compass || {}), spotlight: Object.assign({}, cfg.spotlight, h.spotlight || {}) });
+        hud.setTheme(cfg.theme); hud.refresh();
+        done.push('thème, télémètre et boussole');
+    }
     if (sec.includes('hotkeys') && d.hotkeys) { cfg.hotkeys = Object.assign({ ...DEFAULT_HOTKEYS }, replace ? {} : cfg.hotkeys, d.hotkeys); done.push('raccourcis'); }
     if (sec.includes('general') && d.general) {
         const g = d.general;
@@ -760,6 +823,7 @@ else {
     app.whenReady().then(() => {
         if (process.platform === 'win32') app.setAppUserModelId('com.ar2.crosshair');
         loadConfig();
+        hud.normalize(cfg, cfg);
         visible = !cfg.startHidden;
         createOverlay();
         tray = new Tray(trayIcon());
@@ -773,6 +837,8 @@ else {
         if (SELFTEST) return runSelftest();
         updater.schedule(cfg.autoUpdate);
         if (!process.argv.includes('--hidden')) createSettings();
+        hud.refresh();
+        setTimeout(() => hud.refreshIndex(false), 30000);
         screen.on('display-metrics-changed', () => { acSourceCache = {}; placeOverlay(); acSync(); });
         screen.on('display-added', placeOverlay);
         screen.on('display-removed', () => { cfg.display = 0; placeOverlay(); });
@@ -844,6 +910,23 @@ async function runSelftest() {
             out.wiki = Object.assign({ created: !!wikiWin }, wk || {}); out.wikiOk = !!(wk && wk.groups > 5 && wk.bridge);
             if (wikiWin) wikiWin.close();
         } catch (e) { out.timerError = String(e && e.message || e); }
+        write();
+        // v1.5 : wiki instantané, télémètre, boussole, thèmes (non bloquant)
+        try {
+            const W = () => hud.wins();
+            out.hud = { indexItems: hud.stateInfo().indexItems };
+            hud.toggleRange(true); await wait(1500);
+            out.hud.range = { created: !!W().rangeWin, visible: W().rangeWin ? W().rangeWin.isVisible() : false, marks: hud.rangeData().ladder.length, bounds: W().rangeWin ? W().rangeWin.getBounds() : null };
+            hud.setRoute({ title: 'Test', points: [{ id: 'l0', name: 'Ashland', x: 540, y: 600 }, { id: 'l13', name: 'Regional Airport', x: 345, y: 770 }] }); await wait(1500);
+            out.hud.compass = { created: !!W().compWin, visible: W().compWin ? W().compWin.isVisible() : false, deg: Math.round(hud.compassData().deg), card: hud.compassData().card };
+            hud.showSpot('m4a1'); await wait(2500);
+            const sw = W().spotWin;
+            out.hud.spot = { created: !!sw, visible: sw ? sw.isVisible() : false, ok: sw ? await sw.webContents.executeJavaScript('!!(window.__spotReady && document.querySelector(".aq-it"))') : false };
+            hud.hideSpot();
+            hud.setTheme('nvg'); await wait(300); out.hud.theme = cfg.theme; hud.setTheme('classic');
+            hud.toggleRange(false); hud.toggleCompass(false); cfg.compass.route = null;
+            out.hudOk = out.hud.indexItems > 100 && out.hud.range.created && out.hud.range.marks > 3 && out.hud.compass.created && out.hud.compass.deg === 229 && out.hud.spot.ok && out.hud.theme === 'nvg';
+        } catch (e) { out.hudError = String(e && e.stack || e); }
         write();
         // mises à jour
         await updater.check();

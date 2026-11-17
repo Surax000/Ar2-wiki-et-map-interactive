@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'unsafe-inline'">
+<style>
+html,body{margin:0;padding:0;background:transparent;overflow:hidden;font-family:"Segoe UI",Inter,system-ui,sans-serif;color:var(--c-text,#fff)}
+#box{position:absolute;inset:0;box-sizing:border-box;border-radius:12px;background:var(--c-hud,rgba(10,13,18,.78));border:1px solid rgb(var(--t-acc,0 255 136) / .4);overflow:hidden}
+svg{display:block}
+.row{display:flex;align-items:baseline;gap:.6em;padding:0 .9em;white-space:nowrap}
+.cap{font:800 1.9em/1 ui-monospace,Consolas,monospace;color:var(--c-acc,#00ff88)}
+.card{font-weight:800;color:var(--c-acc,#00ff88);font-size:1.05em}
+.to{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;font-weight:700;font-size:1.05em}
+.to small{color:var(--c-muted,#8b949e);font-weight:600}
+.eta{font:700 1em ui-monospace,Consolas,monospace;color:var(--c-gold,#e5c07b)}
+.sub{padding:.15em .9em 0;font-size:.78em;color:var(--c-muted,#8b949e);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sub b{color:var(--c-text,#fff)}
+.empty{display:flex;align-items:center;justify-content:center;height:100%;padding:0 1em;text-align:center;font-size:.95em;color:var(--c-muted,#8b949e)}
+.empty b{color:var(--c-acc,#00ff88)}
+</style></head><body><div id="box"></div>
+<script src="ar2-tools.js"></script>
+<script src="compass.js"></script>
+</body></html>
