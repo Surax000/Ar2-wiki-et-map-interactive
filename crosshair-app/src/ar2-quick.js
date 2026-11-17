@@ -8,6 +8,10 @@
     const T = root.AR2Tools;
     const esc = T.esc, fr = T.fr;
     const ICON = { weapon: 'ARM', attachment: 'ACC', heal: 'SOIN', food: 'FOOD', backpack: 'SAC', mag: 'CHG', loc: 'LIEU', boss: 'BOSS' };
+    // Images des objets (wiki Apocalypse Rising, Fandom) : dossier fixé par le site ou fourni par l'index
+    let IMG_BASE = root.AR2_IMG_BASE || null, IMG_FIXED = !!root.AR2_IMG_BASE;
+    function setImgBase(b) { IMG_BASE = b || null; IMG_FIXED = !!b; }
+    const pic = (o, cls) => o && o.img && IMG_BASE && /^[a-z0-9._-]+$/i.test(o.img) ? `<img class="${cls || 'aq-pic'}" src="${esc(IMG_BASE + o.img)}.webp" alt="" loading="lazy" decoding="async" draggable="false">` : '';
     const CAT_COLOR = { weapon: 'var(--aq-acc)', attachment: '#22d3ee', heal: '#fb7185', food: '#fb923c', backpack: '#fbbf24', mag: '#e5c07b', loc: '#a78bfa', boss: '#f87171' };
 
     const CSS = `
@@ -26,7 +30,7 @@
 .aq-it{display:flex;align-items:center;gap:8px;width:100%;padding:7px 9px;border-radius:10px;border:1px solid transparent;background:none;color:var(--aq-tx);text-align:left;cursor:pointer;font:600 13px/1.25 "Segoe UI",Inter,system-ui,sans-serif}
 .aq-it:hover{background:rgb(var(--t-card,22 25 32) / .9)}
 .aq-it.sel{background:rgb(var(--t-acc,0 255 136) / .12);border-color:rgb(var(--t-acc,0 255 136) / .6)}
-.aq-ic{flex:none;width:38px;text-align:center;font:800 9px/1 ui-monospace,Consolas,monospace;letter-spacing:.06em;padding:4px 0;border-radius:6px;border:1px solid currentColor;opacity:.9}
+.aq-ic{flex:none;width:46px;text-align:center;font:800 9px/1 ui-monospace,Consolas,monospace;letter-spacing:.06em;padding:4px 0;border-radius:6px;border:1px solid currentColor;opacity:.9}
 .aq-it b{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:700}
 .aq-it small{flex:none;color:var(--aq-mut);font:600 10px ui-monospace,Consolas,monospace;max-width:40%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .aq-det{overflow-y:auto;padding:12px 14px}
@@ -58,6 +62,12 @@
 .aq-ex button{font:700 11px "Segoe UI",Inter,system-ui,sans-serif;padding:6px 9px;border-radius:999px;border:1px solid var(--aq-bd);background:none;color:var(--aq-tx);cursor:pointer}
 .aq-ex button:hover{border-color:var(--aq-acc);color:var(--aq-acc)}
 .aq-verd{padding:16px 18px;overflow-y:auto}
+.aq-th{flex:none;width:46px;height:26px;display:flex;align-items:center;justify-content:center;border-radius:6px;background:rgb(var(--t-card,22 25 32) / .9);border:1px solid var(--aq-bd);overflow:hidden}
+.aq-th img{max-width:100%;max-height:100%;object-fit:contain}
+.aq-hero{display:flex;align-items:center;justify-content:center;height:96px;margin:0 0 10px;border-radius:12px;border:1px solid var(--aq-bd);background:radial-gradient(ellipse at center,rgb(var(--t-acc,0 255 136) / .12),rgb(var(--t-card,22 25 32) / .9) 70%);overflow:hidden}
+.aq-hero img{max-width:92%;max-height:84px;object-fit:contain;filter:drop-shadow(0 4px 8px rgba(0,0,0,.5))}
+.aq-vs .aq-th{width:40px;height:22px;margin-right:6px;vertical-align:middle;display:inline-flex}
+.aq-vs span{display:inline-flex;align-items:center}
 .aq-vs{display:flex;align-items:center;gap:10px;font:700 12px ui-monospace,Consolas,monospace;color:var(--aq-mut);margin-bottom:10px}
 .aq-vs span{padding:4px 8px;border-radius:7px;border:1px solid var(--aq-bd);color:var(--aq-tx)}
 .aq-vs span.w{border-color:var(--aq-acc);color:var(--aq-acc);background:rgb(var(--t-acc,0 255 136) / .1)}
@@ -97,7 +107,8 @@
     function detail(o, index) {
         if (!o) return '';
         const sub = (...a) => `<div class="aq-sub">${a.filter(Boolean).map(esc).join(' • ')}</div>`;
-        let h = `<div class="aq-h">${esc(o.name)}</div>`;
+        const im = pic(o, 'aq-pi');
+        let h = (im ? `<div class="aq-hero">${im}</div>` : '') + `<div class="aq-h">${esc(o.name)}</div>`;
         if (o.type === 'weapon') {
             const t50 = T.ttk(o, 50), t150 = T.ttk(o, 150);
             h += sub(o.cat, o.cal, o.tier ? 'Tier ' + o.tier : '', o.rarity) + `<div class="aq-g">
@@ -128,7 +139,7 @@
 
     function duelHTML(d) {
         const wa = d.winner === d.a.id, wb = d.winner === d.b.id;
-        return `<div class="aq-vs"><span class="${wa ? 'w' : ''}">A · ${esc(d.a.name)}</span>VS<span class="${wb ? 'w' : ''}">B · ${esc(d.b.name)}</span></div>
+        return `<div class="aq-vs"><span class="${wa ? 'w' : ''}">${pic(d.a) ? `<i class="aq-th">${pic(d.a)}</i>` : ''}A · ${esc(d.a.name)}</span>VS<span class="${wb ? 'w' : ''}">${pic(d.b) ? `<i class="aq-th">${pic(d.b)}</i>` : ''}B · ${esc(d.b.name)}</span></div>
                 <div class="aq-big ${d.winner ? '' : 'mix'}">${esc(d.headline)}</div>
                 <ul class="aq-rs">${d.reasons.map(r => `<li>${esc(r)}</li>`).join('')}</ul>${d.note ? `<div class="aq-note">${esc(d.note)}</div>` : ''}
                 ${d.table ? `<table class="aq-tb"><tr>${d.cols.map(c => `<th>${esc(c)}</th>`).join('')}</tr>${d.table.map(r => `<tr><td>${esc(r[0])}</td><td class="${r[3] === 'A' ? 'w' : ''}">${esc(r[1])}</td><td class="${r[3] === 'B' ? 'w' : ''}">${esc(r[2])}</td></tr>`).join('')}</table>` : ''}`;
@@ -141,6 +152,10 @@
         el.innerHTML = `<div class="aq"><div class="aq-top">${I_SEARCH}<input class="aq-in" spellcheck="false" autocomplete="off" placeholder="Arme, objet, lieu…  (ex : M4A1, Ashland, Holo vs OCR)"><span class="aq-mode">Wiki</span></div>
             <div class="aq-body"></div><div class="aq-foot"></div></div>`;
         const root_ = el.firstElementChild, input = root_.querySelector('.aq-in'), body = root_.querySelector('.aq-body'), foot = root_.querySelector('.aq-foot'), mode = root_.querySelector('.aq-mode');
+        const useIx = ix => { if (ix && ix.imgBase && !IMG_FIXED) IMG_BASE = ix.imgBase; };
+        useIx(opt.index);
+        // image manquante (hors-ligne, 404) : on la masque sans casser la mise en page (CSP : pas de onerror inline)
+        root_.addEventListener('error', e => { const t = e.target; if (t && t.tagName === 'IMG') { const w = t.closest('.aq-th,.aq-hero'); if (w && w.classList.contains('aq-hero')) w.remove(); else t.style.visibility = 'hidden'; } }, true);
         let index = opt.index, results = [], sel = 0, cmd = { kind: 'search', q: '' }, lastDuel = null, lastRoute = null;
         const A = opt.actions;
         const app = opt.host === 'app';
@@ -185,7 +200,7 @@
             body.className = 'aq-body';
             if (!results.length) { body.className = 'aq-body full'; body.innerHTML = `<div class="aq-empty">Aucun résultat pour « ${esc(input.value)} ».</div>`; return; }
             const o = results[sel];
-            body.innerHTML = `<div class="aq-list">${results.map((r, i) => `<button type="button" class="aq-it ${i === sel ? 'sel' : ''}" data-i="${i}"><span class="aq-ic" style="color:${CAT_COLOR[r.type] || 'var(--aq-mut)'}">${ICON[r.type] || '•'}</span><b>${esc(r.name)}</b><small>${esc(r.type === 'loc' ? (r.island || r.catLabel || '') : r.type === 'weapon' ? (r.cal || '') : (r.slot || r.cat || ''))}</small></button>`).join('')}</div>
+            body.innerHTML = `<div class="aq-list">${results.map((r, i) => `<button type="button" class="aq-it ${i === sel ? 'sel' : ''}" data-i="${i}">${pic(r) ? `<span class="aq-th">${pic(r)}</span>` : `<span class="aq-ic" style="color:${CAT_COLOR[r.type] || 'var(--aq-mut)'}">${ICON[r.type] || '•'}</span>`}<b>${esc(r.name)}</b><small>${esc(r.type === 'loc' ? (r.island || r.catLabel || '') : r.type === 'weapon' ? (r.cal || '') : (r.slot || r.cat || ''))}</small></button>`).join('')}</div>
                 <div class="aq-det">${detail(o, index)}<div class="aq-acts">${actsFor(o).map(([id, l, k], i) => `<button type="button" class="aq-btn ${i === 0 ? 'pri' : ''}" data-act="${id}">${esc(l)}<kbd>${k}</kbd></button>`).join('')}</div></div>`;
             const s = body.querySelector('.aq-it.sel'); if (s && s.scrollIntoView) s.scrollIntoView({ block: 'nearest' });
         }
@@ -269,12 +284,12 @@
         update();
         return {
             focus(select) { input.focus(); if (select) input.select(); },
-            setIndex(ix) { index = T.prep(ix); update(); },
+            setIndex(ix) { useIx(ix); index = T.prep(ix); update(); },
             set(text) { input.value = text || ''; sel = 0; update(); },
             message: msg,
             refresh: update,
             el: root_
         };
     }
-    root.AR2Quick = { mount, detail, duelHTML, dial, ensureCSS, CAT_COLOR, ICON };
+    root.AR2Quick = { mount, detail, duelHTML, dial, ensureCSS, setImgBase, CAT_COLOR, ICON };
 })(typeof window !== 'undefined' ? window : globalThis);

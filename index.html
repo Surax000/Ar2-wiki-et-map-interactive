@@ -82,6 +82,16 @@
         .cr-kind-btn { padding: 10px 12px; border-radius: 12px; border: 1px solid rgb(var(--t-border)); background: rgb(var(--t-bg)); color: rgb(var(--t-muted)); font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; transition: all .15s; }
         .cr-kind-btn:hover { color: #fff; border-color: rgb(var(--t-gold) / .53); }
         .cr-kind-btn.active { background: rgb(var(--t-gold)); color: #0b0f14; border-color: rgb(var(--t-gold)); }
+        /* Images des objets (wiki AR2) */
+        .item-hero { position: relative; display: flex; align-items: center; justify-content: center; height: 112px; margin-bottom: 14px; border-radius: 14px; border: 1px solid rgb(var(--t-border) / .6); background: radial-gradient(ellipse at 50% 60%, rgb(var(--t-acc) / .10), transparent 70%), linear-gradient(180deg, rgb(var(--t-bg) / .35), rgb(var(--t-bg) / .85)); overflow: hidden; }
+        .item-hero img { max-width: 88%; max-height: 92px; width: auto; height: auto; object-fit: contain; filter: drop-shadow(0 6px 10px rgba(0,0,0,.55)); transition: transform .25s ease; }
+        .group:hover .item-hero img { transform: scale(1.06); }
+        .item-hero.lg { height: 150px; } .item-hero.lg img { max-height: 128px; }
+        .item-hero.sm { height: 84px; margin-bottom: 10px; } .item-hero.sm img { max-height: 70px; }
+        .item-thumb { flex: none; width: 40px; height: 26px; display: inline-flex; align-items: center; justify-content: center; border-radius: 6px; background: rgb(var(--t-bg) / .7); border: 1px solid rgb(var(--t-border) / .6); overflow: hidden; }
+        .item-thumb img { max-width: 36px; max-height: 22px; width: auto; height: auto; object-fit: contain; }
+        .bd-pic { position: absolute; inset: 3px; display: flex; align-items: center; justify-content: center; pointer-events: none; }
+        .bd-pic img { max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; filter: drop-shadow(0 2px 3px rgba(0,0,0,.6)); }
         .fi-item { display: flex; align-items: center; gap: 8px; width: 100%; text-align: left; padding: 7px 10px; border-radius: 10px; border: 1px solid transparent; font-size: 12px; color: #c9d1d9; }
         .fi-item:hover { background: rgb(var(--t-bg)); border-color: rgb(var(--t-border)); color: #fff; }
         .fi-item.active { background: #38bdf81a; border-color: #38bdf8; color: #fff; }
@@ -733,6 +743,9 @@
             <div id="df-root"></div>
         </section>
     </main>
+    <footer class="max-w-7xl mx-auto px-4 pb-28 pt-2 text-center text-[11px] text-tactical-muted">
+        Images des objets : <a href="https://roblox-apocalypse-rising.fandom.com/wiki/Apocalypse_Rising_Wiki" target="_blank" rel="noopener" class="underline hover:text-tactical-accent">wiki Apocalypse Rising (Fandom)</a>, licence <a href="https://creativecommons.org/licenses/by-sa/3.0/" target="_blank" rel="noopener" class="underline hover:text-tactical-accent">CC BY-SA</a> (<a href="img/items/CREDITS.md" target="_blank" rel="noopener" class="underline hover:text-tactical-accent">liste des sources</a>). Site fait par des fans, non affilié à Gullet Productions ni à Roblox.
+    </footer>
 
     <!-- ===== LISTE DE LOOT (wishlist) ===== -->
     <div id="ck-bar" class="hidden fixed z-[46] left-3 bottom-24 w-[320px] max-w-[calc(100vw-1.5rem)] max-h-[70vh] flex flex-col bg-tactical-card/95 backdrop-blur-xl border border-tactical-border rounded-2xl shadow-2xl"></div>
@@ -1456,6 +1469,28 @@
         // ============================================================
         // SVG Icons
         // ============================================================
+        // Images des objets (wiki Apocalypse Rising sur Fandom, licence CC BY-SA) : img/items/<id>.webp
+        const ITEM_IMG = {"mini-14":["mini-14",256,49],"model-94":["model-94",256,52],"model-94-ranger":["model-94-ranger",256,59],"m1903":["m1903",256,48],"m21":["m21",256,59],"model-788":["model-788",256,56],"model-788-carbine":["model-788-carbine",256,60],"mosin-nagant":["mosin-nagant",256,51],"msg-90":["msg-90",256,58],"psg-1":["psg-1",256,66],"dragunov":["dragunov",256,47],"vss":["vss",256,65],"l96a1":["l96a1",256,50],"m40a1":["m40a1",256,57],"auto-5":["auto-5",256,49],"coach-gun":["coach-gun",256,54],"maverick-88":["maverick-88",256,51],"model-590":["model-590",256,56],"aa-12":["aa-12",256,103],"spas-12":["spas-12",256,68],"boomstick":["boomstick",256,62],"lupara":["lupara",256,65],"broadside-lupara":["broadside-lupara",256,72],"vagrant-lupara":["vagrant-lupara",256,64],"thompson":["thompson",256,74],"m3a1":["m3a1",256,145],"mat-49":["mat-49",256,133],"mp5":["mp5",256,137],"mp40":["mp40",256,119],"ump45":["ump45",256,112],"pp-19-bizon":["pp-19-bizon",256,84],"ppsh-41":["ppsh-41",256,78],"mp5k":["mp5k",193,160],"uzi":["uzi",256,142],"ao-46":["ao-46",256,116],"rogue-uzi":["rogue-uzi",256,158],"camp-carbine":["camp-carbine",256,54],"model-44":["model-44",256,57],"mosin-m44":["mosin-m44",256,49],"m1-carbine":["m1-carbine",256,52],"m2-carbine":["m2-carbine",256,57],"m4a1":["m4a1",256,78],"sks":["sks",256,47],"xm177":["xm177",256,73],"aks-74u":["aks-74u",256,93],"operator-m4a1":["operator-m4a1",256,89],"patriot":["patriot",256,90],"ac-556":["ac-556",256,60],"ak-47":["ak-47",256,80],"akm":["akm",256,61],"aug":["aug",256,86],"famas":["famas",256,93],"l85a1":["l85a1",256,99],"m16a1":["m16a1",256,58],"m16a2":["m16a2",256,69],"ak-74":["ak-74",256,76],"as-val":["as-val",256,77],"ots-14-groza":["ots-14-groza",249,160],"stunted-ak-47":["stunted-ak-47",256,140],"fal":["fal",256,58],"g3":["g3",256,67],"m1-garand":["m1-garand",256,48],"m14":["m14",256,48],"svt-40":["svt-40",256,38],"bar":["bar",256,43],"m1919a6":["m1919a6",256,94],"m249-saw":["m249-saw",256,87],"m60":["m60",256,70],"rpk":["rpk",256,67],"rpk-74m":["rpk-74m",256,82],"m249-para":["m249-para",256,88],"pkm":["pkm",256,55],"obrez-mosin-nagant":["obrez-mosin-nagant",256,53],"trapper-s-model-94":["trapper-s-model-94",256,61],"model-29":["model-29",256,139],"python":["python",256,129],"snubnose":["snubnose",233,160],"desert-eagle":["desert-eagle",256,145],"g17":["g17",227,160],"hi-power":["hi-power",249,160],"m9":["m9",240,160],"m1911":["m1911",249,160],"makarov":["makarov",202,160],"model-459":["model-459",217,160],"p38":["p38",255,160],"p220":["p220",196,160],"socom-mk23":["socom-mk23",256,103],"m93r":["m93r",180,160],"mac-10":["mac-10",172,160],"skorpion-vz-65":["skorpion-vz-65",243,160],"tec-9":["tec-9",256,137],"m1911-f-a":["m1911-f-a",197,160],"snake-s-mac-10":["snake-s-mac-10",256,143],"sweeper-desert-eagle":["sweeper-desert-eagle",256,146],"avtomat-makarov":["avtomat-makarov",106,160],"m1918-tankgewehr":["m1918-tankgewehr",256,82],"santas-pig":["santas-pig",256,64],"trooper-m1919a6":["trooper-m1919a6",256,100],"an-94":["an-94",256,82],"m14-dmr":["m14-dmr",256,54],"admirals-m9":["admirals-m9",241,160],"bootleg-type-37":["bootleg-type-37",256,146],"filtered-aks-74u":["filtered-aks-74u",256,79],"operator-xm177":["operator-xm177",256,86],"silent-partner-m1911":["silent-partner-m1911",256,93],"spetsnaz-aks-74u":["spetsnaz-aks-74u",256,92],"bandage":["bandage",256,137],"field-dressing":["field-dressing",192,160],"small-medkit":["small-medkit",180,160],"large-medkit":["large-medkit",181,160],"military-medkit":["military-medkit",196,160],"ai2-medkit":["ai2-medkit",195,160],"health-booster":["health-booster",213,160],"mil-health-booster":["mil-health-booster",94,160],"stamina-booster":["stamina-booster",84,160],"mil-stamina-booster":["mil-stamina-booster",158,160],"cqr":["cqr",256,124],"holo":["holo",256,124],"kobra":["kobra",256,124],"soviet-reflex":["soviet-reflex",185,160],"reflex":["reflex",256,124],"ocr":["ocr",256,124],"pelican":["pelican",256,124],"prism":["prism",256,124],"rifle-scope":["rifle-scope",256,124],"oil-filter":["oil-filter",256,124],"std-sup":["std-sup",256,124],"mil-sup":["mil-sup",256,124],"heavy-sup":["heavy-sup",256,124],"soviet-mil-sup":["soviet-mil-sup",160,160],"pro-sup":["pro-sup",164,160],"nato-sup":["nato-sup",256,124],"spetsnaz-sup":["spetsnaz-sup",256,124],"laser":["laser",256,124],"green-laser":["green-laser",256,124],"pink-laser":["pink-laser",160,160],"folding-grip":["folding-grip",256,124],"short-grip":["short-grip",256,124],"straight-grip":["straight-grip",256,124],"schoolbag":["schoolbag",161,160],"drawstring":["drawstring",150,160],"briefcase":["briefcase",120,160],"knapsack":["knapsack",147,160],"large-schoolbag":["large-schoolbag",151,160],"college-pack":["college-pack",135,160],"daypack":["daypack",146,160],"commercial-parachute":["commercial-parachute",144,160],"rucksack-civ":["rucksack-civ",120,160],"rifle-bag":["rifle-bag",120,160],"us-recon":["us-recon",120,160],"vintage-us-army":["vintage-us-army",120,160],"vintage-soviet":["vintage-soviet",120,160],"utility-safety":["utility-safety",125,160],"guide-pack":["guide-pack",152,160],"guitar-case":["guitar-case",148,160],"hiking-pack":["hiking-pack",150,160],"military-rucksack":["military-rucksack",120,160],"military-parachute":["military-parachute",149,160],"weaved-basket":["weaved-basket",120,160],"radio-pack":["radio-pack",120,160],"duffel-bag":["duffel-bag",120,160],"rucksack":["rucksack",120,160],"heavy-us-recon":["heavy-us-recon",120,160],"heavy-us-rucksack":["heavy-us-rucksack",120,160],"duffel":["duffel",120,160],"us-seabag":["us-seabag",120,160],"canvas-duffel":["canvas-duffel",120,160],"hard-suitcase":["hard-suitcase",149,160],"soft-suitcase":["soft-suitcase",146,160],"garbage-bag":["garbage-bag",120,160],"pirate-rucksack":["pirate-rucksack",120,160],"tan-us-recon":["tan-us-recon",120,160],"soviet-assault":["soviet-assault",118,160],"tan-us-rucksack":["tan-us-rucksack",120,160],"tan-mil-parachute":["tan-mil-parachute",120,160],"golden-duffel":["golden-duffel",120,160],"magenta-duffel":["magenta-duffel",120,160],"spec-ops":["spec-ops",105,160],"maroon-duffel":["maroon-duffel",120,160],"tan-us-duffel":["tan-us-duffel",121,160],"tan-heavy-rucksack":["tan-heavy-rucksack",120,160],"white-duffel":["white-duffel",120,160],"heavy-survey":["heavy-survey",120,160],"kolobok":["kolobok",124,160],"mre":["mre",183,160],"canned-chicken":["canned-chicken",107,160],"canned-beans":["canned-beans",122,160],"peanut-butter":["peanut-butter",102,160],"canned-salmon":["canned-salmon",150,160],"canned-tuna":["canned-tuna",171,160],"beef-jerky":["beef-jerky",148,160],"cheese":["cheese",150,160],"salty-chips":["salty-chips",93,160],"chocolate":["chocolate",234,160],"water":["water",55,160],"soda":["soda",168,160],"sports-drink":["sports-drink",219,160],"energy-drink":["energy-drink",119,160],"milk-gallon":["milk-gallon",102,160],"choc-milk":["choc-milk",107,160],"orange-juice":["orange-juice",104,160],"orange-juice-carton":["orange-juice-carton",112,160],"apple-cider":["apple-cider",43,160],"spoiled-milk":["spoiled-milk",112,160],"scurvy-tonic":["scurvy-tonic",101,160],"corn-beef":["corn-beef",146,160],"mayonnaise":["mayonnaise",116,160],"bubblegum":["bubblegum",226,160],"salty-crackers":["salty-crackers",124,160],"old-steak":["old-steak",192,160],"canned-ham":["canned-ham",170,160],"canned-soup":["canned-soup",100,160],"rotten-carrots":["rotten-carrots",161,160],"rotten-corn":["rotten-corn",223,160],"rotten-veg":["rotten-veg",182,160],"cake-slice":["cake-slice",167,160],"moldy-bread":["moldy-bread",157,160],"banana":["banana",186,160],"raw-onion":["raw-onion",162,160],"sweet-onion":["sweet-onion",155,160],"apple":["apple",165,160],"orange":["orange",162,160],"yogurt":["yogurt",132,160],"bread-full":["bread-full",256,72],"bread-half":["bread-half",256,151],"ketchup":["ketchup",92,160],"mustard":["mustard",76,160],"raw-steak":["raw-steak",157,160],"boiled-egg":["boiled-egg",177,160],"goop-juice":["goop-juice",80,160],"goop":["goop",250,160],"abomination-heart":["abomination-heart",155,160],"sugar-cookie":["sugar-cookie",256,157],"eggnog":["eggnog",98,160],"honey-tankard":["honey-tankard",137,160],"health-potion":["health-potion",109,160],"sarsaparilla":["sarsaparilla",70,160],"medal-energy":["medal-energy",103,160],"legacy-mre":["legacy-mre",106,160],"legacy-water":["legacy-water",67,160],"mess-kit":["mess-kit",256,151],"seasoning-kit":["seasoning-kit",168,160],"electrolyte":["electrolyte",107,160],"energy-supp":["energy-supp",115,160],"multivitamins":["multivitamins",59,94],"water-tabs":["water-tabs",105,160],"m67-grenade":["m67-grenade",196,160],"rgd5-grenade":["rgd5-grenade",151,160],"mk2-grenade":["mk2-grenade",121,160],"f1-grenade":["f1-grenade",178,160],"ems-medkit":["ems-medkit",201,160],"transfusion-bag":["transfusion-bag",117,160],"trauma-kit":["trauma-kit",248,160],"mechanic-tools":["mechanic-tools",203,160],"fuel-syphon":["fuel-syphon",252,160],"gun-cleaning-kit":["gun-cleaning-kit",196,160],"sharpening-stone":["sharpening-stone",209,160],"tool-griptape":["tool-griptape",146,160],"athletic-gear":["athletic-gear",146,160],"padded-soles":["padded-soles",184,160],"scent-cover":["scent-cover",110,160],"field-radio":["field-radio",245,160],"militia-radio":["militia-radio",126,160],"binoculars":["binoculars",183,160],"rangefinder":["rangefinder",201,160],"flashlight":["flashlight",256,153],"lantern":["lantern",100,160],"survival-flashlight":["survival-flashlight",110,160],"military-flashlight":["military-flashlight",158,160],"m1-garand-8rd-clip":["m1-garand-8rd-clip",172,160],"m1918a2-bar-20rd-magazine":["m1918a2-bar-20rd-magazine",187,160],"m1918a2-bar-30rd-magazine":["m1918a2-bar-30rd-magazine",170,160],"m1919a6-100rd-magazine":["m1919a6-100rd-magazine",171,160],"python-6rd-speedloader":["python-6rd-speedloader",173,160],"desert-eagle-8rd-magazine":["desert-eagle-8rd-magazine",178,160],"model-29-6rd-speedloader":["model-29-6rd-speedloader",148,160],"model-44-carbine-10rd-magazine":["model-44-carbine-10rd-magazine",101,127],"sweeper-desert-eagle-12rd-magazine":["sweeper-desert-eagle-12rd-magazine",138,160],"m1-thompson-20rd-magazine":["m1-thompson-20rd-magazine",180,160],"m1-thompson-30rd-magazine":["m1-thompson-30rd-magazine",223,160],"m1-thompson-50rd-magazine":["m1-thompson-50rd-magazine",157,160],"m1911-7rd-magazine":["m1911-7rd-magazine",136,160],"m1911-f-a-custom-12rd-magazine":["m1911-f-a-custom-12rd-magazine",171,160],"m3a1-30rd-magazine":["m3a1-30rd-magazine",170,160],"mac-10-30rd-magazine":["mac-10-30rd-magazine",157,160],"p220-10rd-magazine":["p220-10rd-magazine",235,160],"socom-mk23-12rd-magazine":["socom-mk23-12rd-magazine",219,160],"socom-mk23-17rd-magazine":["socom-mk23-17rd-magazine",128,160],"snubnose-6rd-speedloader":["snubnose-6rd-speedloader",155,160],"ump45-25rd-magazine":["ump45-25rd-magazine",122,160],"5-56mm-stanag-20rd-magazine":["5-56mm-stanag-20rd-magazine",183,160],"5-56mm-stanag-30rd-magazine":["5-56mm-stanag-30rd-magazine",167,160],"ac-556-30rd-magazine":["ac-556-30rd-magazine",166,160],"m249-100rd-magazine":["m249-100rd-magazine",125,160],"mini-14-20rd-magazine":["mini-14-20rd-magazine",176,160],"patriot-100rd-drum-magazine":["patriot-100rd-drum-magazine",198,160],"fal-20rd-magazine":["fal-20rd-magazine",166,160],"fal-30rd-magazine":["fal-30rd-magazine",118,160],"msg-g3-10rd-magazine":["msg-g3-10rd-magazine",156,152],"g3-msg-20rd-magazine":["g3-msg-20rd-magazine",152,160],"g3-msg-30rd-magazine":["g3-msg-30rd-magazine",133,160],"l96a1-10rd-magazine":["l96a1-10rd-magazine",155,160],"m14-20rd-magazine":["m14-20rd-magazine",169,160],"m14-30rd-magazine":["m14-30rd-magazine",101,160],"m60-100rd-magazine":["m60-100rd-magazine",119,160],"ak-30rd-magazine":["ak-30rd-magazine",84,160],"ak-40rd-magazine":["ak-40rd-magazine",68,160],"ak-75rd-magazine":["ak-75rd-magazine",157,160],"sks-10rd-clip":["sks-10rd-clip",167,160],"dragunov-10rd-magazine":["dragunov-10rd-magazine",174,160],"pkm-100rd-magazine":["pkm-100rd-magazine",150,160],"svt-40-10rd-magazine":["svt-40-10rd-magazine",160,160],"59-series-15rd-magazine":["59-series-15rd-magazine",172,160],"g17-17rd-magazine":["g17-17rd-magazine",175,160],"hi-power-13rd-magazine":["hi-power-13rd-magazine",164,160],"m9-15rd-magazine":["m9-15rd-magazine",182,160],"m93r-20rd-magazine":["m93r-20rd-magazine",158,160],"m93r-30rd-magazine":["m93r-30rd-magazine",176,160],"mat-49-32rd-magazine":["mat-49-32rd-magazine",118,160],"mp-40-32rd-magazine":["mp-40-32rd-magazine",146,160],"mp5-30rd-magazine":["mp5-30rd-magazine",122,160],"p38-8rd-magazine":["p38-8rd-magazine",175,160],"tec-9-20rd-magazine":["tec-9-20rd-magazine",145,160],"tec-9-32rd-magazine":["tec-9-32rd-magazine",77,160],"uzi-20rd-magazine":["uzi-20rd-magazine",159,160],"uzi-32rd-magazine":["uzi-32rd-magazine",155,160],"makarov-8rd-magazine":["makarov-8rd-magazine",139,160],"makarov-84rd-drum-magazine":["makarov-84rd-drum-magazine",159,160],"pp-19-bizon-64rd-magazine":["pp-19-bizon-64rd-magazine",215,160],"skorpion-vz-65-20rd-magazine":["skorpion-vz-65-20rd-magazine",165,160],"skorpion-vz-65-30rd-magazine":["skorpion-vz-65-30rd-magazine",161,160],"m1-carbine-15rd-magazine":["m1-carbine-15rd-magazine",162,160],"m2-carbine-30rd-magazine":["m2-carbine-30rd-magazine",153,160],"ak-74-30rd-magazine":["ak-74-30rd-magazine",112,160],"ak-74-30rd-plum-magazine":["ak-74-30rd-plum-magazine",132,160],"ak-74-45rd-magazine":["ak-74-45rd-magazine",70,160],"ak-74-45rd-plum-magazine":["ak-74-45rd-plum-magazine",161,160],"ao-46-21rd-magazine":["ao-46-21rd-magazine",121,160],"ppsh-41-35rd-magazine":["ppsh-41-35rd-magazine",140,160],"ppsh-41-71rd-drum-magazine":["ppsh-41-71rd-drum-magazine",170,160],"vss-vintorez-10rd-magazine":["vss-vintorez-10rd-magazine",134,160],"as-val-20rd-magazine":["as-val-20rd-magazine",128,160],"as-val-30rd-magazine":["as-val-30rd-magazine",187,160],"santa-s-pig-700rd-magazine":["santa-s-pig-700rd-magazine",129,160],"can-3006":["can-3006",164,160],"bp-556":["bp-556",177,160],"bp-762n":["bp-762n",178,160],"can-545":["can-545",193,160],"can-762s":["can-762s",256,133],"can-762r":["can-762r",172,160],"can-9x39":["can-9x39",256,141],"ammo:.30-06 Springfield":["ammo-30-06-springfield",161,160],"ammo:.357 Magnum":["ammo-357-magnum",180,160],"ammo:.44 Magnum":["ammo-44-magnum",157,160],"ammo:.45 ACP":["ammo-45-acp",176,160],"ammo:5.56mm NATO":["ammo-5-56mm-nato",171,160],"ammo:7.62mm NATO":["ammo-7-62mm-nato",160,160],"ammo:7.62mm Soviet":["ammo-7-62mm-soviet",155,160],"ammo:7.62mm Rimmed":["ammo-7-62mm-rimmed",158,160],"ammo:9mm Parabellum":["ammo-9mm-parabellum",181,160],"ammo:9mm Soviet":["ammo-9mm-soviet",172,160],"ammo:12 Gauge Buckshot":["ammo-12-gauge-buckshot",129,160],"ammo:.30 Carbine":["ammo-30-carbine",160,160],"ammo:5.45mm Soviet":["ammo-5-45mm-soviet",179,160],"ammo:7.62mm Tokarev":["ammo-7-62mm-tokarev",251,160],"ammo:9mm Subsonic":["ammo-9mm-subsonic",256,130],"ammo:7.62mm Plastic Balls":["ammo-7-62mm-plastic-balls",227,160],"ammo:13.2mm Anti-Tank":["ammo-13-2mm-anti-tank",175,160]};
+        const ITEM_IMG_BASE = 'img/items/';
+        // Accepte un id d'objet, une clé du sac (w:, m:, a:, c:, h:, f:, x:) ou « mag:<id> »
+        function itemImgKey(k) {
+            k = String(k || '');
+            if (k.startsWith('a:')) return 'ammo:' + k.slice(2);
+            if (k.startsWith('mag:')) return k.slice(4);
+            if (/^[wmchfx]:/.test(k)) return k.slice(2);
+            return k;
+        }
+        function itemImgInfo(k) { return ITEM_IMG[itemImgKey(k)] || null; }
+        function itemImgSlug(k) { const e = itemImgInfo(k); return e ? e[0] : null; }
+        function itemPic(k, cls = '', alt = '') {
+            const e = itemImgInfo(k); if (!e) return '';
+            return `<img src="${ITEM_IMG_BASE}${e[0]}.webp" width="${e[1]}" height="${e[2]}" alt="${String(alt).replace(/"/g, '&quot;')}" loading="lazy" decoding="async" draggable="false" class="item-pic ${cls}">`;
+        }
+        // Bandeau image en haut des fiches (rien si l'objet n'a pas d'image, ex : objet perso)
+        function itemHero(k, alt, extra = '') {
+            const img = itemPic(k, '', alt); if (!img) return '';
+            return `<div class="item-hero ${extra}" title="Image : wiki Apocalypse Rising (Fandom)">${img}</div>`;
+        }
         function getWeaponSVG(type) {
             switch(type) {
                 case 'ar':
@@ -1849,6 +1884,7 @@
                             </span>
                         </div>
 
+                        ${itemHero(weapon.id, weapon.name)}
                         <!-- Visual Silhouette & Title -->
                         <div class="flex items-center justify-between py-2 border-b border-tactical-border/50 mb-4">
                             <div>
@@ -1858,9 +1894,9 @@
                                 <p class="text-[10px] font-mono text-cyan-400/80 mt-0.5">Accessoires: ${weapon.attach || '—'}</p>
                                 <span class="inline-block mt-1.5 text-[10px] font-mono font-bold px-1.5 py-0.5 rounded border ${RARITY_BADGE[weapon.rarity] || RARITY_BADGE['Commun']}">${weapon.rarity}</span>
                             </div>
-                            <div class="p-2 bg-tactical-bg/50 rounded-xl border border-tactical-border/30">
+                            ${itemImgInfo(weapon.id) ? '' : `<div class="p-2 bg-tactical-bg/50 rounded-xl border border-tactical-border/30">
                                 ${getWeaponSVG(weapon.iconType)}
-                            </div>
+                            </div>`}
                         </div>
 
                         <!-- Description -->
@@ -1920,14 +1956,15 @@
                             </span>
                             <span class="text-xs font-mono font-bold px-2 py-0.5 rounded border ${RARITY_BADGE[item.rarity] || RARITY_BADGE['Commun']}">${item.rarity}</span>
                         </div>
+                        ${itemHero(item.id, item.name)}
                         <div class="flex items-center justify-between py-2 border-b border-tactical-border/50 mb-4">
                             <div>
                                 <h3 class="text-lg font-bold text-white transition-colors" style="--c:${color}">${item.name}</h3>
                                 <p class="text-xs font-mono text-tactical-muted mt-0.5">${cfg.subtitle(item)}</p>${item.custom ? `<span class="inline-block mt-1 text-[10px] font-mono font-bold px-1.5 py-0.5 rounded border border-tactical-gold/60 text-tactical-gold bg-tactical-gold/10">Explosif personnalisé</span>` : ''}
                             </div>
-                            <div class="p-2 bg-tactical-bg/50 rounded-xl border border-tactical-border/30">
+                            ${itemImgInfo(item.id) ? '' : `<div class="p-2 bg-tactical-bg/50 rounded-xl border border-tactical-border/30">
                                 ${getWeaponSVG(item.iconType)}
-                            </div>
+                            </div>`}
                         </div>
                         <p class="text-xs text-tactical-muted mb-3 line-clamp-2">${item.description}</p>
                         <div class="flex items-start gap-2 text-[11px] mb-4 px-3 py-2 rounded-lg bg-tactical-bg/60 border border-tactical-border/40">
@@ -2004,7 +2041,7 @@
                 const item = ALL_ITEMS.find(w => w.id === id);
                 return `
                     <div class="flex items-center gap-2 bg-tactical-bg border border-tactical-accent/40 rounded-lg px-3 py-1.5 text-xs">
-                        ${getCategoryDot(item.category)}
+                        ${itemImgInfo(item.id) ? `<span class="item-thumb">${itemPic(item.id)}</span>` : getCategoryDot(item.category)}
                         <span class="font-bold text-white">${item.name}</span>
                         <button onclick="toggleCompare('${id}')" class="text-tactical-muted hover:text-tactical-red">
                             &times;
@@ -2309,6 +2346,7 @@
                             <div class="bg-tactical-bg border border-tactical-border rounded-xl p-5 flex flex-col justify-between" style="border-top: 4px solid ${RADAR_COLORS[wi]}">
                                 <div>
                                     <div class="flex items-center gap-2 text-[10px] font-mono uppercase tracking-wider mb-2" style="color:${RADAR_COLORS[wi]}"><span class="w-5 h-2 rounded-full" style="background:${RADAR_COLORS[wi]}"></span>${wi === 0 && cmpShowDiff && eff.length > 1 ? 'Arme de référence' : 'Couleur sur le graphique'}</div>
+                                    ${itemHero(weapon.id, weapon.name, 'sm')}
                                     <div class="flex items-center justify-between mb-2 gap-2">
                                         <h4 class="text-xl font-extrabold text-white flex items-center gap-2">
                                             ${getCategoryDot(weapon.category)} ${weapon.name}
@@ -2492,6 +2530,7 @@
                         return `
                             <div class="bg-tactical-bg border border-tactical-border rounded-xl p-5 flex flex-col justify-between">
                                 <div>
+                                    ${itemHero(item.id, item.name, 'sm')}
                                     <div class="flex items-center justify-between mb-2 gap-2">
                                         <h4 class="text-xl font-extrabold text-white flex items-center gap-2">
                                             ${getCategoryIcon(item.category)} ${item.name}
@@ -3766,7 +3805,7 @@
             document.getElementById('fi-list').innerHTML = items.map(i => {
                 let head = '';
                 if (i.group !== last) { last = i.group; const g = GROUPS.find(x => x.id === i.group); head = `<div class="text-[10px] font-bold uppercase tracking-widest text-tactical-muted pt-3 pb-1 px-1">${g ? g.label : ''}</div>`; }
-                return `${head}<button type="button" class="fi-item ${fiSel === i.id ? 'active' : ''}" data-fi-item="${i.id}">${getCategoryDot(i.category)}<span class="flex-1 min-w-0 truncate font-semibold">${i.name}</span><span class="text-[9px] font-mono text-tactical-muted shrink-0">${i.sub || ''}</span></button>`;
+                return `${head}<button type="button" class="fi-item ${fiSel === i.id ? 'active' : ''}" data-fi-item="${i.id}">${itemImgInfo(i.id) ? `<span class="item-thumb">${itemPic(i.id)}</span>` : getCategoryDot(i.category)}<span class="flex-1 min-w-0 truncate font-semibold">${i.name}</span><span class="text-[9px] font-mono text-tactical-muted shrink-0">${i.sub || ''}</span></button>`;
             }).join('') || '<p class="text-[11px] text-tactical-muted px-1">Aucun objet trouvé.</p>';
             document.getElementById('fi-chips').innerHTML = FI_GROUPS.map(([l, g]) => `<button type="button" class="fi-chip ${fiGroup === g ? 'active' : ''}" data-fi-group="${g || ''}">${l}</button>`).join('');
         }
@@ -3785,6 +3824,7 @@
             box.innerHTML = `
                 <div class="flex items-center gap-2 mb-1">${getCategoryDot(item.category)}<span class="text-[10px] font-mono uppercase text-tactical-muted">${item.category}</span><span class="ml-auto text-[10px] font-mono font-bold px-1.5 py-0.5 rounded border ${RARITY_BADGE[item.rarity] || RARITY_BADGE['Commun']}">${item.rarity || ''}</span></div>
                 <h3 class="text-lg font-extrabold text-white leading-tight">${item.name}</h3>
+                ${itemHero(item.id, item.name, 'sm mt-2')}
                 <p class="text-[11px] text-tactical-muted mt-1 mb-4"><span class="text-tactical-gold">Où le trouver :</span> ${item.loot}</p>
                 <div class="text-[10px] font-bold uppercase tracking-widest text-tactical-muted mb-2">Meilleures zones</div>
                 <div class="space-y-1.5">${top.map((z, i) => `
@@ -4353,7 +4393,7 @@
             document.getElementById('bd-palette').innerHTML = bdPaletteItems().map(([key, d]) => {
                 const star = d.ref && eq.includes(d.ref.id) && (d.k === 'm') || (d.k === 'a' && eq.some(id => (bdFindW(id) || {}).caliber === d.cal));
                 return `<button type="button" data-bd-add="${crEsc(key)}" class="w-full flex items-center gap-2 text-left px-2.5 py-1.5 rounded-lg border ${star ? 'border-tactical-accent/50' : 'border-tactical-border'} bg-tactical-bg hover:border-tactical-accent transition-colors">
-                    <span class="w-2 h-2 rounded-full shrink-0" style="background:${BD_KIND_COLOR[d.k]}"></span>
+                    ${itemImgInfo(key) ? `<span class="item-thumb" style="border-color:${BD_KIND_COLOR[d.k]}66">${itemPic(key)}</span>` : `<span class="w-2 h-2 rounded-full shrink-0" style="background:${BD_KIND_COLOR[d.k]}"></span>`}
                     <span class="text-xs text-white truncate flex-1">${crEsc(d.name)}${star ? ' <span class="text-tactical-accent text-[10px]">• équipée</span>' : ''}</span>
                     <span class="text-[10px] font-mono text-tactical-muted shrink-0">${d.w}x${d.h}${d.ammo ? ' • ' + d.ammo + ' b.' : ''}</span>
                     <span class="text-tactical-accent font-bold text-sm shrink-0">+</span>
@@ -4374,8 +4414,9 @@
                 const [w, h] = bdSize(it); const c = BD_KIND_COLOR[d.k];
                 const label = d.k === 'a' ? d.short : d.name;
                 return `<div data-bd-item="${i}" title="${crEsc(d.name)}" class="absolute rounded-md cursor-grab flex flex-col justify-between p-1 overflow-hidden ${i === bdSel ? 'ring-2 ring-white z-10' : ''}" style="left:${it.x * BD_CELL}px;top:${it.y * BD_CELL}px;width:${w * BD_CELL - 2}px;height:${h * BD_CELL - 2}px;background:${c}26;border:1.5px solid ${c}">
-                    <span class="text-[9px] leading-tight font-bold text-white break-words" style="${w === 1 && h >= 2 ? 'writing-mode:vertical-rl' : ''}">${crEsc(label)}</span>
-                    ${d.ammo ? `<span class="text-[9px] font-mono" style="color:${c}">${d.ammo}</span>` : ''}
+                    ${itemImgInfo(it.key) ? `<span class="bd-pic">${itemPic(it.key)}</span>` : ''}
+                    <span class="relative text-[9px] leading-tight font-bold text-white break-words ${itemImgInfo(it.key) ? (w * h === 1 ? 'hidden' : 'bg-black/50 rounded px-0.5 self-start') : ''}" style="text-shadow:0 1px 2px #000,0 0 3px #000;${w === 1 && h >= 2 ? 'writing-mode:vertical-rl' : ''}">${crEsc(label)}</span>
+                    ${d.ammo ? `<span class="relative text-[9px] font-mono" style="color:${c};text-shadow:0 1px 2px #000">${d.ammo}</span>` : ''}
                 </div>`;
             }).join('');
             g.innerHTML = cells + items + '<div id="bd-ghost" class="absolute rounded-md pointer-events-none hidden"></div>';
@@ -5924,7 +5965,7 @@
                             <div class="flex items-start justify-between gap-3"><div><div class="text-[10px] font-bold uppercase tracking-[.25em] text-purple-300">Défi AR2 #${df.seed}</div>
                                 <div class="text-xs text-tactical-muted mt-0.5">${['', 'Facile', 'Normal', 'Hardcore'][df.diff]} • ${c.world === 'kf' ? 'Kin Flats' : 'Halsey Islands'}</div></div>
                                 <span class="text-xs font-mono font-bold px-2 py-0.5 rounded border ${getTierBadgeClass(c.weapon.tier)}">Tier ${c.weapon.tier}</span></div>
-                            <div class="flex items-center gap-4"><div class="p-2 bg-black/30 rounded-xl border border-white/10 shrink-0">${getWeaponSVG(c.weapon.iconType)}</div>
+                            <div class="flex items-center gap-4"><div class="p-2 bg-black/30 rounded-xl border border-white/10 shrink-0 ${itemImgInfo(c.weapon.id) ? 'w-40 h-20 flex items-center justify-center' : ''}">${itemImgInfo(c.weapon.id) ? itemPic(c.weapon.id, 'max-w-full max-h-full object-contain', c.weapon.name) : getWeaponSVG(c.weapon.iconType)}</div>
                                 <div><div class="text-[10px] uppercase tracking-widest text-tactical-muted">Arme imposée</div><div class="text-2xl font-extrabold text-white">${hx(c.weapon.name)}</div><div class="text-xs font-mono text-tactical-muted">${hx(c.weapon.category)} • ${hx(c.weapon.caliber)} • ${c.weapon.capacity} balles</div></div></div>
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                                 <button type="button" data-df-go="${c.spawn.uid}" class="text-left bg-black/25 border border-white/10 rounded-xl p-3 hover:border-green-400/60"><div class="text-[10px] uppercase tracking-widest text-green-300">Zone de spawn</div><div class="text-sm font-bold text-white">${hx(c.spawn.name)}</div><div class="text-[10px] text-tactical-muted">Voir sur la carte →</div></button>
@@ -6096,6 +6137,7 @@
     <script src="crosshair-app/src/autocolor.js"></script>
     <script src="crosshair-app/src/aimtrainer.js"></script>
     <script src="crosshair-app/src/ar2-tools.js"></script>
+    <script>window.AR2_IMG_BASE = "img/items/";</script>
     <script src="crosshair-app/src/ar2-quick.js"></script>
     <script>
     /* ===== Mini entraînement de visée (onglet Crosshair) ===== */
@@ -6409,7 +6451,9 @@
                 cats: Object.fromEntries(Object.entries(MAP_CATS).map(([k, v]) => [k, [v.label, v.color]])),
                 halsey: { paths: MAP_DATA.paths, labels: typeof ISLAND_LABELS !== 'undefined' ? ISLAND_LABELS : [] },
                 kf: typeof KF_VEC !== 'undefined' ? { vec: KF_VEC, icons: KF_ICONS, iconDef: kfi } : null };
-            return { app: 'ar2-index', format: 1, generated: new Date().toISOString(), items, locs, map,
+            items.forEach(it => { if (it.type === 'boss') return; const sl = itemImgSlug(it.id); if (sl) it.img = sl; });
+            const imgBase = /^https?:/.test(location.protocol) ? new URL(ITEM_IMG_BASE, location.href).href : null;
+            return { app: 'ar2-index', format: 1, generated: new Date().toISOString(), imgBase, items, locs, map,
                 scale: { halsey: LR_STUDS_PER_UNIT, kf: typeof KF_STUDS_PER_UNIT !== 'undefined' ? KF_STUDS_PER_UNIT : LR_STUDS_PER_UNIT }, speeds: T.SPEEDS };
         }
         let INDEX = null;
