@@ -47,9 +47,27 @@ jobs:
       - name: Installation silencieuse + auto-test
         shell: pwsh
         run: |
-          Start-Process -FilePath "dist\AR2-Crosshair-Setup.exe" -ArgumentList '/S' -Wait
-          $exe = Join-Path $env:LOCALAPPDATA 'Programs\AR2 Crosshair\AR2 Crosshair.exe'
-          if (!(Test-Path $exe)) { Get-ChildItem "$env:LOCALAPPDATA\Programs" -Recurse -Depth 2 | Select-Object FullName; throw "exe introuvable" }
+          Get-ChildItem dist | Select-Object Name, Length
+          $inst = Start-Process -FilePath "dist\AR2-Crosshair-Setup.exe" -ArgumentList '/S','/currentuser' -Wait -PassThru
+          "Code de sortie installateur: $($inst.ExitCode)"
+          $exe = $null
+          for ($i = 0; $i -lt 60 -and -not $exe; $i++) {
+            foreach ($d in @("$env:LOCALAPPDATA\Programs", $env:ProgramFiles, ${env:ProgramFiles(x86)})) {
+              if ($d -and (Test-Path $d)) {
+                $f = Get-ChildItem $d -Recurse -Depth 3 -Filter 'AR2 Crosshair.exe' -ErrorAction SilentlyContinue | Select-Object -First 1
+                if ($f) { $exe = $f.FullName; break }
+              }
+            }
+            if (-not $exe) { Start-Sleep -Seconds 2 }
+          }
+          if (-not $exe) {
+            Write-Warning "exe installé introuvable, auto-test sur la version zip"
+            Expand-Archive "dist\AR2-Crosshair-Windows.zip" -DestinationPath "$env:RUNNER_TEMP\ar2zip" -Force
+            $f = Get-ChildItem "$env:RUNNER_TEMP\ar2zip" -Recurse -Filter 'AR2 Crosshair.exe' | Select-Object -First 1
+            if (-not $f) { throw "exe introuvable" }
+            $exe = $f.FullName
+          }
+          "Exe: $exe"
           (Get-Item $exe).VersionInfo | Format-List ProductVersion, FileVersion
           $out = Join-Path $env:RUNNER_TEMP 'selftest.json'
           $p = Start-Process -FilePath $exe -ArgumentList "--selftest=$out" -PassThru
