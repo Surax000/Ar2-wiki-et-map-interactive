@@ -29,5 +29,6 @@ contextBridge.exposeInMainWorld('xh', {
     onTimer: (cb) => ipcRenderer.on('timer', (e, t) => cb(t)),
     onTimerAlarm: (cb) => ipcRenderer.on('timer-alarm', (e, a) => cb(a)),
     timerBeeped: () => ipcRenderer.send('timer-beeped'),
-    aimOpen: () => ipcRenderer.invoke('aim-open')
+    aimOpen: () => ipcRenderer.invoke('aim-open'),
+    wikiOpen: (tab) => ipcRenderer.invoke('wiki-open', tab)
 });

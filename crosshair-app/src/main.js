@@ -21,7 +21,8 @@ const DEFAULT_HOTKEYS = {
     center: 'Control+Alt+C',
     up: 'Control+Alt+Up', down: 'Control+Alt+Down', left: 'Control+Alt+Left', right: 'Control+Alt+Right',
     autoColor: 'Control+Alt+A', checklist: 'Control+Alt+O', checkNext: 'Control+Alt+N',
-    timer: 'Control+Alt+T', timer1: 'Control+Alt+F1', timer2: 'Control+Alt+F2', timer3: 'Control+Alt+F3', timerStop: 'Control+Alt+R'
+    timer: 'Control+Alt+T', timer1: 'Control+Alt+F1', timer2: 'Control+Alt+F2', timer3: 'Control+Alt+F3', timerStop: 'Control+Alt+R',
+    wiki: 'Control+Alt+W'
 };
 
 let cfgPath, cfg, overlay = null, settingsWin = null, tray = null, visible = true;
@@ -234,6 +235,7 @@ function registerHotkeys() {
     reg(h.timer, () => { cfg.timer.overlay = !cfg.timer.overlay; saveConfig(); placeTimer(); broadcast(); refreshTray(); });
     reg(h.timer1, () => timerStart(0)); reg(h.timer2, () => timerStart(1)); reg(h.timer3, () => timerStart(2));
     reg(h.timerStop, () => timerStop('all'));
+    reg(h.wiki, () => toggleWiki());
     reg(h.up, () => nudge(0, -1)); reg(h.down, () => nudge(0, 1)); reg(h.left, () => nudge(-1, 0)); reg(h.right, () => nudge(1, 0));
     return fails;
 }
@@ -257,6 +259,7 @@ function refreshTray() {
         ...(updater.status.state === 'ready' ? [{ label: `Installer la mise à jour v${updater.status.version} et redémarrer`, click: () => updater.install() }, { type: 'separator' }] : updater.status.state === 'available' ? [{ label: `Télécharger la version v${updater.status.version}…`, click: () => updater.install() }, { type: 'separator' }] : []),
         { label: visible ? 'Masquer le crosshair' : 'Afficher le crosshair', accelerator: cfg.hotkeys.toggle, click: () => setVisible(!visible) },
         { label: 'Réglages…', accelerator: cfg.hotkeys.settings, click: () => createSettings() },
+        { label: 'Wiki AR2 (site complet)…', accelerator: cfg.hotkeys.wiki, click: () => openWiki() },
         { type: 'separator' },
         { label: 'Profil', submenu: cfg.profiles.map((p, i) => ({ label: p.name, type: 'radio', checked: i === cfg.active, click: () => setActive(i) })) },
         { label: 'Changement d\'arme automatique', type: 'checkbox', checked: !!cfg.autoSwitch.enabled, click: m => { cfg.autoSwitch.enabled = m.checked; autoHidden = { holster: false, ads: false, wl: autoHidden.wl }; applyVisibility(); saveConfig(); broadcast(); } },
@@ -561,6 +564,61 @@ ipcMain.handle('timer-stop', (e, id) => timerStop(id));
 ipcMain.handle('timer-add', (e, { id, sec }) => { const r = cfg.timer.running.find(x => x.id === id); if (r) { r.end = Math.max(Date.now() + 1000, r.end + (sec | 0) * 1000); r.doneAt = null; r.warned = false; r.dur = Math.max(r.dur, (r.end - Date.now()) / 1000); saveConfig(); timerSchedule(); placeTimer(); broadcast(); } return state(); });
 ipcMain.on('timer-beeped', () => { timerBeeps++; });
 
+// ---------- Wiki AR2 : le site complet dans l'appli ----------
+const WIKI_URL = process.env.AR2_WIKI_URL || 'https://surax000.github.io/Ar2-wiki-et-map-interactive/';
+const WIKI_ORIGIN = new URL(WIKI_URL).origin, WIKI_PATH = new URL(WIKI_URL).pathname;
+let wikiWin = null, wikiOffline = false;
+const isWikiUrl = u => { try { const x = new URL(u); return x.origin === WIKI_ORIGIN && x.pathname.startsWith(WIKI_PATH); } catch (e) { return false; } };
+function openWiki(tab) {
+    if (wikiWin) { if (wikiWin.isMinimized()) wikiWin.restore(); wikiWin.show(); wikiWin.focus(); if (tab) wikiGo(tab); return wikiWin; }
+    const b = cfg.wikiBounds || {};
+    wikiWin = new BrowserWindow({ width: b.width || 1440, height: b.height || 900, x: b.x, y: b.y, minWidth: 820, minHeight: 560, title: 'AR2 Crosshair – Wiki AR2', backgroundColor: '#0b0d10', autoHideMenuBar: true, icon: path.join(__dirname, 'assets', 'icon.png'),
+        webPreferences: { preload: path.join(__dirname, 'wikipreload.js'), contextIsolation: true, nodeIntegration: false, sandbox: true } });
+    if (b.max) wikiWin.maximize();
+    wikiWin.setMenuBarVisibility(false);
+    const wc = wikiWin.webContents;
+    // liens externes (wiki fandom, devforum, YouTube…) : navigateur par défaut
+    wc.setWindowOpenHandler(({ url }) => { if (isWikiUrl(url)) { wc.loadURL(url); } else if (/^https?:\/\//.test(url)) shell.openExternal(url); return { action: 'deny' }; });
+    wc.on('will-navigate', (e, url) => { if (!isWikiUrl(url) && !url.startsWith('file:')) { e.preventDefault(); if (/^https?:\/\//.test(url)) shell.openExternal(url); } });
+    wc.on('did-fail-load', (e, code, desc, url, isMain) => { if (!isMain || code === -3) return; wikiOffline = true; wikiWin.loadFile(path.join(__dirname, 'wikioffline.html'), { query: { err: desc || String(code) } }); });
+    wc.on('did-finish-load', () => { if (tab) { wikiGo(tab); tab = null; } });
+    wc.on('before-input-event', (e, i) => {
+        if (i.type !== 'keyDown') return;
+        if (i.key === 'F5' || (i.control && i.key.toLowerCase() === 'r')) { e.preventDefault(); wikiReload(i.shift); }
+        else if (i.alt && i.key === 'ArrowLeft' && wc.canGoBack()) wc.goBack();
+        else if (i.control && (i.key === '+' || i.key === '=')) wc.setZoomLevel(Math.min(4, wc.getZoomLevel() + 0.5));
+        else if (i.control && i.key === '-') wc.setZoomLevel(Math.max(-3, wc.getZoomLevel() - 0.5));
+        else if (i.control && i.key === '0') wc.setZoomLevel(0);
+    });
+    const keep = () => { if (!wikiWin) return; cfg.wikiBounds = Object.assign(wikiWin.isMaximized() ? (cfg.wikiBounds || {}) : wikiWin.getBounds(), { max: wikiWin.isMaximized() }); saveConfig(); };
+    wikiWin.on('resized', keep); wikiWin.on('moved', keep); wikiWin.on('maximize', keep); wikiWin.on('unmaximize', keep);
+    wikiWin.on('closed', () => { wikiWin = null; });
+    wikiReload();
+    return wikiWin;
+}
+function wikiReload(hard) {
+    if (!wikiWin) return;
+    wikiOffline = false;
+    if (hard) wikiWin.webContents.session.clearCache().catch(() => {}).then(() => wikiWin && wikiWin.loadURL(WIKI_URL));
+    else wikiWin.loadURL(WIKI_URL);
+}
+function wikiGo(tab) { if (wikiWin && !wikiOffline) wikiWin.webContents.executeJavaScript(`window.toolGoTab && window.toolGoTab(${JSON.stringify(String(tab))})`).catch(() => {}); }
+function toggleWiki() { if (wikiWin && wikiWin.isFocused()) wikiWin.minimize(); else openWiki(); }
+const fromWiki = e => wikiWin && e.sender === wikiWin.webContents;
+ipcMain.handle('wiki-open', (e, tab) => { openWiki(tab); return true; });
+ipcMain.handle('wiki-retry', () => { wikiReload(true); return true; });
+ipcMain.handle('wiki-info', e => ({ inApp: true, version: app.getVersion(), profiles: cfg.profiles.map(p => p.name), active: cfg.active, hotkeys: { wiki: cfg.hotkeys.wiki, settings: cfg.hotkeys.settings } }));
+// le site envoie un crosshair (code AR2X-) ou une sauvegarde AR2SAVE- : import direct, sans copier-coller
+ipcMain.handle('wiki-import', (e, { text, name, sections } = {}) => {
+    if (!fromWiki(e)) throw new Error('refusé');
+    const o = parseBackup(text);
+    if (name && o.data && Array.isArray(o.data.profiles) && o.data.profiles.length === 1) o.data.profiles[0].name = String(name).slice(0, 40);
+    const r = applyBackup(o, 'merge', sections);
+    broadcast();
+    return { done: r.done, active: cfg.profiles[cfg.active].name };
+});
+ipcMain.handle('wiki-settings', e => { if (fromWiki(e)) createSettings(); return true; });
+
 // ---------- Entraînement de visée ----------
 let aimWin = null;
 function openAim() {
@@ -779,6 +837,12 @@ async function runSelftest() {
             openAim(); await wait(2500);
             out.aim = { created: !!aimWin, ok: aimWin ? await aimWin.webContents.executeJavaScript('!!(window.AR2Aim && document.querySelector(".aim canvas") && window.__aimReady)') : false };
             if (aimWin) aimWin.close();
+            // wiki : le site complet doit se charger dans l'appli avec le pont ar2App
+            openWiki(); const tw = Date.now(); let wk = null;
+            while (Date.now() - tw < 25000) { await wait(1000); if (!wikiWin) break; try { wk = await wikiWin.webContents.executeJavaScript('({ groups: (typeof GROUPS !== "undefined" ? GROUPS.length : 0), inApp: document.documentElement.classList.contains("in-app"), toApp: !!document.getElementById("xh-toapp"), bridge: !!(window.ar2App && window.ar2App.inApp), offline: !!window.__wikiOffline, title: document.title })'); } catch (err) {} if (wk && (wk.groups > 5 || wk.offline)) break; }
+            if (wk && wk.groups > 5) { try { const n0 = cfg.profiles.length; await wikiWin.webContents.executeJavaScript("toolGoTab('crosshair'); new Promise(r => setTimeout(r, 600)).then(() => document.getElementById('xh-toapp').click())"); await wait(1500); wk.sentProfile = cfg.profiles.length === n0 + 1 && cfg.profiles[cfg.active].name === 'Crosshair du wiki'; if (wk.sentProfile) { cfg.profiles.splice(cfg.active, 1); cfg.active = 0; saveConfig(); } } catch (err) { wk.sendError = String(err && err.message || err); } }
+            out.wiki = Object.assign({ created: !!wikiWin }, wk || {}); out.wikiOk = !!(wk && wk.groups > 5 && wk.bridge);
+            if (wikiWin) wikiWin.close();
         } catch (e) { out.timerError = String(e && e.message || e); }
         write();
         // mises à jour

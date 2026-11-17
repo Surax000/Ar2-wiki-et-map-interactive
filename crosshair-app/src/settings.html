@@ -8,7 +8,7 @@
 </head>
 <body>
 <header class="top">
-    <div class="brand"><img src="assets/icon.png" alt=""><div><b>AR2 Crosshair</b><span id="ver">v1.3.0</span></div></div>
+    <div class="brand"><img src="assets/icon.png" alt=""><div><b>AR2 Crosshair</b><span id="ver">v1.4.0</span></div></div>
     <div class="top-actions">
         <button id="vis-btn" class="btn primary">Crosshair affiché</button>
         <span class="hint">Ctrl+Alt+X afficher / masquer • Ctrl+Alt+A couleur auto • Ctrl+Alt+T minuteur • Ctrl+Alt+F1/F2/F3 lancer • Ctrl+Alt+O objectifs</span>
@@ -151,6 +151,16 @@
             <div class="field"><label>Garder « PRÊT » affiché <b id="tm-keep-v"></b></label><input type="range" id="tm-keep" min="5" max="300" step="5"></div>
             <div class="field"><label>Taille <b id="tm-scale-v"></b></label><input type="range" id="tm-scale" min="0.6" max="2" step="0.1"></div>
             <div class="field"><label>Opacité <b id="tm-op-v"></b></label><input type="range" id="tm-op" min="0.2" max="1" step="0.05"></div>
+        </details>
+        <details open id="wiki-box"><summary>Wiki AR2 (site complet)</summary>
+            <p class="muted small">Tout le site AR2 dans l'appli : armes, TTK, build, carte, loot run, balistique, boss, survie, défi… Depuis le wiki, tu envoies un crosshair ou des objectifs dans l'appli en un clic (sans copier-coller). Raccourci <b id="wiki-key">Ctrl+Alt+W</b>.</p>
+            <div class="row gap wrap">
+                <button id="wiki-open" class="btn sm primary">Ouvrir le wiki</button>
+                <button class="btn sm" data-wiki-tab="armes">Armes</button>
+                <button class="btn sm" data-wiki-tab="build">Build</button>
+                <button class="btn sm" data-wiki-tab="carte">Carte</button>
+                <button class="btn sm" data-wiki-tab="crosshair">Éditeur de crosshair</button>
+            </div>
         </details>
         <details open id="aim-box"><summary>Entraînement de visée</summary>
             <p class="muted small">Un mini test pour voir si ton crosshair te convient : réflexes, précision, suivi d'une cible et visibilité sur les fonds du jeu (plaine, forêt, neige, ciel, nuit, ville, sable).</p>

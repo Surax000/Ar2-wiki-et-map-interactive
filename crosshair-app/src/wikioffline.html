@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><title>Wiki AR2 – hors ligne</title>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'unsafe-inline'; script-src 'unsafe-inline'">
+<style>
+html,body{height:100%;margin:0;background:#0b0d10;color:#e6e8eb;font:14px/1.5 "Segoe UI",system-ui,sans-serif}
+body{display:flex;align-items:center;justify-content:center}
+.box{max-width:460px;padding:28px;border:1px solid #23272e;border-radius:16px;background:#12151a;text-align:center}
+h1{font-size:18px;margin:0 0 8px;color:#00ff88;letter-spacing:.06em;text-transform:uppercase}
+p{color:#9aa3ad;margin:6px 0}
+code{color:#fb923c;font-size:12px}
+button{margin-top:16px;padding:9px 18px;border:0;border-radius:10px;background:#00ff88;color:#000;font-weight:700;cursor:pointer}
+button:hover{filter:brightness(1.1)}
+</style></head>
+<body><div class="box">
+<h1>Wiki AR2 indisponible</h1>
+<p>Le wiki a besoin d'internet : il est chargé en ligne pour être toujours à jour.</p>
+<p>Le crosshair, les objectifs et le minuteur marchent quand même sans connexion.</p>
+<p><code id="err"></code></p>
+<button id="r">Réessayer</button>
+<p style="font-size:12px;margin-top:14px">Nouvel essai automatique toutes les 20 secondes.</p>
+</div>
+<script>
+window.__wikiOffline = true;
+const e = new URLSearchParams(location.search).get('err'); if (e) document.getElementById('err').textContent = e;
+const go = () => window.ar2App && window.ar2App.retry();
+document.getElementById('r').onclick = go;
+setInterval(() => { if (navigator.onLine) go(); }, 20000);
+window.addEventListener('online', go);
+</script>
+</body></html>

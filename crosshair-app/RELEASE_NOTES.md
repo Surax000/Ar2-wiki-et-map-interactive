@@ -1,10 +1,12 @@
-## Nouveautés de la v1.3.0
-- **Minuteur tactique** : un petit compte à rebours discret dans un coin de l'écran, pour savoir quand revenir aux caisses militaires, à un hélico crashé, à un spot de boss, ou quand ton boost se termine.
-  - **Ctrl+Alt+T** affiche ou masque le minuteur. **Ctrl+Alt+F1 / F2 / F3** lancent les 3 minuteurs rapides (15, 10 et 5 min par défaut ; noms et durées modifiables). Rappuie pour relancer. **Ctrl+Alt+R** arrête tout.
-  - Le chiffre passe en orange à la fin (30 s par défaut), puis en rouge clignotant « PRÊT » avec un bip discret (volume réglable, bip d'alerte en option).
-  - Raccourcis en F1-F3 et pas en chiffres : sur un clavier AZERTY, Ctrl+Alt+chiffre = AltGr (~ # { [ …), ce qui gênerait le chat.
-- **Entraînement de visée** : un mini test pour voir si ton crosshair te convient : réflexes (25 cibles), précision (petites cibles), suivi d'une cible qui bouge, et test de visibilité sur 7 fonds du jeu. Records enregistrés. Fonctionne avec la couleur auto.
-- La sauvegarde inclut le minuteur, et l'import accepte les codes AR2SAVE- du site (crosshair + objectifs du site).
+## Nouveautés de la v1.4.0
+- **Wiki AR2 dans l'appli** : tout le site (armes, TTK, build, carte, loot run, balistique, boss, survie, défi, Find Item, crosshair…) s'ouvre dans sa propre fenêtre de l'appli. **Ctrl+Alt+W**, le menu près de l'horloge (« Wiki AR2 (site complet)… ») ou le bouton dans les réglages.
+  - Le wiki est chargé en ligne : il est toujours à jour sans réinstaller l'appli. Sans internet, une page « hors ligne » réessaie toute seule (le crosshair, les objectifs et le minuteur marchent quand même).
+  - **Envoi direct, sans copier-coller** : dans l'onglet Crosshair du wiki, « Envoyer dans l'appli » ajoute ton crosshair comme nouveau profil et l'active. Le bouton « Envoyer à l'appli » des Objectifs les ajoute direct à l'appli. Le bouton « Appli » en haut ouvre les réglages.
+  - F5 recharge, Ctrl + / Ctrl - / Ctrl 0 pour le zoom, Alt+← pour revenir. Les liens externes (wiki fandom, devforum…) s'ouvrent dans ton navigateur. La taille et la position de la fenêtre sont gardées.
+
+## Rappel v1.3.0
+- **Minuteur tactique** : Ctrl+Alt+T affiche ou masque, Ctrl+Alt+F1 / F2 / F3 lancent les minuteurs rapides (caisses militaires 15 min, hélico crashé 10 min, boost 5 min), Ctrl+Alt+R arrête tout. Orange à la fin, puis « PRÊT » en rouge avec un bip discret.
+- **Entraînement de visée** : réflexes, précision, suivi et test de visibilité du crosshair sur 7 fonds.
 
 ## Rappel v1.2.0
 - **Couleur automatique** (Ctrl+Alt+A) : l'appli regarde le fond autour du crosshair et prend la couleur la plus visible (sur de l'herbe verte : magenta ; sur le ciel : jaune ; sur la neige : noir). Tu règles le temps de rafraîchissement (150 ms à 5 s), la zone analysée, l'anti-clignotement, le fondu, la palette, le mode (palette / couleur opposée / noir-blanc) et le contour auto.

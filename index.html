@@ -126,6 +126,9 @@
             filter: drop-shadow(0 0 6px currentColor);
         }
         .stat-active{border-color:#e5c07b !important;background:rgba(229,192,123,.12) !important}
+        /* affiché seulement quand le site est ouvert dans l'appli AR2 Crosshair */
+        html:not(.in-app) .in-app-only { display: none !important; }
+        html.in-app .web-only { display: none !important; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col pb-28">
@@ -167,6 +170,10 @@
                     <span class="hidden sm:inline">Objectifs</span><span id="ck-badge" class="hidden text-[10px] font-mono text-tactical-accent"></span>
                 </button>
                 <!-- Sauvegarde globale (import / export) -->
+                <button id="app-set-btn" type="button" title="Ouvrir les réglages d'AR2 Crosshair" class="in-app-only flex items-center gap-2 whitespace-nowrap px-3.5 py-2 text-xs font-bold uppercase tracking-wider text-tactical-accent border border-tactical-accent/60 rounded-xl hover:bg-tactical-accent/10 transition-all">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
+                    <span class="hidden sm:inline">Appli</span>
+                </button>
                 <button id="bk-btn" title="Exporter / importer toutes tes données" class="flex items-center gap-2 px-3.5 py-2 text-xs font-bold uppercase tracking-wider text-tactical-muted border border-tactical-border rounded-xl hover:text-tactical-accent hover:border-tactical-accent/60 transition-all">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M8 12l4 4 4-4M12 4v12"/></svg>
                     <span class="hidden sm:inline">Sauvegarde</span>
@@ -316,11 +323,12 @@
                     <div class="xh-h">Modèles</div>
                     <div id="xh-presets" class="space-y-1"></div>
                     <div class="xh-h mt-5">Code de partage</div>
-                    <p class="text-[11px] text-tactical-muted mb-2">Colle ce code dans l'appli (Réglages &gt; Code de partage &gt; Importer).</p>
+                    <p class="text-[11px] text-tactical-muted mb-2 web-only">Colle ce code dans l'appli (Réglages &gt; Code de partage &gt; Importer).</p>
                     <div class="flex gap-2 mb-2">
                         <input id="xh-code" readonly class="xh-in flex-1 font-mono text-[11px]">
                         <button id="xh-copy" class="xh-btn">Copier</button>
                     </div>
+                    <button id="xh-toapp" type="button" class="xh-btn in-app-only w-full mb-2" style="background:#00ff88;color:#000;border-color:#00ff88">Envoyer dans l'appli (nouveau profil)</button>
                     <div class="flex gap-2">
                         <input id="xh-code-in" placeholder="Colle un code AR2X-..." class="xh-in flex-1 font-mono text-[11px]">
                         <button id="xh-import" class="xh-btn">Charger</button>
@@ -3995,7 +4003,7 @@
             const sec = $('crosshair-section');
             sec.addEventListener('input', e => { const k = e.target.dataset && e.target.dataset.k; if (!k) return; S[k] = e.target.type === 'checkbox' ? e.target.checked : e.target.type === 'color' ? e.target.value : parseFloat(e.target.value); save(); sync(); });
             sec.addEventListener('click', e => {
-                const t = e.target.closest('[data-style],[data-sw],[data-p],[data-bg],[data-zoom],#xh-reset,#xh-copy,#xh-import'); if (!t) return;
+                const t = e.target.closest('[data-style],[data-sw],[data-p],[data-bg],[data-zoom],#xh-reset,#xh-copy,#xh-toapp,#xh-import'); if (!t) return;
                 if (t.dataset.style) S.style = t.dataset.style;
                 else if (t.dataset.sw) S[t.dataset.sw] = t.dataset.c;
                 else if (t.dataset.p) S = C.withDefaults(C.PRESETS[+t.dataset.p].s);
@@ -4003,6 +4011,7 @@
                 else if (t.dataset.zoom) zoom = +t.dataset.zoom;
                 else if (t.id === 'xh-reset') S = C.withDefaults();
                 else if (t.id === 'xh-copy') { const v = $('xh-code').value; (navigator.clipboard ? navigator.clipboard.writeText(v) : Promise.reject()).then(() => msg('Code copié', true)).catch(() => { $('xh-code').select(); document.execCommand('copy'); msg('Code copié', true); }); return; }
+                else if (t.id === 'xh-toapp') { if (!window.ar2App) return; window.ar2App.importCode($('xh-code').value, { name: 'Crosshair du wiki' }).then(r => msg(`Ajouté dans l'appli et activé : « ${r.active} »`, true)).catch(err => msg("Échec de l'envoi : " + (err && err.message || err), false)); return; }
                 else if (t.id === 'xh-import') { try { S = C.withDefaults(C.fromCode($('xh-code-in').value)); $('xh-code-in').value = ''; msg('Crosshair chargé', true); } catch (err) { msg('Code invalide', false); return; } }
                 save(); sync();
             });
@@ -5839,7 +5848,7 @@
             if (a === 'clean') return set(() => { ck.items = ck.items.filter(i => !i.done); });
             if (a === 'hide') return set(() => { ck.hideDone = !ck.hideDone; });
             if (a === 'copy') { toolCopy(`**${ck.title}**\n` + ck.items.map(i => `${i.done ? '[x]' : '[ ]'} ${i.text}`).join('\n')).then(ok => { msg = ok ? 'Liste copiée.' : 'Copie bloquée par le navigateur.'; render(); }); return; }
-            if (a === 'app') { const o = { app: 'ar2-armory', format: 1, exported: new Date().toISOString(), data: { [KEY]: JSON.stringify(ck) } }; toolCopy('AR2SAVE-' + btoa(unescape(encodeURIComponent(JSON.stringify(o))))).then(ok => { msg = ok ? "Code copié : colle-le dans l'appli (Sauvegarde > Importer)." : 'Copie bloquée par le navigateur.'; render(); }); }
+            if (a === 'app') { const o = { app: 'ar2-armory', format: 1, exported: new Date().toISOString(), data: { [KEY]: JSON.stringify(ck) } }; const code = 'AR2SAVE-' + btoa(unescape(encodeURIComponent(JSON.stringify(o)))); if (window.ar2App) { window.ar2App.importCode(code, { sections: ['checklist'] }).then(() => { msg = "Objectifs ajoutés dans l'appli (Ctrl+Alt+O pour les afficher en jeu)."; render(); }).catch(err => { msg = "Échec de l'envoi : " + (err && err.message || err); render(); }); return; } toolCopy(code).then(ok => { msg = ok ? "Code copié : colle-le dans l'appli (Sauvegarde > Importer)." : 'Copie bloquée par le navigateur.'; render(); }); }
         });
         document.addEventListener('change', e => {
             const t = e.target; if (!t.closest || !t.closest('#ck-bar')) return;
@@ -5858,6 +5867,22 @@
             render
         };
         render();
+    })();
+    </script>
+    <script>
+    /* ===== Site ouvert dans l'appli AR2 Crosshair (Wiki AR2) ===== */
+    (function () {
+        if (!window.ar2App || !window.ar2App.inApp) return;
+        document.documentElement.classList.add('in-app');
+        const b = document.getElementById('app-set-btn'); if (b) b.onclick = () => window.ar2App.openSettings();
+        const dl = document.getElementById('xh-dl-setup'); if (dl && dl.parentElement) dl.parentElement.classList.add('web-only');
+        window.ar2App.info().then(i => {
+            const sec = document.getElementById('crosshair-section'); if (!sec || document.getElementById('in-app-note')) return;
+            const n = document.createElement('div'); n.id = 'in-app-note';
+            n.className = 'mb-4 px-4 py-3 rounded-xl border border-tactical-accent/40 bg-tactical-accent/10 text-xs text-white';
+            n.innerHTML = `Tu es dans l'appli <b>AR2 Crosshair v${i.version}</b> : « Envoyer dans l'appli » ajoute ton crosshair comme nouveau profil, sans copier-coller. Profil actif : <b>${String(i.profiles[i.active] || '').replace(/[<>&]/g, '')}</b>.`;
+            sec.insertBefore(n, sec.firstElementChild.nextSibling);
+        }).catch(() => {});
     })();
     </script>
     <script src="crosshair-app/src/autocolor.js"></script>

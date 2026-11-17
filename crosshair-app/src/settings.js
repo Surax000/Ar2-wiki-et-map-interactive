@@ -2,7 +2,7 @@
 const C = window.AR2Crosshair;
 // Mode démo (ouverture dans un navigateur, sans Electron)
 if (!window.xh) {
-    const st = { cfg: { active: 0, profiles: C.PRESETS.map((p, i) => ({ id: 'p' + i, name: p.name, settings: C.withDefaults(p.s) })), display: 0, autoUpdate: true, autoSwitch: { enabled: true, onlyRoblox: true, holsterHide: true, adsHide: false, adsMode: 'hold', slots: {}, labels: {} }, hotkeys: { toggle: 'Control+Alt+X', settings: 'Control+Alt+S', nextProfile: 'Control+Alt+P', center: 'Control+Alt+C', autoColor: 'Control+Alt+A', checklist: 'Control+Alt+O', checkNext: 'Control+Alt+N', timer: 'Control+Alt+T', timer1: 'Control+Alt+F1', timer2: 'Control+Alt+F2', timer3: 'Control+Alt+F3', timerStop: 'Control+Alt+R', up: 'Control+Alt+Up', down: 'Control+Alt+Down', left: 'Control+Alt+Left', right: 'Control+Alt+Right' }, startHidden: false, launchAtStartup: false, moveStep: 1, autoColor: JSON.parse(JSON.stringify(window.AR2AutoColor.DEFAULTS)), whitelist: { enabled: false, apps: [{ id: 'roblox', name: 'Roblox', match: 'Roblox', on: true }, { id: 'minecraft', name: 'Minecraft', match: 'Minecraft', on: false }] }, checklist: { title: 'Objectifs', overlay: false, corner: 'tr', scale: 1, opacity: 0.85, hideDone: false, items: [{ id: 'a', text: 'Trouver un sac à dos', done: true }, { id: 'b', text: 'Une arme à feu + 2 chargeurs', done: false }] }, timer: { overlay: true, corner: 'tl', scale: 1, opacity: 0.9, sound: true, volume: 0.5, warn: 30, warnBeep: false, keepDone: 45, presets: [{ id: 'caisses', name: 'Caisses militaires', min: 15 }, { id: 'helico', name: 'Hélico crashé', min: 10 }, { id: 'boost', name: 'Boost', min: 5 }], running: [] } }, autoColor: { samples: 0 }, fgTitle: null, presets: { debut: 'Début de partie', militaire: 'Run militaire', boss: 'Chasse au boss' }, visible: true, displays: [{ i: 0, label: 'Écran 1 – 1920×1080 (principal)' }], version: '1.3.0', update: { state: 'none', mode: 'auto', version: '1.3.0' }, hook: { started: true }, installed: true };
+    const st = { cfg: { active: 0, profiles: C.PRESETS.map((p, i) => ({ id: 'p' + i, name: p.name, settings: C.withDefaults(p.s) })), display: 0, autoUpdate: true, autoSwitch: { enabled: true, onlyRoblox: true, holsterHide: true, adsHide: false, adsMode: 'hold', slots: {}, labels: {} }, hotkeys: { toggle: 'Control+Alt+X', settings: 'Control+Alt+S', nextProfile: 'Control+Alt+P', center: 'Control+Alt+C', autoColor: 'Control+Alt+A', checklist: 'Control+Alt+O', checkNext: 'Control+Alt+N', timer: 'Control+Alt+T', timer1: 'Control+Alt+F1', timer2: 'Control+Alt+F2', timer3: 'Control+Alt+F3', timerStop: 'Control+Alt+R', wiki: 'Control+Alt+W', up: 'Control+Alt+Up', down: 'Control+Alt+Down', left: 'Control+Alt+Left', right: 'Control+Alt+Right' }, startHidden: false, launchAtStartup: false, moveStep: 1, autoColor: JSON.parse(JSON.stringify(window.AR2AutoColor.DEFAULTS)), whitelist: { enabled: false, apps: [{ id: 'roblox', name: 'Roblox', match: 'Roblox', on: true }, { id: 'minecraft', name: 'Minecraft', match: 'Minecraft', on: false }] }, checklist: { title: 'Objectifs', overlay: false, corner: 'tr', scale: 1, opacity: 0.85, hideDone: false, items: [{ id: 'a', text: 'Trouver un sac à dos', done: true }, { id: 'b', text: 'Une arme à feu + 2 chargeurs', done: false }] }, timer: { overlay: true, corner: 'tl', scale: 1, opacity: 0.9, sound: true, volume: 0.5, warn: 30, warnBeep: false, keepDone: 45, presets: [{ id: 'caisses', name: 'Caisses militaires', min: 15 }, { id: 'helico', name: 'Hélico crashé', min: 10 }, { id: 'boost', name: 'Boost', min: 5 }], running: [] } }, autoColor: { samples: 0 }, fgTitle: null, presets: { debut: 'Début de partie', militaire: 'Run militaire', boss: 'Chasse au boss' }, visible: true, displays: [{ i: 0, label: 'Écran 1 – 1920×1080 (principal)' }], version: '1.4.0', update: { state: 'none', mode: 'auto', version: '1.4.0' }, hook: { started: true }, installed: true };
     const cur = () => st.cfg.profiles[st.cfg.active].settings;
     window.xh = {
         getState: async () => st, update: async p => { Object.assign(cur(), p); return st; },
@@ -22,6 +22,7 @@ if (!window.xh) {
         timerStop: async id => { st.cfg.timer.running = id === 'all' ? [] : st.cfg.timer.running.filter(r => r.id !== id); return st; },
         timerAdd: async ({ id, sec }) => { const r = st.cfg.timer.running.find(x => x.id === id); if (r) { r.end += sec * 1000; r.doneAt = null; } return st; },
         aimOpen: async () => { window.open('aim.html'); return true; },
+        wikiOpen: async () => { window.open('../../index.html'); return true; },
         backupExport: async o => { const b = { app: 'ar2-crosshair', format: 1, version: st.version, data: { profiles: st.cfg.profiles, autoColor: st.cfg.autoColor, whitelist: st.cfg.whitelist, checklist: st.cfg.checklist, hotkeys: st.cfg.hotkeys } }; return o && o.as === 'code' ? 'AR2CFG-' + btoa(unescape(encodeURIComponent(JSON.stringify(b)))) : JSON.stringify(b, null, 2); },
         backupSave: async () => ({ ok: true, file: 'ar2-crosshair-sauvegarde.json' }), backupOpen: async () => null,
         backupInspect: async t => { let x = String(t).trim(); if (/^AR2(CFG|SAVE)-/.test(x)) x = decodeURIComponent(escape(atob(x.replace(/^AR2(CFG|SAVE)-/, '')))); if (/^AR2X-/.test(x)) return { sections: ['profiles'] }; const o = JSON.parse(x); if (o.app === 'ar2-armory') return { sections: ['profiles'] }; if (o.app !== 'ar2-crosshair') throw new Error('format inconnu'); return { sections: Object.keys(o.data) }; },
@@ -33,7 +34,7 @@ let S = null, bg = 'game', zoom = 1, pvColor = null, pvPick = null;
 const $ = s => document.querySelector(s);
 const cur = () => S.cfg.profiles[S.cfg.active].settings;
 const SW = ['#00ff88', '#ff2d55', '#ffffff', '#22d3ee', '#facc15', '#fb923c', '#e879f9', '#a3e635', '#3b82f6', '#000000'];
-const HK_LABELS = { toggle: 'Afficher / masquer', settings: 'Ouvrir les réglages', nextProfile: 'Profil suivant', center: 'Recentrer', timer: 'Minuteur : afficher / masquer', timer1: 'Minuteur 1 (lancer / relancer)', timer2: 'Minuteur 2 (lancer / relancer)', timer3: 'Minuteur 3 (lancer / relancer)', timerStop: 'Arrêter les minuteurs', autoColor: 'Couleur auto on / off', checklist: 'Objectifs à l\'écran', checkNext: 'Cocher l\'objectif suivant', up: 'Monter', down: 'Descendre', left: 'Gauche', right: 'Droite' };
+const HK_LABELS = { toggle: 'Afficher / masquer', settings: 'Ouvrir les réglages', nextProfile: 'Profil suivant', center: 'Recentrer', timer: 'Minuteur : afficher / masquer', timer1: 'Minuteur 1 (lancer / relancer)', timer2: 'Minuteur 2 (lancer / relancer)', timer3: 'Minuteur 3 (lancer / relancer)', timerStop: 'Arrêter les minuteurs', wiki: 'Ouvrir le wiki AR2', autoColor: 'Couleur auto on / off', checklist: 'Objectifs à l\'écran', checkNext: 'Cocher l\'objectif suivant', up: 'Monter', down: 'Descendre', left: 'Gauche', right: 'Droite' };
 
 function drawBg(ctx, w, h) {
     if (bg === 'dark') { ctx.fillStyle = '#14171c'; ctx.fillRect(0, 0, w, h); return; }
@@ -101,6 +102,7 @@ function renderControls() {
 }
 function renderHotkeys() {
     $('#hotkeys').innerHTML = Object.keys(HK_LABELS).map(k => `<div class="hk"><span>${HK_LABELS[k]}</span><input readonly data-hk="${k}" value="${(S.cfg.hotkeys[k] || '').replace(/Control/g, 'Ctrl')}"></div>`).join('');
+    { const wk = document.getElementById('wiki-key'); if (wk) wk.textContent = (S.cfg.hotkeys.wiki || 'aucun').replace(/Control/g, 'Ctrl'); }
 }
 // ---------- Changement d'arme automatique ----------
 const W = window.AR2_WEAPONS || [];
@@ -447,3 +449,5 @@ $('#tm-test').onclick = () => {
     } catch (e) {}
 };
 $('#aim-open').onclick = () => xh.aimOpen();
+$('#wiki-open').onclick = () => xh.wikiOpen();
+document.querySelectorAll('[data-wiki-tab]').forEach(b => { b.onclick = () => xh.wikiOpen(b.dataset.wikiTab); });

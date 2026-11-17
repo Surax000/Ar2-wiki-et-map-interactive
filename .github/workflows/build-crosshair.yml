@@ -61,6 +61,7 @@ jobs:
           if (-not $j.hook.started) { throw "détection clavier non démarrée: $($j.hook.error)" }
           if (-not $j.switchOk) { throw "changement d'arme automatique KO" }
           if ($j.update.state -eq "error") { Write-Warning "mise à jour: $($j.update.error)" }
+          if (-not $j.wikiOk) { Write-Warning "wiki AR2: $($j.wiki | ConvertTo-Json -Compress)" }
           "AUTO-TEST OK"
 
   release:
