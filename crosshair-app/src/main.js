@@ -123,6 +123,15 @@ function saveConfig() {
     saveTimer = setTimeout(() => { try { fs.mkdirSync(path.dirname(cfgPath), { recursive: true }); fs.writeFileSync(cfgPath, JSON.stringify(cfg, null, 2)); } catch (e) {} }, 250);
 }
 const current = () => cfg.profiles[cfg.active].settings;
+// Une suppression ne doit pas faire basculer sur un autre profil par erreur.
+function activeAfterProfileDelete(active, deletedIndex, remainingCount) {
+    if (deletedIndex < active) return active - 1;
+    if (deletedIndex === active) return Math.min(active, remainingCount - 1);
+    return Math.min(active, remainingCount - 1);
+}
+function cloneProfileSettings(settings) {
+    return core.withDefaults(JSON.parse(JSON.stringify(settings || {})));
+}
 // Réglages réellement affichés (couleur automatique appliquée par-dessus le profil)
 function effective() {
     const s = current(), a = cfg.autoColor;
@@ -347,13 +356,25 @@ ipcMain.handle('set-config', (e, partial) => {
     return { ...state(), fails };
 });
 ipcMain.handle('profile', (e, { action, name, index, code }) => {
-    if (action === 'add') { cfg.profiles.push({ id: uid(), name: name || `Profil ${cfg.profiles.length + 1}`, settings: core.withDefaults({ ...current() }) }); cfg.active = cfg.profiles.length - 1; }
-    if (action === 'rename' && cfg.profiles[index]) cfg.profiles[index].name = name || cfg.profiles[index].name;
-    if (action === 'delete' && cfg.profiles.length > 1 && cfg.profiles[index]) { cfg.profiles.splice(index, 1); cfg.active = Math.min(cfg.active, cfg.profiles.length - 1); }
+    if (action === 'add') {
+        cfg.profiles.push({ id: uid(), name: String(name || `Profil ${cfg.profiles.length + 1}`).trim().slice(0, 40), settings: cloneProfileSettings(current()) });
+        cfg.active = cfg.profiles.length - 1;
+    }
+    if (action === 'rename' && Number.isInteger(index) && cfg.profiles[index]) {
+        const cleanName = String(name || '').trim().slice(0, 40);
+        if (cleanName) cfg.profiles[index].name = cleanName;
+    }
+    if (action === 'delete' && cfg.profiles.length > 1) {
+        const deletedIndex = Number(index);
+        if (Number.isInteger(deletedIndex) && deletedIndex >= 0 && deletedIndex < cfg.profiles.length) {
+            cfg.profiles.splice(deletedIndex, 1);
+            cfg.active = activeAfterProfileDelete(cfg.active, deletedIndex, cfg.profiles.length);
+        }
+    }
     if (action === 'reset') { const d = defaultConfig(); cfg.profiles = d.profiles; cfg.active = 0; cfg.autoSwitch.slots = {}; }
     if (action === 'import') {
         const s = core.fromCode(code);
-        cfg.profiles.push({ id: uid(), name: name || 'Profil importé', settings: core.withDefaults(s) });
+        cfg.profiles.push({ id: uid(), name: String(name || 'Profil importé').trim().slice(0, 40) || 'Profil importé', settings: core.withDefaults(s) });
         cfg.active = cfg.profiles.length - 1;
     }
     placeOverlay(); saveConfig(); refreshTray();
@@ -903,6 +924,16 @@ async function runSelftest() {
         out.autoColor = { method: acState.method, samples: acState.samples, color: acState.color, bg: acState.bg, error: acState.error };
         out.autoColorOk = acState.samples > 0;
         cfg.autoColor.enabled = false; acSync();
+        // Gestion des profils : suppression avant / du / après le profil actif.
+        out.profileManagementOk =
+            activeAfterProfileDelete(3, 1, 4) === 2 &&
+            activeAfterProfileDelete(2, 2, 4) === 2 &&
+            activeAfterProfileDelete(1, 3, 4) === 1;
+        if (!out.profileManagementOk) throw new Error('gestion des profils : index actif incorrect après suppression');
+        const copied = cloneProfileSettings({ ...current(), customParts: [{ style: 'cross', x: 0 }] });
+        copied.customParts[0].x = 99;
+        out.profileCloneOk = copied.customParts[0].x === 99 && current().customParts?.[0]?.x !== 99;
+        if (!out.profileCloneOk) throw new Error('gestion des profils : copie non indépendante');
         // liste blanche, objectifs, sauvegarde
         out.whitelist = { allowedRoblox: wlAllowed('Roblox'), allowedNotepad: (cfg.whitelist.enabled = true, wlAllowed('Bloc-notes')) };
         cfg.whitelist.enabled = false;

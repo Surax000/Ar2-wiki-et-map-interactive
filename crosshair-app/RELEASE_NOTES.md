@@ -1,5 +1,11 @@
 # Notes de version
 
+## v1.8.1
+- Correction de la suppression des profils : le profil actif reste correctement sélectionné même si un profil situé avant lui est supprimé.
+- Les nouveaux profils possèdent désormais une copie indépendante de leurs réglages personnalisés.
+- Renommage sécurisé et ajout de tests automatiques pour la gestion des profils.
+
+
 ## v1.8.0
 - **Atelier de viseur personnalisé** : construis ton propre viseur en ajoutant jusqu'à 24 éléments indépendants. Choisis leur forme, leur taille, leur épaisseur, leur rotation, leur position horizontale/verticale et leur couleur.
 - **Nouvelles formes** : plus, traits horizontal et vertical, point creux, losange, pentagone, hexagone, octogone, étoile et coins de cadre.
