@@ -2,7 +2,7 @@
 const C = window.AR2Crosshair;
 // Mode démo (ouverture dans un navigateur, sans Electron)
 if (!window.xh) {
-    const st = { cfg: { active: 0, profiles: C.PRESETS.map((p, i) => ({ id: 'p' + i, name: p.name, settings: C.withDefaults(p.s) })), display: 0, autoUpdate: true, autoSwitch: { enabled: true, onlyRoblox: true, holsterHide: true, adsHide: false, adsMode: 'hold', slots: {}, labels: {} }, hotkeys: { toggle: 'Control+Alt+X', settings: 'Control+Alt+S', nextProfile: 'Control+Alt+P', center: 'Control+Alt+C', autoColor: 'Control+Alt+A', checklist: 'Control+Alt+O', checkNext: 'Control+Alt+N', timer: 'Control+Alt+T', timer1: 'Control+Alt+F1', timer2: 'Control+Alt+F2', timer3: 'Control+Alt+F3', timerStop: 'Control+Alt+R', spotlight: 'Control+Alt+W', wiki: 'Control+Alt+Shift+W', range: 'Control+Alt+D', rangeZoom: 'Control+Alt+Shift+D', compass: 'Control+Alt+K', compassNext: 'Control+Alt+J', compassPrev: 'Control+Alt+Shift+J', map: 'Control+Alt+M', mapWorld: 'Control+Alt+Shift+M', themeNext: '', up: 'Control+Alt+Up', down: 'Control+Alt+Down', left: 'Control+Alt+Left', right: 'Control+Alt+Right' }, theme: 'classic', range: { show: false, weapon: 'm4a1', followSlot: true, zoomBy: {}, fov: 70, calib: 1, side: 'right', gap: 70, onlyAds: false, opacity: 0.9, scale: 1 }, compass: { show: false, route: null, leg: 0, opacity: 0.92, scale: 1, speed: 'sprint', top: 10 }, spotlight: { opacity: 0.9, hideOnBlur: true }, tmap: { world: 'auto', last: 'halsey', opacity: 0.85, size: 0.72, bld: true, hidden: true, custom: true, route: true, events: false, labels: true }, startHidden: false, launchAtStartup: false, moveStep: 1, autoColor: JSON.parse(JSON.stringify(window.AR2AutoColor.DEFAULTS)), whitelist: { enabled: false, apps: [{ id: 'roblox', name: 'Roblox', match: 'Roblox', on: true }, { id: 'minecraft', name: 'Minecraft', match: 'Minecraft', on: false }] }, checklist: { title: 'Objectifs', overlay: false, corner: 'tr', scale: 1, opacity: 0.85, hideDone: false, items: [{ id: 'a', text: 'Trouver un sac à dos', done: true }, { id: 'b', text: 'Une arme à feu + 2 chargeurs', done: false }] }, timer: { overlay: true, corner: 'tl', scale: 1, opacity: 0.9, sound: true, volume: 0.5, warn: 30, warnBeep: false, keepDone: 45, presets: [{ id: 'caisses', name: 'Caisses militaires', min: 15 }, { id: 'helico', name: 'Hélico crashé', min: 10 }, { id: 'boost', name: 'Boost', min: 5 }], running: [] } }, autoColor: { samples: 0 }, fgTitle: null, presets: { debut: 'Début de partie', militaire: 'Run militaire', boss: 'Chasse au boss' }, visible: true, displays: [{ i: 0, label: 'Écran 1 – 1920×1080 (principal)' }], version: '1.7.1', update: { state: 'none', mode: 'auto', version: '1.7.1' }, hook: { started: true }, installed: true };
+    const st = { cfg: { active: 0, profiles: C.PRESETS.map((p, i) => ({ id: 'p' + i, name: p.name, settings: C.withDefaults(p.s) })), display: 0, autoUpdate: true, autoSwitch: { enabled: true, onlyRoblox: true, holsterHide: true, adsHide: false, adsMode: 'hold', slots: {}, labels: {} }, hotkeys: { toggle: 'Control+Alt+X', settings: 'Control+Alt+S', nextProfile: 'Control+Alt+P', center: 'Control+Alt+C', autoColor: 'Control+Alt+A', checklist: 'Control+Alt+O', checkNext: 'Control+Alt+N', timer: 'Control+Alt+T', timer1: 'Control+Alt+F1', timer2: 'Control+Alt+F2', timer3: 'Control+Alt+F3', timerStop: 'Control+Alt+R', spotlight: 'Control+Alt+W', wiki: 'Control+Alt+Shift+W', range: 'Control+Alt+D', rangeZoom: 'Control+Alt+Shift+D', compass: 'Control+Alt+K', compassNext: 'Control+Alt+J', compassPrev: 'Control+Alt+Shift+J', map: 'Control+Alt+M', mapWorld: 'Control+Alt+Shift+M', themeNext: '', up: 'Control+Alt+Up', down: 'Control+Alt+Down', left: 'Control+Alt+Left', right: 'Control+Alt+Right' }, theme: 'classic', range: { show: false, weapon: 'm4a1', followSlot: true, zoomBy: {}, fov: 70, calib: 1, side: 'right', gap: 70, onlyAds: false, opacity: 0.9, scale: 1 }, compass: { show: false, route: null, leg: 0, opacity: 0.92, scale: 1, speed: 'sprint', top: 10 }, spotlight: { opacity: 0.9, hideOnBlur: true }, tmap: { world: 'auto', last: 'halsey', opacity: 0.85, size: 0.72, bld: true, hidden: true, custom: true, route: true, events: false, labels: true }, startHidden: false, launchAtStartup: false, moveStep: 1, autoColor: JSON.parse(JSON.stringify(window.AR2AutoColor.DEFAULTS)), whitelist: { enabled: false, apps: [{ id: 'roblox', name: 'Roblox', match: 'Roblox', on: true }, { id: 'minecraft', name: 'Minecraft', match: 'Minecraft', on: false }] }, checklist: { title: 'Objectifs', overlay: false, corner: 'tr', scale: 1, opacity: 0.85, hideDone: false, items: [{ id: 'a', text: 'Trouver un sac à dos', done: true }, { id: 'b', text: 'Une arme à feu + 2 chargeurs', done: false }] }, timer: { overlay: true, corner: 'tl', scale: 1, opacity: 0.9, sound: true, volume: 0.5, warn: 30, warnBeep: false, keepDone: 45, presets: [{ id: 'caisses', name: 'Caisses militaires', min: 15 }, { id: 'helico', name: 'Hélico crashé', min: 10 }, { id: 'boost', name: 'Boost', min: 5 }], running: [] } }, autoColor: { samples: 0 }, fgTitle: null, presets: { debut: 'Début de partie', militaire: 'Run militaire', boss: 'Chasse au boss' }, visible: true, displays: [{ i: 0, label: 'Écran 1 – 1920×1080 (principal)' }], version: '1.8.0', update: { state: 'none', mode: 'auto', version: '1.8.0' }, hook: { started: true }, installed: true };
     const cur = () => st.cfg.profiles[st.cfg.active].settings;
     window.xh = {
         getState: async () => st, update: async p => { Object.assign(cur(), p); return st; },
@@ -85,6 +85,27 @@ function renderStyles() {
     $('#styles').innerHTML = Object.entries(C.STYLES).map(([k, l]) => `<button class="style-btn ${s.style === k ? 'active' : ''}" data-style="${k}"><canvas></canvas>${l}</button>`).join('');
     document.querySelectorAll('.style-btn').forEach(b => mini(b.querySelector('canvas'), { ...s, style: b.dataset.style, offsetX: 0, offsetY: 0 }, 44));
 }
+function renderCustomEditor() {
+    const s = cur(), box = $('#custom-editor');
+    if (!box) return;
+    box.classList.toggle('hidden', s.style !== 'custom');
+    const options = Object.entries(C.STYLES).filter(([key]) => key !== 'custom').map(([key, label]) => `<option value="${key}">${label}</option>`).join('');
+    $('#custom-add-type').innerHTML = options;
+    const parts = Array.isArray(s.customParts) ? s.customParts.slice(0, 24) : [];
+    $('#custom-parts').innerHTML = parts.length ? parts.map((p, i) => `
+        <div class="custom-part" data-part="${i}">
+            <div class="custom-part-title"><b>Élément ${i + 1}</b><button class="ib" type="button" title="Supprimer cet élément" data-custom-remove="${i}">×</button></div>
+            <div class="custom-part-grid">
+                <label>Forme<select data-part-key="style">${Object.entries(C.STYLES).filter(([key]) => key !== 'custom').map(([key,label]) => `<option value="${key}" ${p.style === key ? 'selected' : ''}>${label}</option>`).join('')}</select></label>
+                <label>Taille<input type="number" min="0.5" max="80" step="0.5" data-part-key="size" value="${Number(p.size) || 8}"></label>
+                <label>Épaisseur<input type="number" min="0.5" max="12" step="0.5" data-part-key="thickness" value="${Number(p.thickness) || 2}"></label>
+                <label>Rotation<input type="number" min="-360" max="360" step="1" data-part-key="rotation" value="${Number(p.rotation) || 0}"></label>
+                <label>Horizontal<input type="number" min="-100" max="100" step="1" data-part-key="x" value="${Number(p.x) || 0}"></label>
+                <label>Vertical<input type="number" min="-100" max="100" step="1" data-part-key="y" value="${Number(p.y) || 0}"></label>
+                <label>Couleur<input type="color" data-part-key="color" value="${/^#[0-9a-f]{6}$/i.test(p.color || '') ? p.color : s.color}"></label>
+            </div>
+        </div>`).join('') : '<p class="muted small custom-empty">Aucun élément. Ajoute une forme pour commencer à créer ton viseur.</p>';
+}
 function renderControls() {
     const s = cur();
     document.querySelectorAll('[data-k]').forEach(el => {
@@ -141,22 +162,52 @@ function renderUpdate() {
     b.classList.toggle('hidden', !show);
     if (show) { $('#upd-text').textContent = txt + (u.state === 'ready' ? " Elle s'installera aussi toute seule à la fermeture de l'appli." : u.mode === 'manual' ? ' (version portable : télécharge la nouvelle version)' : ''); $('#upd-btn').textContent = u.state === 'ready' ? 'Redémarrer et installer' : 'Télécharger'; }
 }
-function renderAll() { renderHUD(); renderProfiles(); renderStyles(); renderControls(); renderHotkeys(); renderAuto(); renderUpdate(); renderPreview(); renderAC(); renderWL(); renderCK(); renderTM(); renderBK(); }
+function renderAll() { renderHUD(); renderProfiles(); renderStyles(); renderCustomEditor(); renderControls(); renderHotkeys(); renderAuto(); renderUpdate(); renderPreview(); renderAC(); renderWL(); renderCK(); renderTM(); renderBK(); }
 
 async function upd(partial) {
     Object.assign(cur(), partial);
     S = await xh.update(partial);
-    renderControls(); renderPreview(); renderStyles(); renderProfiles();
+    renderControls(); renderPreview(); renderStyles(); renderCustomEditor(); renderProfiles();
 }
 
 document.addEventListener('input', e => {
+    if (e.target.dataset.partKey) return;
     const k = e.target.dataset.k; if (!k) return;
     const v = e.target.type === 'checkbox' ? e.target.checked : e.target.type === 'range' || e.target.type === 'number' ? parseFloat(e.target.value) : e.target.value;
     upd({ [k]: v });
 });
+document.addEventListener('change', e => {
+    const key = e.target.dataset.partKey;
+    if (!key) return;
+    const row = e.target.closest('[data-part]');
+    if (!row) return;
+    const index = Number(row.dataset.part), parts = (cur().customParts || []).map(p => ({ ...p }));
+    if (!parts[index]) return;
+    let value = e.target.value;
+    if (e.target.type === 'number') value = Number(value);
+    if (key === 'x' || key === 'y') value = Math.max(-100, Math.min(100, Number(value) || 0));
+    if (key === 'size') value = Math.max(0.5, Math.min(80, Number(value) || 8));
+    if (key === 'thickness') value = Math.max(0.5, Math.min(12, Number(value) || 2));
+    if (key === 'rotation') value = Math.max(-360, Math.min(360, Number(value) || 0));
+    parts[index][key] = value;
+    upd({ customParts: parts });
+});
 document.addEventListener('click', async e => {
-    const t = e.target.closest('[data-style],[data-sw],[data-p],[data-bg],[data-zoom]'); if (!t) return;
-    if (t.dataset.style) upd({ style: t.dataset.style });
+    const t = e.target.closest('[data-style],[data-sw],[data-p],[data-bg],[data-zoom],[data-custom-add],[data-custom-remove]'); if (!t) return;
+    if (t.dataset.customAdd !== undefined) {
+        const parts = Array.isArray(cur().customParts) ? cur().customParts.slice(0, 24) : [];
+        if (parts.length >= 24) return;
+        parts.push({ style: $('#custom-add-type').value || 'cross', x: 0, y: 0, size: 8, thickness: 2, rotation: 0, color: cur().color });
+        await upd({ style: 'custom', customParts: parts });
+    }
+    else if (t.dataset.customRemove !== undefined) {
+        const parts = (cur().customParts || []).filter((_, i) => i !== Number(t.dataset.customRemove));
+        await upd({ customParts: parts });
+    }
+    else if (t.dataset.style) {
+        if (t.dataset.style === 'custom' && !(cur().customParts || []).length) upd({ style: 'custom', customParts: [{ style: 'cross', x: 0, y: 0, size: 8, thickness: 2, rotation: 0, color: cur().color }] });
+        else upd({ style: t.dataset.style });
+    }
     else if (t.dataset.sw) upd({ color: t.dataset.sw, glowColor: t.dataset.sw });
     else if (t.dataset.p !== undefined) { S = await xh.setConfig({ active: +t.dataset.p }); renderAll(); }
     else if (t.dataset.bg) { bg = t.dataset.bg; renderControls(); renderPreview(); }

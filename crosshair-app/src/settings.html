@@ -8,7 +8,7 @@
 </head>
 <body>
 <header class="top">
-    <div class="brand"><img src="assets/icon.png" alt=""><div><b>AR2 Crosshair</b><span id="ver">v1.7.1</span></div></div>
+    <div class="brand"><img src="assets/icon.png" alt=""><div><b>AR2 Crosshair</b><span id="ver">v1.8.0</span></div></div>
     <div class="top-actions">
         <button id="vis-btn" class="btn primary">Crosshair affiché</button>
         <span class="hint"><span class="kbd">Ctrl+Alt+X</span> afficher / masquer le viseur</span>
@@ -93,6 +93,12 @@
                     <label class="tog"><input type="checkbox" data-k="armLeft"> Gauche</label>
                     <label class="tog"><input type="checkbox" data-k="armRight"> Droite</label>
                 </div>
+            </div>
+            <div id="custom-editor" class="custom-editor hidden">
+                <div class="custom-editor-head"><b>Atelier de viseur</b><span class="muted small">Compose ton viseur élément par élément. Déplace, redimensionne, tourne et colore chaque forme.</span></div>
+                <div class="row gap wrap custom-add-row"><select id="custom-add-type" class="grow"></select><button id="custom-add" class="btn sm primary">+ Ajouter un élément</button></div>
+                <div id="custom-parts"></div>
+                <p class="muted small">Jusqu'à 24 éléments. Les modifications sont enregistrées dans le profil et incluses dans le code de partage.</p>
             </div>
         </details>
         <details open id="ol-box"><summary>Contour et lueur</summary>

@@ -1,7 +1,8 @@
 /* AR2 Crosshair – moteur de dessin partagé (appli + site web) */
 (function (root) {
     const DEFAULTS = {
-        style: 'crossdot',      // cross | crossdot | dot | circle | circlecross | circledot | tshape | x | chevron | square | triangle
+        style: 'crossdot',      // formes classiques, géométriques et custom
+        customParts: [],        // éléments du viseur personnalisé
         color: '#00ff88',
         opacity: 1,
         length: 8,              // longueur des branches (px)
@@ -22,7 +23,9 @@
     };
     const STYLES = {
         cross: 'Croix', crossdot: 'Croix + point', dot: 'Point', circle: 'Cercle', circlecross: 'Cercle + croix',
-        circledot: 'Cercle + point', tshape: 'T (sans haut)', x: 'Croix en X', chevron: 'Chevron', square: 'Carré', triangle: 'Triangle'
+        circledot: 'Cercle + point', tshape: 'T (sans haut)', x: 'Croix en X', chevron: 'Chevron', square: 'Carré', triangle: 'Triangle',
+        plus: 'Plus', vertical: 'Trait vertical', horizontal: 'Trait horizontal', hollowdot: 'Point creux',
+        diamond: 'Losange', pentagon: 'Pentagone', hexagon: 'Hexagone', octagon: 'Octogone', star: 'Étoile', brackets: 'Coins (cadre)', custom: 'Personnalisé'
     };
     const PRESETS = [
         { name: 'AR2 vert (défaut)', s: {} },
@@ -48,6 +51,19 @@
     function draw(ctx, cx, cy, settings) {
         const s = withDefaults(settings);
         const k = Math.max(0.1, Number(s.scale) || 1);
+        if (s.style === 'custom') {
+            const parts = Array.isArray(s.customParts) ? s.customParts.slice(0, 24) : [];
+            for (const part of parts) {
+                if (!part || !STYLES[part.style] || part.style === 'custom') continue;
+                const size = Math.max(0.5, Math.min(80, Number(part.size) || 8));
+                const x = Math.max(-100, Math.min(100, Number(part.x) || 0));
+                const y = Math.max(-100, Math.min(100, Number(part.y) || 0));
+                const thickness = Math.max(0.5, Math.min(12, Number(part.thickness) || s.thickness));
+                const color = /^#[0-9a-f]{6}$/i.test(part.color || '') ? part.color : s.color;
+                draw(ctx, cx + x * k, cy + y * k, { ...s, style: part.style, length: size, circleRadius: size, dotSize: Math.max(0.5, size * 0.22), thickness, rotation: (Number(s.rotation) || 0) + (Number(part.rotation) || 0), color, customParts: [] });
+            }
+            return;
+        }
         const L = s.length * k, T = s.thickness * k, G = s.gap * k, D = s.dotSize * k, R = s.circleRadius * k, O = s.outline ? s.outlineWidth * k : 0;
         const shapes = []; // {type:'rect'|'circle'|'ring'|'poly', ...}
         const rect = (x, y, w, h) => shapes.push({ type: 'rect', x, y, w, h });
@@ -60,6 +76,7 @@
         };
         const dot = () => shapes.push({ type: 'circle', r: D });
         const ring = () => shapes.push({ type: 'ring', r: R, w: T });
+        const polygon = (sides, radius, start = -Math.PI / 2) => Array.from({ length: sides }, (_, i) => [Math.cos(start + i * Math.PI * 2 / sides) * radius, Math.sin(start + i * Math.PI * 2 / sides) * radius]);
         let rot = s.rotation || 0;
         switch (s.style) {
             case 'cross': arms(); break;
@@ -73,6 +90,16 @@
             case 'chevron': shapes.push({ type: 'poly', pts: [[-L, L * 0.8], [0, 0], [L, L * 0.8]], w: T }); break;
             case 'square': shapes.push({ type: 'sq', r: R * 0.7, w: T }); dot(); break;
             case 'triangle': shapes.push({ type: 'poly', pts: [[0, -R], [R * 0.87, R * 0.5], [-R * 0.87, R * 0.5], [0, -R]], w: T }); break;
+            case 'plus': rect(-L, -T / 2, L * 2, T); rect(-T / 2, -L, T, L * 2); break;
+            case 'vertical': rect(-T / 2, -L, T, L * 2); break;
+            case 'horizontal': rect(-L, -T / 2, L * 2, T); break;
+            case 'hollowdot': shapes.push({ type: 'ring', r: Math.max(D * 2, R * 0.35), w: T }); break;
+            case 'diamond': shapes.push({ type: 'poly', pts: [[0, -R], [R, 0], [0, R], [-R, 0], [0, -R]], w: T }); break;
+            case 'pentagon': shapes.push({ type: 'poly', pts: [...polygon(5, R), polygon(5, R)[0]], w: T }); break;
+            case 'hexagon': shapes.push({ type: 'poly', pts: [...polygon(6, R), polygon(6, R)[0]], w: T }); break;
+            case 'octagon': shapes.push({ type: 'poly', pts: [...polygon(8, R), polygon(8, R)[0]], w: T }); break;
+            case 'star': { const pts = Array.from({ length: 11 }, (_, i) => { const a = -Math.PI / 2 + i * Math.PI / 5, r = i === 10 ? R : (i % 2 ? R * 0.42 : R); return [Math.cos(a) * r, Math.sin(a) * r]; }); shapes.push({ type: 'poly', pts, w: T }); break; }
+            case 'brackets': { const a = R * 0.45, b = R; [[-b,-b+a,-b,-b,-b+a,-b],[b-a,-b,b,-b,b,-b+a],[b,b-a,b,b,b-a,b],[-b+a,b,-b,b,-b,b-a]].forEach(p => shapes.push({ type: 'poly', pts: [[p[0],p[1]],[p[2],p[3]],[p[4],p[5]]], w: T })); break; }
             default: arms(); dot();
         }
         ctx.save();
@@ -108,7 +135,8 @@
     function extent(settings) {
         const s = withDefaults(settings);
         const k = Math.max(0.1, Number(s.scale) || 1);
-        return Math.ceil((Math.max(s.gap + s.length, s.circleRadius + s.thickness, s.dotSize) + s.outlineWidth + (s.glow ? s.glowSize : 0)) * k * 1.5 + 8);
+        const partExtent = s.style === 'custom' && Array.isArray(s.customParts) ? s.customParts.slice(0, 24).reduce((m, p) => Math.max(m, Math.hypot(Number(p.x) || 0, Number(p.y) || 0) + (Number(p.size) || 8)), 0) : 0;
+        return Math.ceil((Math.max(s.gap + s.length, s.circleRadius + s.thickness, s.dotSize, partExtent) + s.outlineWidth + (s.glow ? s.glowSize : 0)) * k * 1.5 + 8);
     }
 
     // Codes de partage : AR2X-<base64 json>

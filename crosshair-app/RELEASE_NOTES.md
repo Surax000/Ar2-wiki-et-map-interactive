@@ -1,5 +1,11 @@
 # Notes de version
 
+## v1.8.0
+- **Atelier de viseur personnalisé** : construis ton propre viseur en ajoutant jusqu'à 24 éléments indépendants. Choisis leur forme, leur taille, leur épaisseur, leur rotation, leur position horizontale/verticale et leur couleur.
+- **Nouvelles formes** : plus, traits horizontal et vertical, point creux, losange, pentagone, hexagone, octogone, étoile et coins de cadre.
+- Les compositions personnalisées sont conservées dans les profils et dans les codes de partage AR2X.
+
+
 ## v1.7.4
 - Télémètre : remplacement de la longue liste déroulante des armes par une barre de recherche avec résultats filtrés.
 
