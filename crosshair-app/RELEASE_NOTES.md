@@ -1,3 +1,7 @@
+## Nouveautés de la v1.7.2
+- HUD des objectifs interactif : clique sur un objectif pour le cocher ou le décocher directement depuis le petit overlay.
+- HUD des objectifs déplaçable à la souris depuis son en-tête, avec mémorisation de la position entre les lancements.
+
 ## Nouveautés de la v1.7.1
 - **Les vraies images du jeu partout** : chaque arme, munition, chargeur, accessoire, sac, soin et aliment a maintenant son image venant du wiki Apocalypse Rising (351 objets sur 352, plus les 17 calibres de munitions). Elles s'affichent dans le wiki instantané (Ctrl+Alt+W) : une petite image dans la liste, une grande sur la fiche, et les deux armes face à face dans le Duel Express.
 - Sur le site : images sur toutes les fiches, dans Find Item, le comparateur, le Défi random et le sac à dos (les objets rangés dans le sac montrent leur image).
