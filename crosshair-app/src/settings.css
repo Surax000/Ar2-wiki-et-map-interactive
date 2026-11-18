@@ -214,3 +214,11 @@ textarea:focus { border-color: var(--c-acc,#00ff88); }
 .ob-tk.ok .ob-tick { color: #22c55e; }
 .ob-foot { display: flex; justify-content: space-between; gap: 10px; }
 @media (max-width: 620px) { .ob-presets { grid-template-columns: repeat(2, 1fr); } .ob-test { grid-template-columns: 1fr; } }
+
+/* Recherche d'arme du télémètre */
+.rg-weapon-field { position: relative; }
+.rg-weapon-results { position: absolute; z-index: 30; top: 100%; left: 0; right: 0; max-height: 260px; overflow-y: auto; margin-top: 4px; padding: 5px; background: var(--c-card,#161a21); border: 1px solid var(--c-border,#2a3140); border-radius: 10px; box-shadow: 0 12px 28px rgba(0,0,0,.4); }
+.rg-weapon-option { display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%; padding: 8px 9px; border: 0; border-radius: 7px; background: transparent; color: var(--c-text,#e6edf3); text-align: left; cursor: pointer; font: inherit; }
+.rg-weapon-option:hover, .rg-weapon-option:focus-visible { outline: none; background: color-mix(in srgb, var(--c-acc,#00ff88) 13%, transparent); }
+.rg-weapon-option small { color: var(--c-muted,#8b949e); font-size: 10px; }
+.rg-weapon-empty { padding: 12px 9px; color: var(--c-muted,#8b949e); font-size: 11px; }
