@@ -479,11 +479,12 @@ function renderHUD() {
     // télémètre
     $('#rg-show').checked = !!r.show; $('#rg-follow').checked = !!r.followSlot; $('#rg-ads').checked = !!r.onlyAds; $('#rg-side').value = r.side;
     const ws = S.weapons || [];
-    const wsel = $('#rg-weapon');
-    if (document.activeElement !== wsel) {
-        const cats = [...new Set(ws.map(w => w.cat))];
-        wsel.innerHTML = ws.length ? cats.map(c => `<optgroup label="${esc(c)}">${ws.filter(w => w.cat === c).map(w => `<option value="${esc(w.id)}">${esc(w.name)}</option>`).join('')}</optgroup>`).join('') : '<option value="m4a1">M4A1</option>';
-        wsel.value = r.weapon;
+    const weaponSearch = $('#rg-weapon-search'), weaponResults = $('#rg-weapon-results');
+    const selectedWeapon = ws.find(w => w.id === r.weapon);
+    if (document.activeElement !== weaponSearch) {
+        weaponSearch.value = selectedWeapon ? selectedWeapon.name : (r.weapon || 'M4A1');
+        weaponResults.classList.add('hidden');
+        weaponResults.innerHTML = '';
     }
     const sc = $('#rg-scope'), R = H.range;
     if (R && document.activeElement !== sc) { sc.innerHTML = R.scopes.map(s => `<option value="${s.z}">${esc(s.name)}</option>`).join(''); sc.value = String(R.z); }
@@ -512,7 +513,37 @@ $('#rg-show').onchange = e => hudSet({ range: { show: e.target.checked } });
 $('#rg-follow').onchange = e => hudSet({ range: { followSlot: e.target.checked } });
 $('#rg-ads').onchange = e => hudSet({ range: { onlyAds: e.target.checked } });
 $('#rg-side').onchange = e => hudSet({ range: { side: e.target.value } });
-$('#rg-weapon').onchange = e => { e.target.blur(); hudSet({ range: { weapon: e.target.value, followSlot: false } }); };
+const rgWeaponSearch = $('#rg-weapon-search'), rgWeaponResults = $('#rg-weapon-results');
+function showRangeWeaponResults(query) {
+    const all = S.weapons || [], q = String(query || '').trim().toLocaleLowerCase('fr');
+    const matches = (q ? all.filter(w => (w.name + ' ' + (w.cat || '') + ' ' + (w.id || '')).toLocaleLowerCase('fr').includes(q)) : []).slice(0, 14);
+    rgWeaponResults.innerHTML = matches.length
+        ? matches.map(w => `<button type="button" class="rg-weapon-option" data-weapon-id="${esc(w.id)}"><span>${esc(w.name)}</span><small>${esc(w.cat || 'Arme')}</small></button>`).join('')
+        : '<div class="rg-weapon-empty">' + (q ? 'Aucune arme trouvée.' : 'Commence à taper le nom d’une arme.') + '</div>';
+    rgWeaponResults.classList.remove('hidden');
+}
+rgWeaponSearch.addEventListener('focus', () => { if (rgWeaponSearch.value.trim()) showRangeWeaponResults(rgWeaponSearch.value); });
+rgWeaponSearch.addEventListener('input', () => showRangeWeaponResults(rgWeaponSearch.value));
+rgWeaponResults.addEventListener('click', e => {
+    const option = e.target.closest('[data-weapon-id]');
+    if (!option) return;
+    const weapon = (S.weapons || []).find(w => w.id === option.dataset.weaponId);
+    if (!weapon) return;
+    rgWeaponSearch.value = weapon.name;
+    rgWeaponResults.classList.add('hidden');
+    rgWeaponSearch.blur();
+    hudSet({ range: { weapon: weapon.id, followSlot: false } });
+});
+rgWeaponSearch.addEventListener('keydown', e => {
+    if (e.key === 'Escape') { rgWeaponResults.classList.add('hidden'); rgWeaponSearch.blur(); }
+    if (e.key === 'Enter') {
+        const first = rgWeaponResults.querySelector('[data-weapon-id]');
+        if (first) first.click();
+    }
+});
+document.addEventListener('click', e => {
+    if (!e.target.closest('.rg-weapon-field')) rgWeaponResults.classList.add('hidden');
+});
 $('#rg-scope').onchange = e => { e.target.blur(); const R = hudInfo().range; const id = (S.weapons || []).some(w => w.name === R.weapon) ? S.weapons.find(w => w.name === R.weapon).id : S.cfg.range.weapon; hudSet({ range: { zoomBy: { [id]: +e.target.value } } }); };
 $('#cp-show').onchange = e => hudSet({ compass: { show: e.target.checked } });
 $('#cp-speed').onchange = e => hudSet({ compass: { speed: e.target.value } });
