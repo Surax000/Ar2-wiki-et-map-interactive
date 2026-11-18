@@ -359,7 +359,7 @@ function parseLines(txt) {
 }
 $('#ck-paste-go').onclick = () => { const L = parseLines($('#ck-paste').value); if (!L.length) return; $('#ck-paste').value = ''; $('#ck-paste-box').classList.add('hidden'); ckSet({ items: ckItems().concat(L.map(t => ({ id: uidc(), text: t, done: false }))) }); };
 $('#ck-overlay').onchange = e => ckSet({ overlay: e.target.checked });
-$('#ck-corner').onchange = e => ckSet({ corner: e.target.value });
+$('#ck-corner').onchange = e => ckSet({ corner: e.target.value, x: null, y: null });
 $('#ck-hidedone').onchange = e => ckSet({ hideDone: e.target.checked });
 [['ck-scale', 'scale'], ['ck-op', 'opacity']].forEach(([id, k]) => {
     $('#' + id).addEventListener('input', e => { S.cfg.checklist[k] = +e.target.value; renderCK(); });
