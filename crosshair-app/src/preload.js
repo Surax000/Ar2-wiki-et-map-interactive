@@ -12,6 +12,7 @@ contextBridge.exposeInMainWorld('xh', {
     onSettings: (cb) => ipcRenderer.on('settings', (e, s) => cb(s)),
     setExtras: (p) => ipcRenderer.invoke('set-extras', p),
     checklistPreset: (k) => ipcRenderer.invoke('checklist-preset', k),
+    checklistToggle: (id) => ipcRenderer.invoke('checklist-toggle', id),
     wlCapture: (delay) => ipcRenderer.invoke('wl-capture', delay),
     backupExport: (o) => ipcRenderer.invoke('backup-export', o),
     backupSave: (o) => ipcRenderer.invoke('backup-save', o),
