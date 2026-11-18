@@ -47,7 +47,7 @@ const CHECK_PRESETS = {
     militaire: { name: 'Run militaire', items: ['Rejoindre une base militaire', 'Ouvrir les caisses vertes', 'Récupérer un Military MedKit', 'Trouver un viseur', 'Repartir sans se faire repérer', 'Mettre le loot en sécurité'] },
     boss: { name: 'Chasse au boss', items: ['Prendre 2 chargeurs de rechange', 'Booster de PV dans la barre rapide', "Rejoindre l'endroit du boss", 'Nettoyer les infectés autour', 'Tuer le boss', 'Fouiller le butin'] }
 };
-const DEFAULT_CHECK = () => ({ title: 'Objectifs', overlay: false, corner: 'tr', scale: 1, opacity: 0.85, hideDone: false, items: CHECK_PRESETS.debut.items.map(t => ({ id: uid(), text: t, done: false })) });
+const DEFAULT_CHECK = () => ({ title: 'Objectifs', overlay: false, corner: 'tr', x: null, y: null, scale: 1, opacity: 0.85, hideDone: false, items: CHECK_PRESETS.debut.items.map(t => ({ id: uid(), text: t, done: false })) });
 
 const DEFAULT_TIMER = () => ({ overlay: true, corner: 'tl', scale: 1, opacity: 0.9, sound: true, volume: 0.5, warn: 30, warnBeep: false, keepDone: 45,
     presets: [{ id: 'caisses', name: 'Caisses militaires', min: 15 }, { id: 'helico', name: 'Hélico crashé', min: 10 }, { id: 'boost', name: 'Boost', min: 5 }], running: [] });
@@ -496,10 +496,11 @@ function createChecklist() {
     if (checkWin) return;
     checkWin = new BrowserWindow({
         width: 300, height: 120, frame: false, transparent: true, resizable: false, movable: false,
-        alwaysOnTop: true, skipTaskbar: true, focusable: false, hasShadow: false, show: false, backgroundColor: '#00000000',
+        alwaysOnTop: true, skipTaskbar: true, focusable: true, hasShadow: false, show: false, backgroundColor: '#00000000',
         webPreferences: { preload: path.join(__dirname, 'preload.js'), contextIsolation: true, nodeIntegration: false, backgroundThrottling: false }
     });
-    checkWin.setIgnoreMouseEvents(true, { forward: false });
+    checkWin.setIgnoreMouseEvents(false);
+    checkWin.on('moved', () => { if (!cfg || !checkWin) return; const b = checkWin.getBounds(); cfg.checklist.x = b.x; cfg.checklist.y = b.y; saveConfig(); });
     checkWin.setAlwaysOnTop(true, 'screen-saver');
     checkWin.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
     checkWin.loadFile(path.join(__dirname, 'checklist.html'));
@@ -514,8 +515,9 @@ function placeChecklist() {
     const items = c.items.filter(i => !(c.hideDone && i.done));
     const w = Math.round(290 * k), h = Math.round((44 + Math.max(1, items.length) * 26 + 10) * k);
     const wa = targetDisplay().workArea, m = 16;
-    const x = /l$/.test(c.corner) ? wa.x + m : wa.x + wa.width - w - m;
-    const y = /^b/.test(c.corner) ? wa.y + wa.height - h - m : wa.y + m;
+    const custom = Number.isFinite(c.x) && Number.isFinite(c.y);
+    const x = custom ? Math.max(wa.x, Math.min(wa.x + wa.width - w, c.x)) : (/l$/.test(c.corner) ? wa.x + m : wa.x + wa.width - w - m);
+    const y = custom ? Math.max(wa.y, Math.min(wa.y + wa.height - h, c.y)) : (/^b/.test(c.corner) ? wa.y + wa.height - h - m : wa.y + m);
     checkWin.setBounds({ x, y, width: w, height: h });
     checkWin.webContents.send('checklist', c);
     if (!checkWin.isVisible()) checkWin.showInactive();
@@ -819,6 +821,14 @@ ipcMain.handle('set-extras', (e, p) => {
     if (p.timer) { normalizeTimer(Object.assign({}, cfg.timer, p.timer, { running: cfg.timer.running })); placeTimer(); }
     saveConfig(); refreshTray();
     return state();
+});
+ipcMain.handle('checklist-toggle', (e, id) => {
+    if (!checkWin || e.sender !== checkWin.webContents) throw new Error('refusé');
+    const item = cfg.checklist.items.find(i => i.id === String(id));
+    if (!item) return false;
+    item.done = !item.done;
+    saveConfig(); placeChecklist(); broadcast();
+    return true;
 });
 ipcMain.handle('checklist-preset', (e, key) => {
     const p = CHECK_PRESETS[key]; if (!p) return state();
