@@ -1,3 +1,6 @@
+## Nouveautés de la v1.7.3
+- Guide du télémètre entièrement réécrit dans les réglages : utilisation pas à pas, lecture des repères, rôle de l'arme et de la lunette, FOV, calibration et limites de l'estimation.
+
 ## Nouveautés de la v1.7.2
 - HUD des objectifs interactif : clique sur un objectif pour le cocher ou le décocher directement depuis le petit overlay.
 - HUD des objectifs déplaçable à la souris depuis son en-tête, avec mémorisation de la position entre les lancements.
