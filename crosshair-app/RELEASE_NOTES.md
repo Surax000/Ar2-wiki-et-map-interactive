@@ -1,3 +1,8 @@
+# Notes de version
+
+## v1.7.4
+- Télémètre : remplacement de la longue liste déroulante des armes par une barre de recherche avec résultats filtrés.
+
 ## Nouveautés de la v1.7.3
 - Guide du télémètre entièrement réécrit dans les réglages : utilisation pas à pas, lecture des repères, rôle de l'arme et de la lunette, FOV, calibration et limites de l'estimation.
 
