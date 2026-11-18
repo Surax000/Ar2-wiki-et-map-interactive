@@ -166,18 +166,37 @@
             <div id="sp-info" class="small muted"></div>
         </details>
         <details open id="rg-box"><summary>Télémètre (distance au viseur)</summary>
-            <p class="muted small"><span class="kbd" id="rg-key">Ctrl+Alt+D</span> affiche une jauge translucide à côté du viseur. Chaque trait a la hauteur d'un joueur debout à la distance écrite dessous : compare l'ennemi dans ta lunette au trait le plus proche, tu lis sa distance, les dégâts au corps de ton arme et la chute de balle (en hauteurs de tête). <span class="kbd" id="rg-zkey">Ctrl+Alt+Maj+D</span> change de lunette.</p>
+            <div class="help-card">
+                <b>À quoi sert le télémètre ?</b>
+                <p>Il estime la distance d'un joueur grâce à sa taille apparente dans ta lunette. Ce n'est pas le télémètre laser du jeu : tu compares visuellement la hauteur de l'ennemi aux repères affichés à côté du viseur.</p>
+                <b class="help-title">Utilisation en 4 étapes</b>
+                <ol>
+                    <li>Active l'affichage avec <span class="kbd">Ctrl+Alt+D</span>.</li>
+                    <li>Choisis l'arme et la lunette réellement utilisées (ou active le suivi de l'arme).</li>
+                    <li>Quand tu vises un joueur debout, compare sa hauteur au trait le plus proche.</li>
+                    <li>Lis le nombre sous ce trait : c'est la distance estimée en <b>studs</b>. Les valeurs en dessous donnent les dégâts au corps et la chute théorique.</li>
+                </ol>
+                <p class="muted">Astuce : <span class="kbd">Ctrl+Alt+Maj+D</span> fait défiler les lunettes disponibles.</p>
+                <b class="help-title">Lire les repères</b>
+                <ul>
+                    <li><b>Trait vertical :</b> hauteur théorique d'un personnage debout à la distance indiquée.</li>
+                    <li><b>Nombre principal :</b> distance en studs (25, 50, 75, 100…).</li>
+                    <li><b>Nombre juste dessous :</b> dégâts estimés au corps avec l'arme sélectionnée, à cette distance.</li>
+                    <li><b>Dernière valeur :</b> chute de balle exprimée en hauteurs de tête. C'est une estimation basée sur la vitesse de balle enregistrée.</li>
+                </ul>
+                <p class="muted">La taille réelle du personnage, sa posture, le relief et le fait qu'il soit en mouvement peuvent fausser la lecture. Utilise le repère le plus proche : la distance n'est pas une mesure laser exacte.</p>
+            </div>
             <div class="field"><label class="tog"><input type="checkbox" id="rg-show"> Afficher le télémètre</label></div>
-            <div class="field"><label class="tog"><input type="checkbox" id="rg-follow"> Suivre l'arme de la barre rapide (noms des emplacements du changement d'arme)</label></div>
-            <div class="field"><label>Arme</label><select id="rg-weapon" class="w100"></select></div>
-            <div class="field"><label>Lunette / zoom</label><select id="rg-scope" class="w100"></select></div>
+            <div class="field"><label class="tog"><input type="checkbox" id="rg-follow"> Suivre l'arme de la barre rapide (utilise les emplacements configurés dans « Changement d'arme automatique »)</label></div>
+            <div class="field"><label>Arme</label><select id="rg-weapon" class="w100"></select><p class="muted small">Choisis l'arme dont tu veux afficher les dégâts et la chute. Si le suivi est activé, l'arme change selon l'emplacement de ta barre rapide associé.</p></div>
+            <div class="field"><label>Lunette / zoom</label><select id="rg-scope" class="w100"></select><p class="muted small">Sélectionne le grossissement monté sur l'arme. Plus le zoom est élevé, plus un joueur apparaît grand dans la lunette.</p></div>
             <div class="field row gap wrap"><label class="tog"><input type="checkbox" id="rg-ads"> Seulement pendant la visée (clic droit, avec le changement d'arme auto activé)</label><select id="rg-side"><option value="right">À droite du viseur</option><option value="left">À gauche du viseur</option></select></div>
-            <div class="field"><label>Écart au viseur <b id="rg-gap-v"></b></label><input type="range" id="rg-gap" min="20" max="400" step="5"></div>
-            <div class="field"><label>Champ de vision Roblox (vertical) <b id="rg-fov-v"></b></label><input type="range" id="rg-fov" min="50" max="100" step="1"></div>
+            <div class="field"><label>Écart au viseur <b id="rg-gap-v"></b></label><input type="range" id="rg-gap" min="20" max="400" step="5"><p class="muted small">Éloigne ou rapproche toute la jauge du centre de l'écran. Cela ne change pas le calcul de distance.</p></div>
+            <div class="field"><label>Champ de vision Roblox (vertical) <b id="rg-fov-v"></b></label><input type="range" id="rg-fov" min="50" max="100" step="1"><p class="muted small">Indique le FOV vertical utilisé dans Roblox. Il doit correspondre à ton réglage en jeu : une valeur incorrecte décale toutes les estimations.</p></div>
             <div class="field"><label>Calibration <b id="rg-cal-v"></b></label><input type="range" id="rg-cal" min="0.5" max="2" step="0.01"></div>
-            <p class="muted small">Calibrer : place un ami debout à une distance connue (ex : 100 studs, mesurée sur la carte), puis règle jusqu'à ce que son personnage ait la même hauteur que le trait 100.</p>
-            <div class="field"><label>Taille du texte <b id="rg-scale-v"></b></label><input type="range" id="rg-scale" min="0.6" max="2" step="0.1"></div>
-            <div class="field"><label>Opacité <b id="rg-op-v"></b></label><input type="range" id="rg-op" min="0.2" max="1" step="0.05"></div>
+            <p class="muted small"><b>Calibrer correctement :</b> place un ami debout à une distance connue (par exemple 100 studs mesurés sur la carte). Compare sa hauteur au trait « 100 », puis ajuste la calibration jusqu'à ce que les deux hauteurs correspondent. Recommence si tu changes de FOV ou de configuration d'affichage.</p>
+            <div class="field"><label>Taille du texte <b id="rg-scale-v"></b></label><input type="range" id="rg-scale" min="0.6" max="2" step="0.1"><p class="muted small">Agrandit ou réduit les chiffres de la fenêtre en jeu, sans modifier les traits.</p></div>
+            <div class="field"><label>Opacité <b id="rg-op-v"></b></label><input type="range" id="rg-op" min="0.2" max="1" step="0.05"><p class="muted small">Rend la jauge plus ou moins transparente.</p></div>
             <div id="rg-info" class="hudinfo"></div>
         </details>
         <details open id="cp-box"><summary>Boussole / cap de navigation</summary>
