@@ -2,7 +2,7 @@
 const C = window.AR2Crosshair;
 // Mode démo (ouverture dans un navigateur, sans Electron)
 if (!window.xh) {
-    const st = { cfg: { active: 0, profiles: C.PRESETS.map((p, i) => ({ id: 'p' + i, name: p.name, settings: C.withDefaults(p.s) })), display: 0, autoUpdate: true, autoSwitch: { enabled: true, onlyRoblox: true, holsterHide: true, adsHide: false, adsMode: 'hold', slots: {}, labels: {} }, hotkeys: { toggle: 'Control+Alt+X', settings: 'Control+Alt+S', nextProfile: 'Control+Alt+P', center: 'Control+Alt+C', autoColor: 'Control+Alt+A', checklist: 'Control+Alt+O', checkNext: 'Control+Alt+N', timer: 'Control+Alt+T', timer1: 'Control+Alt+F1', timer2: 'Control+Alt+F2', timer3: 'Control+Alt+F3', timerStop: 'Control+Alt+R', spotlight: 'Control+Alt+W', wiki: 'Control+Alt+Shift+W', range: 'Control+Alt+D', rangeZoom: 'Control+Alt+Shift+D', compass: 'Control+Alt+K', compassNext: 'Control+Alt+J', compassPrev: 'Control+Alt+Shift+J', map: 'Control+Alt+M', mapWorld: 'Control+Alt+Shift+M', themeNext: '', up: 'Control+Alt+Up', down: 'Control+Alt+Down', left: 'Control+Alt+Left', right: 'Control+Alt+Right' }, theme: 'classic', range: { show: false, weapon: 'm4a1', followSlot: true, zoomBy: {}, fov: 70, calib: 1, side: 'right', gap: 70, onlyAds: false, opacity: 0.9, scale: 1 }, compass: { show: false, route: null, leg: 0, opacity: 0.92, scale: 1, speed: 'sprint', top: 10 }, spotlight: { opacity: 0.9, hideOnBlur: true }, tmap: { world: 'auto', last: 'halsey', opacity: 0.85, size: 0.72, bld: true, hidden: true, custom: true, route: true, events: false, labels: true }, startHidden: false, launchAtStartup: false, moveStep: 1, autoColor: JSON.parse(JSON.stringify(window.AR2AutoColor.DEFAULTS)), whitelist: { enabled: false, apps: [{ id: 'roblox', name: 'Roblox', match: 'Roblox', on: true }, { id: 'minecraft', name: 'Minecraft', match: 'Minecraft', on: false }] }, checklist: { title: 'Objectifs', overlay: false, corner: 'tr', scale: 1, opacity: 0.85, hideDone: false, items: [{ id: 'a', text: 'Trouver un sac à dos', done: true }, { id: 'b', text: 'Une arme à feu + 2 chargeurs', done: false }] }, timer: { overlay: true, corner: 'tl', scale: 1, opacity: 0.9, sound: true, volume: 0.5, warn: 30, warnBeep: false, keepDone: 45, presets: [{ id: 'caisses', name: 'Caisses militaires', min: 15 }, { id: 'helico', name: 'Hélico crashé', min: 10 }, { id: 'boost', name: 'Boost', min: 5 }], running: [] } }, autoColor: { samples: 0 }, fgTitle: null, presets: { debut: 'Début de partie', militaire: 'Run militaire', boss: 'Chasse au boss' }, visible: true, displays: [{ i: 0, label: 'Écran 1 – 1920×1080 (principal)' }], version: '1.8.2', update: { state: 'none', mode: 'auto', version: '1.8.2' }, hook: { started: true }, installed: true };
+    const st = { cfg: { active: 0, profiles: C.PRESETS.map((p, i) => ({ id: 'p' + i, name: p.name, settings: C.withDefaults(p.s) })), display: 0, autoUpdate: true, autoSwitch: { enabled: true, onlyRoblox: true, holsterHide: true, adsHide: false, adsMode: 'hold', slots: {}, labels: {} }, hotkeys: { toggle: 'Control+Alt+X', settings: 'Control+Alt+S', nextProfile: 'Control+Alt+P', center: 'Control+Alt+C', autoColor: 'Control+Alt+A', checklist: 'Control+Alt+O', checkNext: 'Control+Alt+N', timer: 'Control+Alt+T', timer1: 'Control+Alt+F1', timer2: 'Control+Alt+F2', timer3: 'Control+Alt+F3', timerStop: 'Control+Alt+R', spotlight: 'Control+Alt+W', wiki: 'Control+Alt+Shift+W', range: 'Control+Alt+D', rangeZoom: 'Control+Alt+Shift+D', compass: 'Control+Alt+K', compassNext: 'Control+Alt+J', compassPrev: 'Control+Alt+Shift+J', map: 'Control+Alt+M', mapWorld: 'Control+Alt+Shift+M', themeNext: '', up: 'Control+Alt+Up', down: 'Control+Alt+Down', left: 'Control+Alt+Left', right: 'Control+Alt+Right' }, theme: 'classic', range: { show: false, weapon: 'm4a1', followSlot: true, zoomBy: {}, fov: 70, calib: 1, side: 'right', gap: 70, onlyAds: false, targetSpeed: 'stationary', targetDirection: 'right', opacity: 0.9, scale: 1 }, compass: { show: false, route: null, leg: 0, opacity: 0.92, scale: 1, speed: 'sprint', top: 10 }, spotlight: { opacity: 0.9, hideOnBlur: true }, tmap: { world: 'auto', last: 'halsey', opacity: 0.85, size: 0.72, bld: true, hidden: true, custom: true, route: true, events: false, labels: true }, startHidden: false, launchAtStartup: false, moveStep: 1, autoColor: JSON.parse(JSON.stringify(window.AR2AutoColor.DEFAULTS)), whitelist: { enabled: false, apps: [{ id: 'roblox', name: 'Roblox', match: 'Roblox', on: true }, { id: 'minecraft', name: 'Minecraft', match: 'Minecraft', on: false }] }, checklist: { title: 'Objectifs', overlay: false, corner: 'tr', scale: 1, opacity: 0.85, hideDone: false, items: [{ id: 'a', text: 'Trouver un sac à dos', done: true }, { id: 'b', text: 'Une arme à feu + 2 chargeurs', done: false }] }, timer: { overlay: true, corner: 'tl', scale: 1, opacity: 0.9, sound: true, volume: 0.5, warn: 30, warnBeep: false, keepDone: 45, presets: [{ id: 'caisses', name: 'Caisses militaires', min: 15 }, { id: 'helico', name: 'Hélico crashé', min: 10 }, { id: 'boost', name: 'Boost', min: 5 }] } }, autoColor: { samples: 0 }, fgTitle: null, presets: { debut: 'Début de partie', militaire: 'Run militaire', boss: 'Chasse au boss' }, visible: true, displays: [{ i: 0, label: 'Écran 1 – 1920×1080 (principal)' }], version: '1.8.4', update: { state: 'none', mode: 'auto', version: '1.8.4' }, hook: { started: true }, installed: true };
     const cur = () => st.cfg.profiles[st.cfg.active].settings;
     window.xh = {
         getState: async () => st, update: async p => { Object.assign(cur(), p); return st; },
@@ -318,7 +318,7 @@ function renderAC() {
     $('#ac-outline').checked = !!a.outline; $('#ac-glow').checked = !!a.glow;
     document.querySelectorAll('[data-aci]').forEach(b => b.classList.toggle('active', +b.dataset.aci === a.interval));
     $('#ac-palette').innerHTML = (a.palette || []).map((c, i) => `<div class="psw" data-pi="${i}" title="${c}" style="background:${c}"></div>`).join('');
-    $('#ac-palette').parentElement.style.opacity = a.mode === 'contrast' ? 1 : .5;
+    $('#ac-palette').parentElement.style.opacity = a.mode === 'bw' ? 0.5 : 1;
     renderACLive();
 }
 function renderACLive() {
@@ -339,8 +339,14 @@ $('#ac-mode').onchange = async e => { pvColor = null; await setX({ autoColor: { 
 $('#ac-outline').onchange = async e => { await setX({ autoColor: { outline: e.target.checked } }); renderPreview(); };
 $('#ac-glow').onchange = async e => { await setX({ autoColor: { glow: e.target.checked } }); renderPreview(); };
 $('#ac-int-presets').addEventListener('click', async e => { const b = e.target.closest('[data-aci]'); if (!b) return; await setX({ autoColor: { interval: +b.dataset.aci } }); renderAC(); });
-$('#ac-palette').addEventListener('click', async e => { const b = e.target.closest('[data-pi]'); if (!b) return; const p = S.cfg.autoColor.palette.slice(); if (p.length <= 2) return; p.splice(+b.dataset.pi, 1); pvColor = null; await setX({ autoColor: { palette: p } }); renderAC(); renderPreview(); });
-$('#ac-add').onclick = async () => { const c = $('#ac-add-color').value.toLowerCase(), p = S.cfg.autoColor.palette.slice(); if (p.includes(c) || p.length >= 16) return; p.push(c); await setX({ autoColor: { palette: p } }); renderAC(); renderPreview(); };
+$('#ac-palette').addEventListener('click', async e => { const b = e.target.closest('[data-pi]'); if (!b) return; const p = S.cfg.autoColor.palette.slice(); if (p.length <= 1) return; p.splice(+b.dataset.pi, 1); pvColor = null; await setX({ autoColor: { palette: p } }); renderAC(); renderPreview(); });
+$('#ac-add').onclick = async () => {
+    const c = $('#ac-add-color').value.toLowerCase(), p = S.cfg.autoColor.palette.slice(), msg = $('#ac-fav-msg');
+    if (p.includes(c)) { msg.textContent = 'Cette couleur est déjà dans tes favoris.'; msg.className = 'small muted'; return; }
+    if (p.length >= AR2AutoColor.MAX_PALETTE) { msg.textContent = `Limite atteinte : ${AR2AutoColor.MAX_PALETTE} couleurs favorites.`; msg.className = 'small err'; return; }
+    p.push(c); await setX({ autoColor: { palette: p } }); renderAC(); renderPreview();
+    msg.textContent = `${c} ajoutée aux couleurs favorites.`; msg.className = 'small muted';
+};
 $('#ac-pal-reset').onclick = async () => { pvColor = null; await setX({ autoColor: { palette: AR2AutoColor.DEFAULT_PALETTE.slice() } }); renderAC(); renderPreview(); };
 
 // ================= Liste blanche =================
@@ -551,6 +557,7 @@ function renderHUD() {
     $('#sp-info').textContent = H.indexItems ? `Données du wiki : ${H.indexItems} fiches${H.indexDate ? ' (mises à jour le ' + new Date(H.indexDate).toLocaleDateString('fr-FR') + ')' : ''}. Elles se mettent à jour toutes seules quand tu ouvres le wiki complet.` : '';
     // télémètre
     $('#rg-show').checked = !!r.show; $('#rg-follow').checked = !!r.followSlot; $('#rg-ads').checked = !!r.onlyAds; $('#rg-side').value = r.side;
+    $('#rg-target-speed').value = r.targetSpeed || 'stationary'; $('#rg-target-direction').value = r.targetDirection || 'right';
     const ws = S.weapons || [];
     const weaponSearch = $('#rg-weapon-search'), weaponResults = $('#rg-weapon-results');
     const selectedWeapon = ws.find(w => w.id === r.weapon);
@@ -586,6 +593,8 @@ $('#rg-show').onchange = e => hudSet({ range: { show: e.target.checked } });
 $('#rg-follow').onchange = e => hudSet({ range: { followSlot: e.target.checked } });
 $('#rg-ads').onchange = e => hudSet({ range: { onlyAds: e.target.checked } });
 $('#rg-side').onchange = e => hudSet({ range: { side: e.target.value } });
+$('#rg-target-speed').onchange = e => hudSet({ range: { targetSpeed: e.target.value } });
+$('#rg-target-direction').onchange = e => hudSet({ range: { targetDirection: e.target.value } });
 const rgWeaponSearch = $('#rg-weapon-search'), rgWeaponResults = $('#rg-weapon-results');
 function showRangeWeaponResults(query) {
     const all = S.weapons || [], q = String(query || '').trim().toLocaleLowerCase('fr');

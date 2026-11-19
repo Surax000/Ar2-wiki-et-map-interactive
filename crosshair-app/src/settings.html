@@ -8,7 +8,7 @@
 </head>
 <body>
 <header class="top">
-    <div class="brand"><img src="assets/icon.png" alt=""><div><b>AR2 Crosshair</b><span id="ver">v1.8.2</span></div></div>
+    <div class="brand"><img src="assets/icon.png" alt=""><div><b>AR2 Crosshair</b><span id="ver">v1.8.4</span></div></div>
     <div class="top-actions">
         <button id="vis-btn" class="btn primary">Crosshair affiché</button>
         <span class="hint"><span class="kbd">Ctrl+Alt+X</span> afficher / masquer le viseur</span>
@@ -61,11 +61,11 @@
             <div class="field"><label>Opacité <b data-v="opacity"></b></label><input type="range" min="0.1" max="1" step="0.05" data-k="opacity"></div>
         </details>
         <details open id="ac-box"><summary>Couleur automatique</summary>
-            <p class="muted small">L'appli regarde le fond juste autour du crosshair et met la couleur la plus visible (sur du vert : magenta, sur le ciel : jaune…). Le crosshair lui-même n'est pas pris en compte.</p>
+            <p class="muted small">L'appli regarde le fond juste autour du crosshair et choisit la teinte la plus visible dans tout le spectre RVB, pas seulement parmi quelques couleurs prédéfinies. Le crosshair lui-même n'est pas pris en compte.</p>
             <div class="field"><label class="tog"><input type="checkbox" id="ac-enabled"> Activer la couleur automatique <span class="muted">(Ctrl+Alt+A)</span></label></div>
             <div class="field"><label>Mode</label><select id="ac-mode" class="w100">
-                <option value="contrast">La plus visible (parmi ma palette)</option>
-                <option value="opposite">Couleur opposée au fond</option>
+                <option value="contrast">Tout le spectre RVB : meilleur contraste</option>
+                <option value="opposite">Couleur complémentaire calculée</option>
                 <option value="bw">Noir ou blanc seulement</option></select></div>
             <div class="field"><label>Rafraîchissement <b id="ac-interval-v"></b></label><input type="range" id="ac-interval" min="100" max="5000" step="50"></div>
             <div class="row gap wrap small" id="ac-int-presets"><button class="chip" data-aci="150">Rapide</button><button class="chip" data-aci="400">Normal</button><button class="chip" data-aci="1000">Économie</button><button class="chip" data-aci="3000">Lent</button></div>
@@ -73,9 +73,11 @@
             <div class="field"><label>Anti-clignotement <b id="ac-sens-v"></b></label><input type="range" id="ac-sens" min="0" max="80" step="5"></div>
             <div class="field"><label>Fondu de couleur <b id="ac-fade-v"></b></label><input type="range" id="ac-fade" min="0" max="1000" step="20"></div>
             <div class="field row gap wrap"><label class="tog"><input type="checkbox" id="ac-outline"> Contour auto (noir / blanc)</label><label class="tog"><input type="checkbox" id="ac-glow"> La lueur suit la couleur</label></div>
-            <div class="field"><label>Palette <span class="muted">(clique une couleur pour la retirer)</span></label>
+            <div class="field"><label>Couleurs favorites <span class="muted">(choisis n'importe quelle couleur)</span></label>
                 <div class="row gap wrap" id="ac-palette"></div>
                 <div class="row gap mt-s"><input type="color" id="ac-add-color" value="#ff00ff"><button id="ac-add" class="btn sm">Ajouter</button><button id="ac-pal-reset" class="btn sm ghost">Palette d'origine</button></div>
+                <p class="muted small">Le mode RVB complet teste toutes les teintes; ces favoris ajoutent tes couleurs exactes (jusqu'à 256). Clique un carré pour le retirer.</p>
+                <div id="ac-fav-msg" class="small muted" role="status" aria-live="polite"></div>
             </div>
             <div id="ac-live" class="live small"></div>
         </details>
@@ -202,14 +204,17 @@
                     <article><b>1 · Choisir la bonne vue</b><p>Active la jauge avec <span class="kbd">Ctrl+Alt+D</span>. Sélectionne l’arme et le zoom réellement utilisés, ou active le suivi de l’arme de la barre rapide.</p></article>
                     <article><b>2 · Régler le FOV et le zoom</b><p>Le FOV demandé est le champ de vision <b>vertical</b> de Roblox. Un FOV plus large rend le joueur plus petit à l’écran ; un zoom plus fort le rend plus grand. Garde ces valeurs identiques en jeu et dans l’application. <span class="kbd">Ctrl+Alt+Maj+D</span> change de lunette.</p></article>
                     <article><b>3 · Calibrer une fois</b><p>Avec le FOV et la lunette choisis, utilise un joueur debout à une distance connue (par exemple 100 studs). Ajuste « Calibration » jusqu’à ce que sa hauteur corresponde au trait « 100 ». Recalibre si le FOV, le zoom ou l’affichage change.</p></article>
-                    <article><b>4 · Lire les informations</b><p>Le grand nombre est la distance en studs ; dessous, les dégâts estimés au corps et la chute théorique en hauteurs de tête. Vert = dégâts maximums, jaune = dégâts réduits, rouge = dégâts minimums.</p></article>
+                    <article><b>4 · Lire les informations</b><p>Le grand nombre est la distance en studs ; dessous, les dégâts estimés au corps et les corrections indicatives pour lever le viseur et devancer une cible mobile. Vert = dégâts maximums, jaune = dégâts réduits, rouge = dégâts minimums.</p></article>
+                    <article><b>5 · Régler la cible mobile</b><p>Choisis immobile, marche, sprint ou véhicule, puis le sens de déplacement à l’écran. La flèche ↑ indique la hausse, ←/→ l’avance latérale. L’optique choisie ajuste les pixels au zoom. Les autres accessoires ne modifient le calcul que si une vitesse de balle vérifiée est disponible.</p></article>
                 </div>
                 <div class="range-guide-foot"><b>Écart au viseur</b> déplace toute la jauge à gauche ou à droite du centre ; il ne change pas la distance calculée. <b>Taille du texte</b> et <b>opacité</b> ne changent que l’affichage. La posture, la taille du personnage, les obstacles, la perspective et l’alignement rendent l’estimation approximative : compare au trait le plus proche, sans la traiter comme une mesure laser.</div>
             </div>
             <div class="field"><label class="tog"><input type="checkbox" id="rg-show"> Afficher le télémètre</label></div>
             <div class="field"><label class="tog"><input type="checkbox" id="rg-follow"> Suivre l'arme de la barre rapide (utilise les emplacements configurés dans « Changement d'arme automatique »)</label></div>
             <div class="field rg-weapon-field"><label>Arme</label><input id="rg-weapon-search" class="w100" type="search" autocomplete="off" placeholder="Rechercher une arme…"><div id="rg-weapon-results" class="rg-weapon-results hidden"></div><p class="muted small">Recherche le nom de l’arme puis clique sur le résultat. Si le suivi est activé, l’arme change selon l’emplacement de ta barre rapide associé.</p></div>
-            <div class="field"><label>Lunette / zoom</label><select id="rg-scope" class="w100"></select><p class="muted small">Sélectionne le grossissement monté sur l'arme. Plus le zoom est élevé, plus un joueur apparaît grand dans la lunette.</p></div>
+            <div class="field"><label>Lunette / zoom</label><select id="rg-scope" class="w100"></select><p class="muted small">Sélectionne l'optique montée sur l'arme. Le zoom sert à convertir la correction en pixels à l'écran.</p></div>
+            <div class="field row gap wrap"><label class="grow">Mouvement de la cible<select id="rg-target-speed" class="w100"><option value="stationary">Immobile</option><option value="walk">Marche</option><option value="sprint">Sprint</option><option value="vehicle">Véhicule</option></select></label><label>Vers<select id="rg-target-direction"><option value="left">Gauche</option><option value="right">Droite</option></select></label></div>
+            <p class="muted small">La correction estime la chute et l’avance latérale d’un mouvement de travers. L’application ne détecte pas la cible et ne modélise ni le vent, ni les effets balistiques non documentés des accessoires.</p>
             <div class="field row gap wrap"><label class="tog"><input type="checkbox" id="rg-ads"> Seulement pendant la visée (clic droit, avec le changement d'arme auto activé)</label><select id="rg-side"><option value="right">À droite du viseur</option><option value="left">À gauche du viseur</option></select></div>
             <div class="field"><label>Écart au viseur <b id="rg-gap-v"></b></label><input type="range" id="rg-gap" min="20" max="400" step="5"><p class="muted small">Éloigne ou rapproche toute la jauge du centre de l'écran. Cela ne change pas le calcul de distance.</p></div>
             <div class="field"><label>Champ de vision Roblox (vertical) <b id="rg-fov-v"></b></label><input type="range" id="rg-fov" min="50" max="100" step="1"><p class="muted small">Indique le FOV vertical utilisé dans Roblox. Il doit correspondre à ton réglage en jeu : une valeur incorrecte décale toutes les estimations.</p></div>

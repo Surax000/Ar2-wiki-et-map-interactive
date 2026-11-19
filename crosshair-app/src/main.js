@@ -109,7 +109,9 @@ function loadConfig() {
 function normalizeExtras(c) {
     c = c || {};
     cfg.autoColor = Object.assign(JSON.parse(JSON.stringify(ac.DEFAULTS)), c.autoColor || {});
-    if (!Array.isArray(cfg.autoColor.palette) || !cfg.autoColor.palette.length) cfg.autoColor.palette = ac.DEFAULT_PALETTE.slice();
+    const palette = ac.normalizePalette(cfg.autoColor.palette);
+    cfg.autoColor.palette = palette.length ? Array.from(new Set(palette)) : ac.DEFAULT_PALETTE.slice();
+    if (!['contrast', 'opposite', 'bw'].includes(cfg.autoColor.mode)) cfg.autoColor.mode = ac.DEFAULTS.mode;
     cfg.autoColor.interval = Math.max(100, Math.min(10000, +cfg.autoColor.interval || 400));
     cfg.autoColor.zone = Math.max(40, Math.min(600, +cfg.autoColor.zone || 140));
     const wl = DEFAULT_WL();

@@ -134,6 +134,26 @@
         return { f, n, t, dmg };
     }
     function drop(w, d) { const v = +w.vel || 0; if (!v) return { t: 0, drop: 0, heads: 0 }; const t = d / v, dr = 0.5 * GRAV * t * t; return { t, drop: dr, heads: dr / HEAD_H }; }
+    function aimCorrection(w, d, options) {
+        const o = Object.assign({ zoom: 1, screenH: 1080, fov: 70, calib: 1, targetSpeed: 0, targetDirection: 'right' }, options || {});
+        const distance = Math.max(0, +d || 0), velocity = w && (+w.vel || 0);
+        if (!distance || !velocity) return { available: false, flightTime: 0, drop: 0, heads: 0, liftPx: 0, lead: 0, leadPx: 0 };
+        const flightTime = distance / velocity;
+        const dropDistance = 0.5 * GRAV * flightTime * flightTime;
+        const halfFov = Math.tan((+o.fov / Math.max(1, +o.zoom || 1)) / 2 * Math.PI / 180);
+        const pixelsPerStud = Math.max(1, +o.screenH || 1080) * (Math.max(0.1, +o.calib || 1)) / (2 * halfFov * distance);
+        const leadDistance = Math.max(0, +o.targetSpeed || 0) * flightTime;
+        const direction = o.targetDirection === 'left' ? -1 : 1;
+        return {
+            available: true,
+            flightTime,
+            drop: dropDistance,
+            heads: dropDistance / HEAD_H,
+            liftPx: dropDistance * pixelsPerStud,
+            lead: leadDistance,
+            leadPx: leadDistance * pixelsPerStud * direction
+        };
+    }
 
     // ============================================================
     // DUEL EXPRESS
@@ -306,8 +326,12 @@
             if (px < o.minPx) break;
             if (lastPx - px < o.gap) continue;
             lastPx = px;
-            const f = w ? falloff(w, d) : 1, dr = w ? drop(w, d) : { heads: 0 };
-            out.push({ d, px, f, head: w ? Math.round(w.hd * f) : null, body: w ? Math.round(w.bod * f) : null, heads: dr.heads, zone: !w ? 'full' : d <= w.fdr ? 'full' : d >= w.mdr ? 'min' : 'drop' });
+            const f = w ? falloff(w, d) : 1;
+            const correction = w ? aimCorrection(w, d, { zoom, screenH, fov: o.fov, calib: o.calib, targetSpeed: o.targetSpeed, targetDirection: o.targetDirection }) : null;
+            out.push({ d, px, f, head: w ? Math.round(w.hd * f) : null, body: w ? Math.round(w.bod * f) : null,
+                correctionAvailable: !!(correction && correction.available), heads: correction ? correction.heads : 0, holdPx: correction ? correction.liftPx : 0, lead: correction ? correction.lead : 0,
+                leadPx: correction ? correction.leadPx : 0, flightTime: correction ? correction.flightTime : 0,
+                zone: !w ? 'full' : d <= w.fdr ? 'full' : d >= w.mdr ? 'min' : 'drop' });
         }
         return out;
     }
@@ -321,7 +345,7 @@
     }
 
     const API = { THEMES, THEME_ORDER, themeVars, applyTheme, hexRgb, norm, esc, fr, sec, TYPE_LABEL, prep, search, best, get, parseCommand,
-        STUD_M, BODY_H, HEAD_H, falloff, ttk, drop, duel, bearing, card8, leg, route, fmtDist, SPEEDS, charPx, distFromPx, ladder, scopesFor };
+        STUD_M, BODY_H, HEAD_H, falloff, ttk, drop, aimCorrection, duel, bearing, card8, leg, route, fmtDist, SPEEDS, charPx, distFromPx, ladder, scopesFor };
     if (typeof module !== 'undefined' && module.exports) module.exports = API;
     if (root) root.AR2Tools = API;
 })(typeof window !== 'undefined' ? window : (typeof globalThis !== 'undefined' ? globalThis : null));

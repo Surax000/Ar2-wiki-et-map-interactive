@@ -2,6 +2,7 @@
    Partagé entre le processus principal (Node) et la fenêtre de capture (navigateur). */
 (function (root) {
     const DEFAULT_PALETTE = ['#00ff88', '#ff2d55', '#ffffff', '#000000', '#22d3ee', '#facc15', '#e879f9', '#3b82f6', '#fb923c'];
+    const MAX_PALETTE = 256;
     const DEFAULTS = {
         enabled: false,
         interval: 400,        // ms entre deux analyses
@@ -50,6 +51,25 @@
         const t = x => { x = (x + 1) % 1; return x < 1 / 6 ? p + (q - p) * 6 * x : x < 0.5 ? q : x < 2 / 3 ? p + (q - p) * (2 / 3 - x) * 6 : p; };
         return [t(h + 1 / 3) * 255, t(h) * 255, t(h - 1 / 3) * 255];
     }
+    const colorCandidate = color => {
+        const rgb = hexToRgb(color);
+        return { color, rgb, lab: rgbToLab(rgb), luminance: luminance(rgb) };
+    };
+    const FULL_SPECTRUM = (() => {
+        const colors = new Set(DEFAULT_PALETTE);
+        for (let h = 0; h < 360; h += 3) {
+            for (const s of [0.65, 0.85, 1]) {
+                for (const l of [0.22, 0.38, 0.54, 0.7, 0.82]) colors.add(rgbToHex(...hslToRgb(h, s, l)));
+            }
+        }
+        return Array.from(colors, colorCandidate);
+    })();
+    function normalizePalette(palette) {
+        if (!Array.isArray(palette)) return [];
+        return Array.from(new Set(palette
+            .filter(color => typeof color === 'string' && /^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i.test(color))
+            .map(color => rgbToHex(...hexToRgb(color))))).slice(0, MAX_PALETTE);
+    }
 
     // pixels : tableau RGBA (Uint8 / Uint8Clamped). skip(i) -> true pour ignorer le pixel i.
     // Renvoie { avg:[r,g,b], clusters:[{rgb,w}] } (k-means léger, 3 groupes)
@@ -84,15 +104,43 @@
     }
 
     // Score de visibilité d'une couleur sur le fond analysé (0..~100)
-    function score(rgb, a) {
+    function scoreContext(a) {
         const cl = a.clusters && a.clusters.length ? a.clusters : [{ rgb: a.avg, w: 1 }];
+        return cl.map(c => ({ rgb: c.rgb, lab: rgbToLab(c.rgb), luminance: luminance(c.rgb), w: c.w }));
+    }
+    function scoreCandidate(candidate, clusters) {
         let worst = Infinity, mean = 0;
-        cl.forEach(c => {
-            const d = deltaE(rgb, c.rgb) + 6 * Math.log2(contrastRatio(rgb, c.rgb));
+        clusters.forEach(c => {
+            const lab = candidate.lab || rgbToLab(candidate.rgb);
+            const ratio = (Math.max(candidate.luminance, c.luminance) + 0.05) / (Math.min(candidate.luminance, c.luminance) + 0.05);
+            const d = Math.hypot(lab[0] - c.lab[0], lab[1] - c.lab[1], lab[2] - c.lab[2]) + 6 * Math.log2(ratio);
             mean += d * c.w; if (c.w >= 0.12 && d < worst) worst = d;
         });
         if (!isFinite(worst)) worst = mean;
         return 0.6 * worst + 0.4 * mean;
+    }
+    function score(rgb, a) {
+        const candidate = { rgb, luminance: luminance(rgb), lab: rgbToLab(rgb) };
+        return scoreCandidate(candidate, scoreContext(a));
+    }
+    function refineColor(seed, clusters) {
+        let best = seed, bestScore = scoreCandidate(seed, clusters);
+        for (const step of [16, 4, 1]) {
+            for (let pass = 0; pass < 2; pass++) {
+                let next = best, nextScore = bestScore;
+                for (const r of [-step, 0, step]) for (const g of [-step, 0, step]) for (const b of [-step, 0, step]) {
+                    if (!r && !g && !b) continue;
+                    const rgb = [clamp(best.rgb[0] + r, 0, 255), clamp(best.rgb[1] + g, 0, 255), clamp(best.rgb[2] + b, 0, 255)];
+                    if (rgb.every((v, i) => v === best.rgb[i])) continue;
+                    const candidate = { color: rgbToHex(...rgb), rgb, lab: rgbToLab(rgb), luminance: luminance(rgb) };
+                    const candidateScore = scoreCandidate(candidate, clusters);
+                    if (candidateScore > nextScore) { next = candidate; nextScore = candidateScore; }
+                }
+                if (next === best) break;
+                best = next; bestScore = nextScore;
+            }
+        }
+        return { candidate: best, score: bestScore };
     }
     function opposite(a) {
         const [h, s, l] = rgbToHsl(a.avg);
@@ -102,22 +150,31 @@
     // Choisit la couleur. prev = couleur actuelle (pour l'anti-clignotement)
     function pick(a, opts, prev) {
         const o = Object.assign({}, DEFAULTS, opts || {});
+        const favorites = normalizePalette(o.palette).map(colorCandidate);
         let cands;
-        if (o.mode === 'bw') cands = ['#ffffff', '#000000'];
-        else if (o.mode === 'opposite') { const op = opposite(a); cands = op ? [op] : (o.palette && o.palette.length ? o.palette : DEFAULT_PALETTE); }
-        else cands = o.palette && o.palette.length ? o.palette : DEFAULT_PALETTE;
+        if (o.mode === 'bw') cands = [colorCandidate('#ffffff'), colorCandidate('#000000')];
+        else if (o.mode === 'opposite') { const op = opposite(a); cands = op ? [colorCandidate(op)] : FULL_SPECTRUM.concat(favorites); }
+        else cands = FULL_SPECTRUM.concat(favorites);
+        const clusters = scoreContext(a);
         let best = null, bs = -Infinity;
-        cands.forEach(c => { const sc = score(hexToRgb(c), a); if (sc > bs) { bs = sc; best = c; } });
-        let color = best, sc = bs, kept = false;
-        if (prev && prev !== best && o.mode !== 'opposite') {
-            const ps = score(hexToRgb(prev), a);
+        cands.forEach(c => {
+            const candidateScore = scoreCandidate(c, clusters);
+            if (candidateScore > bs) { best = c; bs = candidateScore; }
+        });
+        if (o.mode !== 'bw' && !(o.mode === 'opposite' && opposite(a))) {
+            const refined = refineColor(best, clusters);
+            if (refined.score > bs) { best = refined.candidate; bs = refined.score; }
+        }
+        let color = best.color, sc = bs, kept = false;
+        if (prev && prev !== color && o.mode !== 'opposite') {
+            const ps = scoreCandidate(colorCandidate(prev), clusters);
             if (ps * (1 + (o.sensitivity || 0) / 100) >= bs && ps > 25) { color = prev; sc = ps; kept = true; }
         }
         const outline = luminance(hexToRgb(color)) > 0.35 ? '#000000' : '#ffffff';
         return { color, outline, score: Math.round(sc), bg: rgbToHex(...a.avg), kept };
     }
 
-    const api = { DEFAULTS, DEFAULT_PALETTE, analyze, pick, score, hexToRgb, rgbToHex, deltaE, contrastRatio, opposite };
+    const api = { DEFAULTS, DEFAULT_PALETTE, MAX_PALETTE, normalizePalette, analyze, pick, score, hexToRgb, rgbToHex, deltaE, contrastRatio, opposite };
     if (typeof module !== 'undefined' && module.exports) module.exports = api;
     root.AR2AutoColor = api;
 })(typeof window !== 'undefined' ? window : globalThis);

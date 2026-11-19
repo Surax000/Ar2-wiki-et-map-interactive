@@ -6,7 +6,7 @@ on:
       from_tag:
         description: 'Version installée au départ (tag de release)'
         required: true
-        default: 'crosshair-v1.1.0'
+        default: 'crosshair-v1.8.3'
   workflow_call:
     inputs:
       from_tag:
@@ -29,7 +29,7 @@ jobs:
         shell: pwsh
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN || secrets.GITHUB_TOKEN }}
-          FROM_TAG: ${{ inputs.from_tag || 'crosshair-v1.8.1' }}
+          FROM_TAG: ${{ inputs.from_tag || 'crosshair-v1.8.3' }}
         run: |
           gh release download "$env:FROM_TAG" --repo "${{ github.repository }}" --pattern 'AR2-Crosshair-Setup.exe' --dir old
           $install = Start-Process -FilePath "old\AR2-Crosshair-Setup.exe" -ArgumentList '/S','/currentuser' -Wait -PassThru

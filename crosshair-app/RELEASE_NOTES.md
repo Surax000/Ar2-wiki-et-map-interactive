@@ -1,5 +1,10 @@
 # Notes de version
 
+## v1.8.4
+- Le télémètre estime maintenant la hausse en pixels et l'avance latérale selon l'arme, la distance, le zoom et le mouvement choisi.
+- L'optique sélectionnée est prise en compte; aucun effet balistique d'accessoire non documenté n'est supposé.
+- La couleur automatique explore tout le spectre RVB, affine la couleur de contraste et accepte jusqu'à 256 favoris personnalisés.
+
 ## v1.8.3
 - Le statut de téléchargement terminé reste affiché même après une vérification simultanée.
 - Le message indique clairement que la mise à jour est prête et qu'un redémarrage l'installera.

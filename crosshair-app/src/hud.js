@@ -8,7 +8,7 @@ const path = require('path');
 const fs = require('fs');
 const T = require('./ar2-tools.js');
 
-const DEFAULT_RANGE = () => ({ show: false, weapon: 'm4a1', followSlot: true, zoomBy: {}, fov: 70, calib: 1, side: 'right', gap: 70, onlyAds: false, opacity: 0.9, scale: 1 });
+const DEFAULT_RANGE = () => ({ show: false, weapon: 'm4a1', followSlot: true, zoomBy: {}, fov: 70, calib: 1, side: 'right', gap: 70, onlyAds: false, targetSpeed: 'stationary', targetDirection: 'right', opacity: 0.9, scale: 1 });
 const DEFAULT_COMPASS = () => ({ show: false, route: null, leg: 0, origin: '', opacity: 0.92, scale: 1, speed: 'sprint', top: 10 });
 const DEFAULT_SPOT = () => ({ opacity: 0.9, hideOnBlur: true });
 const DEFAULT_TMAP = () => ({ world: 'auto', last: 'halsey', opacity: 0.85, size: 0.72, bld: true, hidden: true, custom: true, route: true, events: false, labels: true });
@@ -27,6 +27,8 @@ function normalize(cfg, c) {
     r.fov = clamp(r.fov, 40, 120, 70); r.calib = clamp(r.calib, 0.4, 2.5, 1); r.gap = clamp(r.gap, 20, 400, 70);
     r.opacity = clamp(r.opacity, 0.2, 1, 0.9); r.scale = clamp(r.scale, 0.6, 2, 1);
     if (!['left', 'right'].includes(r.side)) r.side = 'right';
+    if (!['stationary', 'walk', 'sprint', 'vehicle'].includes(r.targetSpeed)) r.targetSpeed = 'stationary';
+    if (!['left', 'right'].includes(r.targetDirection)) r.targetDirection = 'right';
     if (!r.zoomBy || typeof r.zoomBy !== 'object') r.zoomBy = {};
     r.show = !!r.show; r.followSlot = !!r.followSlot; r.onlyAds = !!r.onlyAds;
     cfg.range = r;
@@ -162,10 +164,12 @@ function rangeData() {
     const cfg = C.cfg(), r = cfg.range, d = C.display(), H = d.bounds.height;
     const { w, src } = weaponFor(), sc = zoomFor(w);
     const maxPx = Math.min(360, H * 0.4);
-    const lad = T.ladder(w, sc.z, H, { fov: r.fov, calib: r.calib, maxPx, minPx: 7, gap: 12 });
+    const targetSpeed = r.targetSpeed === 'stationary' ? 0 : T.SPEEDS[r.targetSpeed] || 0;
+    const lad = T.ladder(w, sc.z, H, { fov: r.fov, calib: r.calib, maxPx, minPx: 7, gap: 12, targetSpeed, targetDirection: r.targetDirection });
     return { theme: themeOf(), opacity: r.opacity, scale: r.scale, side: r.side, maxPx, screenH: H,
-        weapon: w ? { id: w.id, name: w.name, cat: w.cat, hd: w.hd, bod: w.bod, fdr: w.fdr, mdr: w.mdr, vel: w.vel } : null, src,
-        scope: { name: sc.name, z: sc.z }, ladder: lad, keys: { toggle: kl(cfg.hotkeys.range), zoom: kl(cfg.hotkeys.rangeZoom) } };
+        weapon: w ? { id: w.id, name: w.name, cat: w.cat, hd: w.hd, bod: w.bod, fdr: w.fdr, mdr: w.mdr, vel: w.vel, estimated: !!w.est } : null, src,
+        scope: { name: sc.name, z: sc.z }, targetSpeed: r.targetSpeed, targetSpeedValue: targetSpeed, targetDirection: r.targetDirection,
+        ladder: lad, keys: { toggle: kl(cfg.hotkeys.range), zoom: kl(cfg.hotkeys.rangeZoom) } };
 }
 function placeRange() {
     if (!C || !index || !C.cfg()) return;
@@ -180,7 +184,7 @@ function placeRange() {
     if (!rangeWin.__ready) return;
     const data = rangeData(), r = C.cfg().range, k = r.scale;
     const n = Math.max(3, data.ladder.length);
-    const W = Math.round(Math.max(250, (n * 34 + 26)) * k), Hh = Math.round(data.maxPx + 120 * k);
+    const W = Math.round(Math.max(250, (n * 34 + 26)) * k), Hh = Math.round(data.maxPx + 148 * k);
     const c = C.center();
     const x = r.side === 'left' ? Math.round(c.x - r.gap - W) : Math.round(c.x + r.gap);
     const y = Math.round(c.y - 50 * k - data.maxPx / 2);
