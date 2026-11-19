@@ -7,11 +7,14 @@ on:
         description: 'Version installée au départ (tag de release)'
         required: true
         default: 'crosshair-v1.1.0'
-  push:
-    branches:
-      - main
-    paths:
-      - '.github/workflows/test-update.yml'
+  workflow_call:
+    inputs:
+      from_tag:
+        type: string
+        required: true
+    secrets:
+      GH_TOKEN:
+        required: false
 
 jobs:
   update:
@@ -20,8 +23,8 @@ jobs:
       - name: Installer l'ancienne version puis laisser l'appli se mettre à jour
         shell: pwsh
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          FROM_TAG: ${{ inputs.from_tag || 'crosshair-v1.8.1' }}
+          GH_TOKEN: ${{ secrets.GH_TOKEN || secrets.GITHUB_TOKEN }}
+          FROM_TAG: ${{ inputs.from_tag }}
         run: |
           gh release download "$env:FROM_TAG" --repo "${{ github.repository }}" --pattern 'AR2-Crosshair-Setup.exe' --dir old
           Start-Process -FilePath "old\AR2-Crosshair-Setup.exe" -ArgumentList '/S' -Wait

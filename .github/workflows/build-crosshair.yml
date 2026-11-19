@@ -114,3 +114,11 @@ jobs:
           fi
           gh release upload "$TAG" dist/*.exe dist/*.zip dist/*.blockmap dist/latest.yml --clobber
           gh release edit "$TAG" --latest --draft=false
+
+  update-test:
+    needs: release
+    uses: ./.github/workflows/test-update.yml
+    with:
+      from_tag: crosshair-v1.8.1
+    secrets:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
