@@ -16,7 +16,7 @@
         <button class="btn sm ghost" data-onboarding id="ob-open-top">Assistant</button>
     </div>
 </header>
-<div id="upd-banner" class="banner hidden"><span id="upd-text"></span><button id="upd-btn" class="btn sm primary">Redémarrer et installer</button></div>
+<div id="upd-banner" class="banner hidden" role="status" aria-live="polite"><span id="upd-text"></span><button id="upd-btn" class="btn sm primary">Redémarrer et installer</button></div>
 <main class="layout">
     <!-- Profils -->
     <aside class="panel profiles">
@@ -278,7 +278,7 @@
             <div class="field"><label class="tog"><input type="checkbox" id="startHidden"> Démarrer avec le crosshair masqué</label></div>
             <div class="field"><label class="tog"><input type="checkbox" id="launchAtStartup"> Lancer au démarrage de Windows</label></div>
             <div class="field"><label class="tog"><input type="checkbox" id="autoUpdate"> Mises à jour automatiques</label></div>
-            <div class="field row gap"><button id="upd-check" class="btn sm">Vérifier maintenant</button><span id="upd-status" class="small muted"></span></div>
+            <div class="field row gap"><button id="upd-check" class="btn sm">Vérifier maintenant</button><span id="upd-status" class="small muted" role="status" aria-live="polite"></span></div>
             <p class="muted small">Roblox : joue en plein écran (F11) ou en fenêtré. Le crosshair est une fenêtre Windows au premier plan, rien n'est injecté dans le jeu. Fermer cette fenêtre laisse l'appli tourner dans la zone de notification (près de l'horloge).</p>
         </details>
     </section>

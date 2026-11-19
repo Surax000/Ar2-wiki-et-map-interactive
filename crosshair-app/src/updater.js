@@ -19,7 +19,11 @@ function isInstalled() {
     const dir = path.dirname(process.execPath);
     try { return fs.readdirSync(dir).some(f => /^Uninstall .*\.exe$/i.test(f)); } catch (e) { return false; }
 }
-function set(p) { status = Object.assign({}, status, p); onChange(status); }
+function set(p) {
+    if (status.state === 'ready' && p.state !== 'error') return;
+    status = Object.assign({}, status, p);
+    onChange(status);
+}
 const cmp = (a, b) => { const x = String(a).split('.').map(n => parseInt(n) || 0), y = String(b).split('.').map(n => parseInt(n) || 0); for (let i = 0; i < 3; i++) { if ((x[i] || 0) !== (y[i] || 0)) return (x[i] || 0) - (y[i] || 0); } return 0; };
 
 async function manualCheck() {
@@ -57,6 +61,7 @@ function init(opts) {
     return status;
 }
 async function check() {
+    if (['checking', 'downloading', 'ready'].includes(status.state)) return status;
     if (autoUpdater) { try { await autoUpdater.checkForUpdates(); } catch (e) { set({ state: 'error', error: String(e.message || e).split('\n')[0] }); } return status; }
     return manualCheck();
 }

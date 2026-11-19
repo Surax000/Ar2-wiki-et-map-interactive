@@ -119,6 +119,6 @@ jobs:
     needs: release
     uses: ./.github/workflows/test-update.yml
     with:
-      from_tag: crosshair-v1.8.1
+      from_tag: crosshair-v1.8.2
     secrets:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

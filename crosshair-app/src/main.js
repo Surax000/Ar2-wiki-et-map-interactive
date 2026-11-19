@@ -1044,7 +1044,12 @@ async function runSelftest() {
         while (['checking', 'downloading'].includes(updater.status.state) && Date.now() - t0 < 240000) await wait(1000);
         out.update = updater.status;
         write();
-        if (SELFTEST_UPDATE && updater.status.state === 'ready') { out.installing = true; write(); updater.autoUpdater.quitAndInstall(true, false); return; }
+        if (SELFTEST_UPDATE && updater.status.state === 'ready') {
+            await updater.check();
+            out.updateAfterRepeatCheck = updater.status;
+            if (updater.status.state !== 'ready') throw new Error('Le statut prêt a été perdu après une nouvelle vérification');
+            out.installing = true; write(); updater.autoUpdater.quitAndInstall(true, false); return;
+        }
     } catch (e) { out.error = String(e.stack || e); }
     write();
     app.exit(0);

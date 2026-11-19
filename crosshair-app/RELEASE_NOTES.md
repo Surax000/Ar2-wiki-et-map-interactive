@@ -1,5 +1,10 @@
 # Notes de version
 
+## v1.8.3
+- Le statut de téléchargement terminé reste affiché même après une vérification simultanée.
+- Le message indique clairement que la mise à jour est prête et qu'un redémarrage l'installera.
+- Test de non-régression : une nouvelle vérification ne doit pas masquer l'état prêt après téléchargement.
+
 ## v1.8.2
 - Gestion des profils renforcée : noms vides ou en double refusés, imports validés et renommages/suppressions contrôlés. Les profils importés et créés restent indépendants.
 - Sauvegarde de configuration atomique ; en cas de configuration illisible, le fichier original est conservé au lieu d'être remplacé par des valeurs par défaut.

@@ -161,12 +161,12 @@ function renderAuto() {
 }
 function renderUpdate() {
     const u = S.update || {}; const b = $('#upd-banner');
-    const txt = { checking: 'Recherche de mise à jour…', downloading: `Téléchargement de la v${u.version} (${u.percent || 0} %)…`, ready: `Mise à jour v${u.version} prête.`, available: `Nouvelle version v${u.version} disponible.`, none: `Tu as la dernière version (v${S.version}).`, error: `Erreur : ${u.error || ''}`, idle: '' }[u.state || 'idle'];
+    const txt = { checking: 'Recherche de mise à jour…', downloading: `Téléchargement de la v${u.version} (${u.percent || 0} %)…`, ready: `Téléchargement terminé : la mise à jour v${u.version} est prête. Redémarre pour l’installer.`, available: `Nouvelle version v${u.version} disponible.`, none: `Tu as la dernière version (v${S.version}).`, error: `Erreur : ${u.error || ''}`, idle: '' }[u.state || 'idle'];
     $('#upd-status').textContent = txt; $('#upd-status').className = 'small ' + (u.state === 'error' ? 'err' : u.state === 'ready' || u.state === 'none' ? 'ok' : 'muted');
     $('#autoUpdate').checked = S.cfg.autoUpdate !== false;
     const show = u.state === 'ready' || u.state === 'available';
     b.classList.toggle('hidden', !show);
-    if (show) { $('#upd-text').textContent = txt + (u.state === 'ready' ? " Elle s'installera aussi toute seule à la fermeture de l'appli." : u.mode === 'manual' ? ' (version portable : télécharge la nouvelle version)' : ''); $('#upd-btn').textContent = u.state === 'ready' ? 'Redémarrer et installer' : 'Télécharger'; }
+    if (show) { $('#upd-text').textContent = u.state === 'ready' ? txt : txt + (u.mode === 'manual' ? ' (version portable : télécharge la nouvelle version)' : ''); $('#upd-btn').textContent = u.state === 'ready' ? 'Redémarrer et installer' : 'Télécharger'; }
 }
 function renderAll() { renderHUD(); renderProfiles(); renderStyles(); renderCustomEditor(); renderControls(); renderHotkeys(); renderAuto(); renderUpdate(); renderPreview(); renderAC(); renderWL(); renderCK(); renderTM(); renderBK(); }
 
