@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "revision": "2026.11.19",
+  "snapshotDate": "2026-11-19",
+  "sources": [
+    {
+      "name": "Wiki communautaire Apocalypse Rising",
+      "url": "https://roblox-apocalypse-rising.fandom.com/wiki/Apocalypse_Rising_Wiki",
+      "lastDatasetUpdate": "2026-11-18"
+    },
+    {
+      "name": "Cosmétiques, accessoires et événements",
+      "url": "https://roblox-apocalypse-rising.fandom.com/wiki/Apocalypse_Rising_Wiki",
+      "lastDatasetUpdate": "2026-11-17"
+    }
+  ],
+  "notice": "Date du snapshot du dépôt, pas une confirmation officielle de chaque statistique. Les raretés et probabilités estimées sont signalées dans le site."
+}

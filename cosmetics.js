@@ -162,10 +162,12 @@
                     <div class="ev-stat" title="${c.c === 'event' ? 'Part estimée des cosmétiques de cet événement' : 'Part estimée de tous les cosmétiques trouvés hors événement'}"><i>${c.c === 'pack' ? 'Prix' : 'Part du loot'}</i><b class="text-tactical-accent">${share}</b></div>
                 </div>
                 ${c.d ? `<p class="text-xs text-white/75 leading-snug">${esc(c.d)}</p>` : ''}
-                <div class="mt-auto pt-1 flex flex-wrap gap-2"><button type="button" data-cos-open="${c.id}" class="xh-btn !py-1.5 !px-3 !text-[11px]">Où le trouver</button></div>
+                <div class="mt-auto pt-1 flex flex-wrap gap-2"><button type="button" data-cos-open="${c.id}" class="xh-btn !py-1.5 !px-3 !text-[11px]">Où le trouver</button><button type="button" data-cos-wish="${c.id}" class="xh-btn !py-1.5 !px-3 !text-[11px]">${wishLabel(c)}</button></div>
             </div>
         </article>`;
     }
+    function wished(c) { return !!(window.AR2Wishlist && AR2Wishlist.has(`cosmetic:${c.id}`)); }
+    function wishLabel(c) { return wished(c) ? 'Retirer de ma liste' : 'Ajouter à ma liste'; }
     function srcList(c) {
         if (c.c === 'pack') return `<p class="text-sm text-white/85">Ce pack s'achète dans la boutique du jeu pour <b class="text-yellow-300">${c.rbx || '?'} Robux</b>. Il ne se loote pas et n'apparaît jamais sur la carte.</p>`;
         if (!c.src || !c.src.length) return '<p class="text-sm text-tactical-muted">Pas encore documenté sur le wiki.</p>';
@@ -204,6 +206,7 @@
             <div class="min-w-0">
                 <h2 class="text-2xl font-extrabold text-white leading-tight pr-10">${esc(c.n)}</h2>
                 ${c.d ? `<p class="text-sm text-white/80 mt-1">${esc(c.d)}</p>` : ''}
+                <div class="flex flex-wrap gap-2 mt-3"><button type="button" data-cos-wish="${c.id}" class="xh-btn">${wishLabel(c)}</button><button type="button" data-cos-find="${c.id}" class="xh-btn">Voir dans Find Item</button></div>
                 <p class="text-[12px] text-tactical-muted mt-1">${esc(CATS[c.c].desc)}${c.e ? ` Période : ${esc(SEASONS[c.e].when)}.` : ''}</p>
                 <div class="ev-sec">Où le trouver</div>
                 ${srcList(c)}
@@ -335,9 +338,18 @@
     }
     function close() { cOpen = null; const m = document.getElementById('cos-modal'); m.classList.add('hidden'); m.classList.remove('flex'); }
     function onClick(ev) {
-        const t = ev.target.closest('[data-cos-open],[data-cos-slot],[data-cos-cat],[data-cos-more],[data-cos-map],[data-cos-ev],[data-cos-boss],[data-cos-loc]'); if (!t) return;
+        const t = ev.target.closest('[data-cos-open],[data-cos-slot],[data-cos-cat],[data-cos-more],[data-cos-map],[data-cos-ev],[data-cos-boss],[data-cos-loc],[data-cos-wish],[data-cos-find]'); if (!t) return;
         const d = t.dataset;
         if (d.cosOpen) { open(d.cosOpen); return; }
+        if (d.cosWish) {
+            const c = byId(d.cosWish);
+            if (c && window.AR2Wishlist) {
+                AR2Wishlist.toggle(c.n, `cosmetic:${c.id}`);
+                document.querySelectorAll('[data-cos-wish]').forEach(button => { const item = byId(button.dataset.cosWish); if (item) button.textContent = wishLabel(item); });
+            }
+            return;
+        }
+        if (d.cosFind) { close(); if (typeof goFindItem === 'function') goFindItem(`cosmetic:${d.cosFind}`); return; }
         if (d.cosSlot) { cSlot = d.cosSlot; cLimit = 48; renderGrid(); return; }
         if (d.cosCat) {
             cCat = d.cosCat; cLimit = 48; renderGrid();
@@ -364,7 +376,11 @@
         }
     }
 
-    window.AR2Cos = { DATA, SLOTS, CATS, SEASONS, render, open, stats, links, count: () => DATA.length };
+    window.AR2Cos = { DATA, SLOTS, CATS, SEASONS, render, open, stats, links, find: byId, thumbnail: c => c ? pic(c, 'w-8 h-8 object-contain') : '', count: () => DATA.length };
+    if (window.AR2SetCosmeticMap) window.AR2SetCosmeticMap(DATA.map(c => Object.assign({ id: c.id, name: c.n }, links(c))));
+    window.addEventListener('ar2:wishlistchange', () => {
+        document.querySelectorAll('[data-cos-wish]').forEach(button => { const item = byId(button.dataset.cosWish); if (item) button.textContent = wishLabel(item); });
+    });
     window.cosRender = render;
     if (typeof currentGroup !== 'undefined' && currentGroup === 'cosmetiques') render();
     if (typeof renderMainTabs === 'function') renderMainTabs();

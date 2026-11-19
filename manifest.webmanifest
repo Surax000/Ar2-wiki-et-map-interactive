@@ -1,0 +1,19 @@
+{
+  "name": "AR2 Wiki & Map Interactive",
+  "short_name": "AR2 Wiki",
+  "description": "Wiki communautaire, comparateur d'armes et carte interactive d'Apocalypse Rising 2.",
+  "lang": "fr",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0f1115",
+  "theme_color": "#0f1115",
+  "icons": [
+    {
+      "src": "pwa-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
