@@ -7,6 +7,11 @@ on:
         description: 'Version installée au départ (tag de release)'
         required: true
         default: 'crosshair-v1.1.0'
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/test-update.yml'
 
 jobs:
   update:
@@ -16,8 +21,9 @@ jobs:
         shell: pwsh
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          FROM_TAG: ${{ inputs.from_tag || 'crosshair-v1.8.1' }}
         run: |
-          gh release download "${{ inputs.from_tag }}" --repo "${{ github.repository }}" --pattern 'AR2-Crosshair-Setup.exe' --dir old
+          gh release download "$env:FROM_TAG" --repo "${{ github.repository }}" --pattern 'AR2-Crosshair-Setup.exe' --dir old
           Start-Process -FilePath "old\AR2-Crosshair-Setup.exe" -ArgumentList '/S' -Wait
           $exe = Join-Path $env:LOCALAPPDATA 'Programs\AR2 Crosshair\AR2 Crosshair.exe'
           function Get-AppVersion {
