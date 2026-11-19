@@ -15,6 +15,11 @@ on:
     secrets:
       GH_TOKEN:
         required: false
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/test-update.yml'
 
 jobs:
   update:
@@ -24,17 +29,24 @@ jobs:
         shell: pwsh
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN || secrets.GITHUB_TOKEN }}
-          FROM_TAG: ${{ inputs.from_tag }}
+          FROM_TAG: ${{ inputs.from_tag || 'crosshair-v1.8.1' }}
         run: |
           gh release download "$env:FROM_TAG" --repo "${{ github.repository }}" --pattern 'AR2-Crosshair-Setup.exe' --dir old
-          Start-Process -FilePath "old\AR2-Crosshair-Setup.exe" -ArgumentList '/S' -Wait
+          $install = Start-Process -FilePath "old\AR2-Crosshair-Setup.exe" -ArgumentList '/S','/currentuser' -Wait -PassThru
+          if ($install.ExitCode -ne 0) { throw "Installation de $env:FROM_TAG échouée: code $($install.ExitCode)" }
           $exe = Join-Path $env:LOCALAPPDATA 'Programs\AR2 Crosshair\AR2 Crosshair.exe'
+          if (-not (Test-Path $exe)) {
+            $installed = Get-ChildItem "$env:LOCALAPPDATA\Programs" -Recurse -Depth 3 -Filter 'AR2 Crosshair.exe' -ErrorAction SilentlyContinue | Select-Object -First 1
+            if ($installed) { $exe = $installed.FullName }
+          }
+          if (-not (Test-Path $exe)) { throw "Application $env:FROM_TAG introuvable après installation" }
           function Get-AppVersion {
             $k = Get-ChildItem 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall' -ErrorAction SilentlyContinue |
               Get-ItemProperty -ErrorAction SilentlyContinue | Where-Object { $_.DisplayName -like 'AR2 Crosshair*' } | Select-Object -First 1
             if ($k) { return [string]$k.DisplayVersion } else { return $null }
           }
           $before = Get-AppVersion
+          if (-not $before) { throw "Version $env:FROM_TAG absente du registre après installation" }
           "Version installée au départ (registre) : $before"
           $latest = (gh release view --repo "${{ github.repository }}" --json tagName -q .tagName)
           "Dernière release : $latest"
