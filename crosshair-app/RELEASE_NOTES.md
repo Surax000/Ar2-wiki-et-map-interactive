@@ -1,5 +1,11 @@
 # Notes de version
 
+## v1.8.2
+- Gestion des profils renforcée : noms vides ou en double refusés, imports validés et renommages/suppressions contrôlés. Les profils importés et créés restent indépendants.
+- Sauvegarde de configuration atomique ; en cas de configuration illisible, le fichier original est conservé au lieu d'être remplacé par des valeurs par défaut.
+- Guide du télémètre réorganisé avec un schéma et des explications exactes sur le FOV vertical, la lunette, la calibration, l'écart au viseur et les limites des estimations.
+- Format des paramètres existants inchangé ; les mises à jour automatiques de l'installeur restent activées.
+
 ## v1.8.1
 - Correction de la suppression des profils : le profil actif reste correctement sélectionné même si un profil situé avant lui est supprimé.
 - Les nouveaux profils possèdent désormais une copie indépendante de leurs réglages personnalisés.

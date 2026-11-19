@@ -8,7 +8,7 @@
 </head>
 <body>
 <header class="top">
-    <div class="brand"><img src="assets/icon.png" alt=""><div><b>AR2 Crosshair</b><span id="ver">v1.8.1</span></div></div>
+    <div class="brand"><img src="assets/icon.png" alt=""><div><b>AR2 Crosshair</b><span id="ver">v1.8.2</span></div></div>
     <div class="top-actions">
         <button id="vis-btn" class="btn primary">Crosshair affiché</button>
         <span class="hint"><span class="kbd">Ctrl+Alt+X</span> afficher / masquer le viseur</span>
@@ -27,6 +27,7 @@
             <button id="p-rename" class="btn sm">Renommer</button>
             <button id="p-del" class="btn sm danger">Supprimer</button>
         </div>
+        <div id="profile-msg" class="muted small" aria-live="polite"></div>
         <h3 class="mt">Code de partage</h3>
         <p class="muted">Copie le code de ton crosshair pour le partager, ou colle un code créé sur le site AR2 Armory.</p>
         <div class="row gap"><input id="code-out" readonly><button id="code-copy" class="btn sm">Copier</button></div>
@@ -172,25 +173,38 @@
             <div id="sp-info" class="small muted"></div>
         </details>
         <details open id="rg-box"><summary>Télémètre (distance au viseur)</summary>
-            <div class="help-card">
-                <b>À quoi sert le télémètre ?</b>
-                <p>Il estime la distance d'un joueur grâce à sa taille apparente dans ta lunette. Ce n'est pas le télémètre laser du jeu : tu compares visuellement la hauteur de l'ennemi aux repères affichés à côté du viseur.</p>
-                <b class="help-title">Utilisation en 4 étapes</b>
-                <ol>
-                    <li>Active l'affichage avec <span class="kbd">Ctrl+Alt+D</span>.</li>
-                    <li>Choisis l'arme et la lunette réellement utilisées (ou active le suivi de l'arme).</li>
-                    <li>Quand tu vises un joueur debout, compare sa hauteur au trait le plus proche.</li>
-                    <li>Lis le nombre sous ce trait : c'est la distance estimée en <b>studs</b>. Les valeurs en dessous donnent les dégâts au corps et la chute théorique.</li>
-                </ol>
-                <p class="muted">Astuce : <span class="kbd">Ctrl+Alt+Maj+D</span> fait défiler les lunettes disponibles.</p>
-                <b class="help-title">Lire les repères</b>
-                <ul>
-                    <li><b>Trait vertical :</b> hauteur théorique d'un personnage debout à la distance indiquée.</li>
-                    <li><b>Nombre principal :</b> distance en studs (25, 50, 75, 100…).</li>
-                    <li><b>Nombre juste dessous :</b> dégâts estimés au corps avec l'arme sélectionnée, à cette distance.</li>
-                    <li><b>Dernière valeur :</b> chute de balle exprimée en hauteurs de tête. C'est une estimation basée sur la vitesse de balle enregistrée.</li>
-                </ul>
-                <p class="muted">La taille réelle du personnage, sa posture, le relief et le fait qu'il soit en mouvement peuvent fausser la lecture. Utilise le repère le plus proche : la distance n'est pas une mesure laser exacte.</p>
+            <div class="range-guide">
+                <div class="range-guide-head">
+                    <span class="range-guide-kicker">Le principe en un coup d’œil</span>
+                    <b>Comparer une hauteur, pas mesurer avec un laser</b>
+                    <p>La jauge calcule la hauteur qu’aurait un personnage debout à plusieurs distances. En jeu, compare la silhouette visible dans ta lunette au trait de hauteur le plus proche ; le nombre associé donne une estimation en studs. L’application ne détecte pas la cible.</p>
+                </div>
+                <div class="range-diagram">
+                    <svg viewBox="0 0 560 176" role="img" aria-label="Comparaison de la hauteur apparente d'un joueur avec un repère de télémètre">
+                        <path d="M37 78h18m18 0h18m-27-27v18m0 18v18" stroke="#00ff88" stroke-width="2" stroke-linecap="round"/>
+                        <circle cx="64" cy="78" r="2.5" fill="#00ff88"/>
+                        <text x="64" y="126" fill="#8b949e" font-size="11" text-anchor="middle" font-family="Segoe UI, sans-serif">viseur</text>
+                        <circle cx="224" cy="43" r="10" fill="#e5c07b"/>
+                        <path d="M210 59q14-9 28 0l8 34h-8l-3 39h-9l-2-29-2 29h-9l-3-39h-8z" fill="#e5c07b" fill-opacity=".72"/>
+                        <line x1="258" y1="33" x2="258" y2="132" stroke="#e5c07b" stroke-width="2"/>
+                        <path d="M252 40l6-7 6 7M252 125l6 7 6-7" fill="none" stroke="#e5c07b" stroke-width="2"/>
+                        <text x="232" y="157" fill="#e5c07b" font-size="11" text-anchor="middle" font-family="Segoe UI, sans-serif">hauteur apparente</text>
+                        <line x1="392" y1="132" x2="392" y2="47" stroke="#00ff88" stroke-width="3"/>
+                        <path d="M385 54l7-7 7 7M385 125l7 7 7-7" fill="none" stroke="#00ff88" stroke-width="2"/>
+                        <line x1="378" y1="47" x2="407" y2="47" stroke="#00ff88" stroke-width="2"/>
+                        <line x1="378" y1="132" x2="407" y2="132" stroke="#00ff88" stroke-width="2"/>
+                        <text x="432" y="89" fill="#00ff88" font-size="13" font-weight="700" font-family="Segoe UI, sans-serif">100 studs</text>
+                        <text x="420" y="157" fill="#8b949e" font-size="11" text-anchor="middle" font-family="Segoe UI, sans-serif">trait de référence</text>
+                    </svg>
+                    <p>Exemple : si un joueur debout a à peu près la hauteur du trait « 100 », lis environ 100 studs — pas une position exacte.</p>
+                </div>
+                <div class="range-guide-grid">
+                    <article><b>1 · Choisir la bonne vue</b><p>Active la jauge avec <span class="kbd">Ctrl+Alt+D</span>. Sélectionne l’arme et le zoom réellement utilisés, ou active le suivi de l’arme de la barre rapide.</p></article>
+                    <article><b>2 · Régler le FOV et le zoom</b><p>Le FOV demandé est le champ de vision <b>vertical</b> de Roblox. Un FOV plus large rend le joueur plus petit à l’écran ; un zoom plus fort le rend plus grand. Garde ces valeurs identiques en jeu et dans l’application. <span class="kbd">Ctrl+Alt+Maj+D</span> change de lunette.</p></article>
+                    <article><b>3 · Calibrer une fois</b><p>Avec le FOV et la lunette choisis, utilise un joueur debout à une distance connue (par exemple 100 studs). Ajuste « Calibration » jusqu’à ce que sa hauteur corresponde au trait « 100 ». Recalibre si le FOV, le zoom ou l’affichage change.</p></article>
+                    <article><b>4 · Lire les informations</b><p>Le grand nombre est la distance en studs ; dessous, les dégâts estimés au corps et la chute théorique en hauteurs de tête. Vert = dégâts maximums, jaune = dégâts réduits, rouge = dégâts minimums.</p></article>
+                </div>
+                <div class="range-guide-foot"><b>Écart au viseur</b> déplace toute la jauge à gauche ou à droite du centre ; il ne change pas la distance calculée. <b>Taille du texte</b> et <b>opacité</b> ne changent que l’affichage. La posture, la taille du personnage, les obstacles, la perspective et l’alignement rendent l’estimation approximative : compare au trait le plus proche, sans la traiter comme une mesure laser.</div>
             </div>
             <div class="field"><label class="tog"><input type="checkbox" id="rg-show"> Afficher le télémètre</label></div>
             <div class="field"><label class="tog"><input type="checkbox" id="rg-follow"> Suivre l'arme de la barre rapide (utilise les emplacements configurés dans « Changement d'arme automatique »)</label></div>

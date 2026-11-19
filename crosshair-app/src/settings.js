@@ -2,7 +2,7 @@
 const C = window.AR2Crosshair;
 // Mode démo (ouverture dans un navigateur, sans Electron)
 if (!window.xh) {
-    const st = { cfg: { active: 0, profiles: C.PRESETS.map((p, i) => ({ id: 'p' + i, name: p.name, settings: C.withDefaults(p.s) })), display: 0, autoUpdate: true, autoSwitch: { enabled: true, onlyRoblox: true, holsterHide: true, adsHide: false, adsMode: 'hold', slots: {}, labels: {} }, hotkeys: { toggle: 'Control+Alt+X', settings: 'Control+Alt+S', nextProfile: 'Control+Alt+P', center: 'Control+Alt+C', autoColor: 'Control+Alt+A', checklist: 'Control+Alt+O', checkNext: 'Control+Alt+N', timer: 'Control+Alt+T', timer1: 'Control+Alt+F1', timer2: 'Control+Alt+F2', timer3: 'Control+Alt+F3', timerStop: 'Control+Alt+R', spotlight: 'Control+Alt+W', wiki: 'Control+Alt+Shift+W', range: 'Control+Alt+D', rangeZoom: 'Control+Alt+Shift+D', compass: 'Control+Alt+K', compassNext: 'Control+Alt+J', compassPrev: 'Control+Alt+Shift+J', map: 'Control+Alt+M', mapWorld: 'Control+Alt+Shift+M', themeNext: '', up: 'Control+Alt+Up', down: 'Control+Alt+Down', left: 'Control+Alt+Left', right: 'Control+Alt+Right' }, theme: 'classic', range: { show: false, weapon: 'm4a1', followSlot: true, zoomBy: {}, fov: 70, calib: 1, side: 'right', gap: 70, onlyAds: false, opacity: 0.9, scale: 1 }, compass: { show: false, route: null, leg: 0, opacity: 0.92, scale: 1, speed: 'sprint', top: 10 }, spotlight: { opacity: 0.9, hideOnBlur: true }, tmap: { world: 'auto', last: 'halsey', opacity: 0.85, size: 0.72, bld: true, hidden: true, custom: true, route: true, events: false, labels: true }, startHidden: false, launchAtStartup: false, moveStep: 1, autoColor: JSON.parse(JSON.stringify(window.AR2AutoColor.DEFAULTS)), whitelist: { enabled: false, apps: [{ id: 'roblox', name: 'Roblox', match: 'Roblox', on: true }, { id: 'minecraft', name: 'Minecraft', match: 'Minecraft', on: false }] }, checklist: { title: 'Objectifs', overlay: false, corner: 'tr', scale: 1, opacity: 0.85, hideDone: false, items: [{ id: 'a', text: 'Trouver un sac à dos', done: true }, { id: 'b', text: 'Une arme à feu + 2 chargeurs', done: false }] }, timer: { overlay: true, corner: 'tl', scale: 1, opacity: 0.9, sound: true, volume: 0.5, warn: 30, warnBeep: false, keepDone: 45, presets: [{ id: 'caisses', name: 'Caisses militaires', min: 15 }, { id: 'helico', name: 'Hélico crashé', min: 10 }, { id: 'boost', name: 'Boost', min: 5 }], running: [] } }, autoColor: { samples: 0 }, fgTitle: null, presets: { debut: 'Début de partie', militaire: 'Run militaire', boss: 'Chasse au boss' }, visible: true, displays: [{ i: 0, label: 'Écran 1 – 1920×1080 (principal)' }], version: '1.8.1', update: { state: 'none', mode: 'auto', version: '1.8.1' }, hook: { started: true }, installed: true };
+    const st = { cfg: { active: 0, profiles: C.PRESETS.map((p, i) => ({ id: 'p' + i, name: p.name, settings: C.withDefaults(p.s) })), display: 0, autoUpdate: true, autoSwitch: { enabled: true, onlyRoblox: true, holsterHide: true, adsHide: false, adsMode: 'hold', slots: {}, labels: {} }, hotkeys: { toggle: 'Control+Alt+X', settings: 'Control+Alt+S', nextProfile: 'Control+Alt+P', center: 'Control+Alt+C', autoColor: 'Control+Alt+A', checklist: 'Control+Alt+O', checkNext: 'Control+Alt+N', timer: 'Control+Alt+T', timer1: 'Control+Alt+F1', timer2: 'Control+Alt+F2', timer3: 'Control+Alt+F3', timerStop: 'Control+Alt+R', spotlight: 'Control+Alt+W', wiki: 'Control+Alt+Shift+W', range: 'Control+Alt+D', rangeZoom: 'Control+Alt+Shift+D', compass: 'Control+Alt+K', compassNext: 'Control+Alt+J', compassPrev: 'Control+Alt+Shift+J', map: 'Control+Alt+M', mapWorld: 'Control+Alt+Shift+M', themeNext: '', up: 'Control+Alt+Up', down: 'Control+Alt+Down', left: 'Control+Alt+Left', right: 'Control+Alt+Right' }, theme: 'classic', range: { show: false, weapon: 'm4a1', followSlot: true, zoomBy: {}, fov: 70, calib: 1, side: 'right', gap: 70, onlyAds: false, opacity: 0.9, scale: 1 }, compass: { show: false, route: null, leg: 0, opacity: 0.92, scale: 1, speed: 'sprint', top: 10 }, spotlight: { opacity: 0.9, hideOnBlur: true }, tmap: { world: 'auto', last: 'halsey', opacity: 0.85, size: 0.72, bld: true, hidden: true, custom: true, route: true, events: false, labels: true }, startHidden: false, launchAtStartup: false, moveStep: 1, autoColor: JSON.parse(JSON.stringify(window.AR2AutoColor.DEFAULTS)), whitelist: { enabled: false, apps: [{ id: 'roblox', name: 'Roblox', match: 'Roblox', on: true }, { id: 'minecraft', name: 'Minecraft', match: 'Minecraft', on: false }] }, checklist: { title: 'Objectifs', overlay: false, corner: 'tr', scale: 1, opacity: 0.85, hideDone: false, items: [{ id: 'a', text: 'Trouver un sac à dos', done: true }, { id: 'b', text: 'Une arme à feu + 2 chargeurs', done: false }] }, timer: { overlay: true, corner: 'tl', scale: 1, opacity: 0.9, sound: true, volume: 0.5, warn: 30, warnBeep: false, keepDone: 45, presets: [{ id: 'caisses', name: 'Caisses militaires', min: 15 }, { id: 'helico', name: 'Hélico crashé', min: 10 }, { id: 'boost', name: 'Boost', min: 5 }], running: [] } }, autoColor: { samples: 0 }, fgTitle: null, presets: { debut: 'Début de partie', militaire: 'Run militaire', boss: 'Chasse au boss' }, visible: true, displays: [{ i: 0, label: 'Écran 1 – 1920×1080 (principal)' }], version: '1.8.2', update: { state: 'none', mode: 'auto', version: '1.8.2' }, hook: { started: true }, installed: true };
     const cur = () => st.cfg.profiles[st.cfg.active].settings;
     window.xh = {
         getState: async () => st, update: async p => { Object.assign(cur(), p); return st; },
@@ -80,6 +80,11 @@ function mini(cv, s, size) {
 function renderProfiles() {
     $('#profile-list').innerHTML = S.cfg.profiles.map((p, i) => `<div class="pitem ${i === S.cfg.active ? 'active' : ''}" data-p="${i}"><canvas width="28" height="28"></canvas><span></span></div>`).join('');
     document.querySelectorAll('.pitem').forEach((el, i) => { el.querySelector('span').textContent = S.cfg.profiles[i].name; mini(el.querySelector('canvas'), S.cfg.profiles[i].settings, 28); });
+}
+function profileMessage(text, ok = false) {
+    const el = $('#profile-msg');
+    el.textContent = text;
+    el.className = 'small ' + (ok ? 'ok' : 'err');
 }
 function renderStyles() {
     const s = cur();
@@ -215,21 +220,37 @@ document.addEventListener('click', async e => {
     else if (t.dataset.zoom) { zoom = +t.dataset.zoom; renderControls(); renderPreview(); }
 });
 $('#vis-btn').onclick = async () => { S = await xh.setVisible(!S.visible); renderControls(); };
-$('#p-add').onclick = async () => { S = await xh.profile({ action: 'add', name: `Mon profil ${S.cfg.profiles.length + 1}` }); renderAll(); };
+$('#p-add').onclick = async () => {
+    try { S = await xh.profile({ action: 'add', name: `Mon profil ${S.cfg.profiles.length + 1}` }); renderAll(); profileMessage('Profil créé avec une copie indépendante des réglages.', true); }
+    catch (err) { profileMessage(err.message || String(err)); }
+};
 $('#p-rename').onclick = async () => {
     const i = S.cfg.active, el = document.querySelector(`.pitem[data-p="${i}"] span`);
     const inp = document.createElement('input'); inp.value = S.cfg.profiles[i].name; inp.style.width = '100%';
     el.replaceWith(inp); inp.focus(); inp.select();
-    const done = async () => { S = await xh.profile({ action: 'rename', index: i, name: inp.value.trim() }); renderProfiles(); };
-    inp.addEventListener('keydown', ev => { if (ev.key === 'Enter') inp.blur(); if (ev.key === 'Escape') { inp.value = S.cfg.profiles[i].name; inp.blur(); } });
+    let cancelled = false;
+    const done = async () => {
+        if (cancelled) { renderProfiles(); return; }
+        try { S = await xh.profile({ action: 'rename', index: i, name: inp.value }); renderProfiles(); profileMessage('Profil renommé.', true); }
+        catch (err) { renderProfiles(); profileMessage(err.message || String(err)); }
+    };
+    inp.addEventListener('keydown', ev => {
+        if (ev.key === 'Enter') inp.blur();
+        if (ev.key === 'Escape') { cancelled = true; inp.blur(); }
+    });
     inp.addEventListener('blur', done, { once: true });
 };
-$('#p-del').onclick = async () => { if (S.cfg.profiles.length <= 1) return; if (!confirm(`Supprimer le profil « ${S.cfg.profiles[S.cfg.active].name} » ?`)) return; S = await xh.profile({ action: 'delete', index: S.cfg.active }); renderAll(); };
+$('#p-del').onclick = async () => {
+    if (S.cfg.profiles.length <= 1) return profileMessage('Le dernier profil ne peut pas être supprimé.');
+    if (!confirm(`Supprimer le profil « ${S.cfg.profiles[S.cfg.active].name} » ?`)) return;
+    try { S = await xh.profile({ action: 'delete', index: S.cfg.active }); renderAll(); profileMessage('Profil supprimé.', true); }
+    catch (err) { profileMessage(err.message || String(err)); }
+};
 $('#p-reset').onclick = async () => { if (!confirm("Remettre les profils d'origine ? Tes profils perso seront effacés.")) return; S = await xh.profile({ action: 'reset' }); renderAll(); };
 $('#code-copy').onclick = () => { const i = $('#code-out'); i.select(); navigator.clipboard.writeText(i.value).catch(() => document.execCommand('copy')); $('#code-msg').textContent = 'Code copié.'; $('#code-msg').className = 'small ok'; };
 $('#code-import').onclick = async () => {
     try { S = await xh.profile({ action: 'import', code: $('#code-in').value, name: 'Profil importé' }); $('#code-in').value = ''; $('#code-msg').textContent = 'Profil importé.'; $('#code-msg').className = 'small ok'; renderAll(); }
-    catch (err) { $('#code-msg').textContent = 'Code invalide.'; $('#code-msg').className = 'small err'; }
+    catch (err) { $('#code-msg').textContent = err.message || 'Code invalide.'; $('#code-msg').className = 'small err'; }
 };
 $('#center').onclick = () => upd({ offsetX: 0, offsetY: 0 });
 $('#step').onchange = async e => { S = await xh.setConfig({ moveStep: parseInt(e.target.value) || 1 }); };

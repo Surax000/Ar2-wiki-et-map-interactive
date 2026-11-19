@@ -106,6 +106,19 @@ textarea:focus { border-color: var(--c-acc,#00ff88); }
 .hudinfo { background: var(--c-bg,#0f1115); border: 1px solid var(--c-border,#2a3140); border-radius: 9px; padding: 8px 10px; font-size: 11.5px; }
 .hudinfo b { color: var(--c-acc,#00ff88); }
 .kbd { font: 700 10.5px Consolas, monospace; padding: 1px 5px; border: 1px solid var(--c-border,#2a3140); border-radius: 5px; color: var(--c-text,#e6edf3); }
+.range-guide { margin: 8px 0 12px; padding: 12px; border: 1px solid color-mix(in srgb, var(--c-acc,#00ff88) 35%, var(--c-border,#2a3140)); border-radius: 12px; background: linear-gradient(145deg, color-mix(in srgb, var(--c-acc,#00ff88) 7%, var(--c-card,#161a21)), var(--c-bg,#0f1115)); }
+.range-guide-head { display: grid; gap: 5px; }
+.range-guide-head > b { font-size: 13px; color: var(--c-text,#e6edf3); }
+.range-guide-head p, .range-guide-grid p { margin: 0; color: var(--c-muted,#8b949e); font-size: 11px; line-height: 1.5; }
+.range-guide-kicker { color: var(--c-acc,#00ff88); font: 700 9px Consolas, monospace; letter-spacing: .12em; text-transform: uppercase; }
+.range-diagram { margin: 10px 0; padding: 8px; border: 1px solid var(--c-border,#2a3140); border-radius: 9px; background: #0b1117; }
+.range-diagram svg { display: block; width: 100%; height: auto; }
+.range-diagram p { margin: 4px 0 0; text-align: center; color: var(--c-muted,#8b949e); font-size: 10px; }
+.range-guide-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 7px; }
+.range-guide-grid article { padding: 8px; border: 1px solid var(--c-border,#2a3140); border-radius: 8px; background: color-mix(in srgb, var(--c-bg,#0f1115) 74%, transparent); }
+.range-guide-grid article b { display: block; margin-bottom: 4px; color: var(--c-text,#e6edf3); font-size: 10.5px; }
+.range-guide-foot { margin-top: 8px; padding: 8px; border-left: 2px solid #e5c07b; background: #e5c07b0d; color: var(--c-muted,#8b949e); font-size: 10.5px; line-height: 1.5; }
+.range-guide-foot b { color: #e5c07b; }
 
 /* v1.6 : catégories et sous-catégories */
 .layout.v2 { grid-template-columns: 220px minmax(0, 1fr) 360px; }

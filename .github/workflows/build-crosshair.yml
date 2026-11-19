@@ -27,6 +27,8 @@ jobs:
         with:
           node-version: 20
       - run: npm ci
+      - name: Tests de non-régression des profils
+        run: npm test
       - name: Build installeur + portable + zip
         run: npx electron-builder --win --x64 --publish never
         env:

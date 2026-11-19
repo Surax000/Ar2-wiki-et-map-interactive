@@ -695,17 +695,35 @@
                 <h2 class="text-2xl font-extrabold text-white tracking-tight">Balistique &amp; chute de balle</h2>
                 <p class="text-xs text-tactical-muted mt-1 max-w-3xl">Choisis une arme, une lunette et la distance de ta cible : le simulateur montre où viser au-dessus de la tête dans le réticule, le temps de vol de la balle et l'avance à prendre sur une cible qui court. Les calculs utilisent la vitesse de balle du wiki ; la gravité et la conversion studs ↔ mètres sont des estimations (modifiables).</p>
             </div>
-            <div class="bg-tactical-card border border-tactical-accent/30 rounded-2xl p-4 mb-5">
+            <div id="rangefinder-guide" class="bg-tactical-card border border-tactical-accent/30 rounded-2xl p-4 mb-5">
                 <div class="text-[10px] font-bold uppercase tracking-widest text-tactical-accent mb-2">Guide — télémètre de l'application AR2 Crosshair</div>
-                <h3 class="text-lg font-extrabold text-white mb-2">Estimer la distance avec la taille du joueur</h3>
-                <p class="text-sm text-gray-300 leading-relaxed">Le télémètre de l'application n'est pas le Military Rangefinder du jeu : c'est un <b class="text-white">stadiamètre</b>. Il affiche des traits correspondant à la hauteur théorique d'un personnage debout à différentes distances. En jeu, active-le avec <b class="text-white">Ctrl+Alt+D</b>, choisis la bonne arme et la bonne lunette, puis compare la hauteur du joueur dans ta lunette au trait le plus proche. Le nombre sous ce trait donne une distance approximative en studs.</p>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-4 text-xs text-gray-300">
-                    <div class="rounded-xl bg-black/20 p-3"><b class="text-white block mb-1">1. Bien régler l'affichage</b>Le FOV vertical doit correspondre à celui de Roblox. Choisis le grossissement exact de ta lunette. Si les repères ne correspondent toujours pas, calibre avec un ami debout à une distance connue, par exemple 100 studs.</div>
-                    <div class="rounded-xl bg-black/20 p-3"><b class="text-white block mb-1">2. Lire les chiffres</b>Le grand nombre indique la distance (studs), celui juste dessous les dégâts estimés au corps, et la dernière valeur la chute théorique en hauteurs de tête.</div>
-                    <div class="rounded-xl bg-black/20 p-3"><b class="text-white block mb-1">3. Comprendre les couleurs</b>Vert = dégâts maximums conservés, jaune = dégâts qui diminuent avec la distance, rouge = dégâts minimums de l'arme.</div>
-                    <div class="rounded-xl bg-black/20 p-3"><b class="text-white block mb-1">4. Ajuster sans fausser la mesure</b>« Écart au viseur » déplace seulement la jauge. « Taille du texte » et « Opacité » changent son apparence, pas les calculs. Ctrl+Alt+Maj+D change de lunette.</div>
+                <h3 class="text-lg font-extrabold text-white mb-2">Comparer la silhouette à un repère de hauteur</h3>
+                <p class="text-sm text-gray-300 leading-relaxed">Ce n'est pas le Military Rangefinder du jeu et ce n'est pas un radar. Le stadiamètre dessine des traits à la hauteur théorique d'un personnage debout selon la distance. Active-le avec <b class="text-white">Ctrl+Alt+D</b>, puis compare la silhouette entière d'un joueur au trait le plus proche : le chiffre associé est une estimation en studs.</p>
+                <div class="grid grid-cols-1 lg:grid-cols-[1fr_1fr] gap-3 mt-4">
+                    <div class="rounded-xl bg-black/20 border border-tactical-border p-3">
+                        <svg viewBox="0 0 560 160" class="w-full" role="img" aria-label="La hauteur d'un joueur debout correspond au trait théorique de 100 studs">
+                            <path d="M30 74h18m18 0h18m-27-27v18m0 18v18" stroke="#00ff88" stroke-width="2" stroke-linecap="round"/><circle cx="57" cy="74" r="2.5" fill="#00ff88"/>
+                            <circle cx="211" cy="37" r="9" fill="#e5c07b"/><path d="M198 51q13-8 26 0l7 31h-7l-3 35h-8l-2-26-2 26h-8l-3-35h-7z" fill="#e5c07b" fill-opacity=".75"/>
+                            <line x1="244" y1="28" x2="244" y2="117" stroke="#e5c07b" stroke-width="2"/><path d="M239 34l5-6 5 6M239 111l5 6 5-6" fill="none" stroke="#e5c07b" stroke-width="2"/>
+                            <line x1="390" y1="117" x2="390" y2="28" stroke="#00ff88" stroke-width="3"/><path d="M384 35l6-7 6 7M384 110l6 7 6-7" fill="none" stroke="#00ff88" stroke-width="2"/>
+                            <line x1="378" y1="28" x2="402" y2="28" stroke="#00ff88" stroke-width="2"/><line x1="378" y1="117" x2="402" y2="117" stroke="#00ff88" stroke-width="2"/>
+                            <text x="211" y="145" fill="#e5c07b" font-size="11" text-anchor="middle" font-family="Inter, sans-serif">Joueur debout</text><text x="448" y="78" fill="#00ff88" font-size="12" font-weight="700" font-family="Inter, sans-serif">100 studs</text>
+                            <text x="390" y="145" fill="#8b949e" font-size="11" text-anchor="middle" font-family="Inter, sans-serif">Trait théorique</text>
+                        </svg>
+                        <p class="text-[10px] text-tactical-muted text-center">Hauteurs proches → distance estimée proche de 100 studs.</p>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-gray-300">
+                        <div class="rounded-xl bg-black/20 p-3"><b class="text-white block mb-1">FOV vertical</b>Reprends le champ de vision vertical de Roblox, pas la résolution. Un FOV plus large fait paraître le joueur plus petit et décale les repères.</div>
+                        <div class="rounded-xl bg-black/20 p-3"><b class="text-white block mb-1">Arme et zoom</b>Choisis l'arme et la lunette réellement utilisées, ou active le suivi de la barre rapide. Un zoom plus fort agrandit la silhouette. <b>Ctrl+Alt+Maj+D</b> passe à la lunette suivante.</div>
+                        <div class="rounded-xl bg-black/20 p-3"><b class="text-white block mb-1">Calibration</b>Avec FOV et zoom réglés, place un joueur debout à une distance connue (ex. 100 studs), puis ajuste le multiplicateur jusqu'à ce que sa hauteur corresponde au trait « 100 ». Recalibre si tu changes de FOV ou de zoom.</div>
+                        <div class="rounded-xl bg-black/20 p-3"><b class="text-white block mb-1">Écart au viseur</b>Déplace seulement la jauge à gauche ou à droite pour libérer la cible ; cela ne change pas le calcul. Taille du texte et opacité ne changent que l'affichage.</div>
+                    </div>
                 </div>
-                <p class="text-[11px] text-tactical-muted mt-3">La lecture reste approximative : posture, taille du personnage, mouvement, relief, FOV et calibration peuvent modifier le résultat. La chute de balle est une estimation calculée à partir des données de vitesse disponibles, pas une garantie de trajectoire exacte.</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3 text-xs text-gray-300">
+                    <div class="rounded-xl bg-black/20 p-3"><b class="text-white block mb-1">Lire les informations</b>Le grand nombre indique les studs ; dessous : dégâts estimés au corps, puis chute en hauteurs de tête. Vert = dégâts maximums, jaune = dégâts réduits, rouge = dégâts minimums.</div>
+                    <div class="rounded-xl border border-tactical-gold/30 bg-tactical-gold/5 p-3"><b class="text-tactical-gold block mb-1">Précision et limites</b>Les repères supposent un personnage debout de taille standard. Posture, mouvement, relief, perspective, obstacles, FOV, résolution et calibration créent des écarts : prends le trait le plus proche comme une fourchette, pas une mesure exacte. L'application ne détecte ni ne localise les joueurs.</div>
+                </div>
+                <p class="text-[11px] text-tactical-muted mt-3">La chute de balle affichée est, elle aussi, une estimation calculée à partir des données de vitesse disponibles — pas une garantie de trajectoire exacte.</p>
             </div>
             <div class="grid grid-cols-1 xl:grid-cols-[360px_1fr] gap-5">
                 <div class="space-y-4">
@@ -898,14 +916,14 @@
 
     <!-- Help Modal (Aide à la compréhension) -->
     <div id="help-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
-        <div class="bg-tactical-card border border-tactical-border rounded-2xl w-full max-w-3xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
+        <div class="bg-tactical-card border border-tactical-border rounded-2xl w-full max-w-4xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
             <!-- Modal Header -->
             <div class="p-6 border-b border-tactical-border flex items-center justify-between">
                 <div>
                     <h3 class="text-xl font-extrabold text-white flex items-center gap-2">
                         <span class="text-tactical-accent">?</span> Aide à la compréhension
                     </h3>
-                    <p class="text-xs text-tactical-muted mt-1">Système de tiers, pastilles de catégorie et glossaire des statistiques.</p>
+                    <p class="text-xs text-tactical-muted mt-1">Télémètre AR2 Crosshair, système de tiers, catégories et statistiques.</p>
                 </div>
                 <button id="close-help-btn" class="p-2 text-tactical-muted hover:text-white rounded-lg hover:bg-tactical-border/50 transition-colors">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -916,6 +934,83 @@
 
             <!-- Modal Body -->
             <div class="p-6 overflow-y-auto flex-1 space-y-8 text-sm">
+                <!-- Télémètre AR2 Crosshair -->
+                <section id="help-rangefinder" class="rounded-2xl border border-tactical-accent/30 bg-tactical-bg/70 p-4 sm:p-6">
+                    <div class="flex flex-col sm:flex-row sm:items-start gap-4 mb-5">
+                        <div class="w-11 h-11 shrink-0 rounded-xl bg-tactical-accent/10 border border-tactical-accent/30 flex items-center justify-center text-tactical-accent font-mono text-lg">⌖</div>
+                        <div>
+                            <h4 class="text-base font-extrabold text-white uppercase tracking-wider">Télémètre AR2 Crosshair</h4>
+                            <p class="text-tactical-muted mt-1">Un stadiamètre : il dessine des repères correspondant à la hauteur théorique d'un personnage debout à différentes distances. Il ne détecte pas les joueurs et ne mesure pas leur position.</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-[1.15fr_.85fr] gap-4 mb-5">
+                        <div class="rounded-xl border border-tactical-border bg-tactical-card p-4">
+                            <h5 class="text-sm font-bold text-white mb-2">Comment lire l'estimation</h5>
+                            <p class="text-xs text-tactical-muted leading-relaxed">Un joueur proche paraît plus grand ; plus loin, il paraît plus petit. Compare sa silhouette entière, debout, à la hauteur d'un trait. Le nombre sous ce trait est la distance estimée en studs.</p>
+                            <div class="mt-4 rounded-lg border border-tactical-border bg-[#0b1117] p-3">
+                                <svg viewBox="0 0 560 160" class="w-full" role="img" aria-label="Schéma : la hauteur d'un joueur debout correspond à un trait gradué du télémètre">
+                                    <path d="M30 74h18m18 0h18m-27-27v18m0 18v18" stroke="#00ff88" stroke-width="2" stroke-linecap="round"/>
+                                    <circle cx="57" cy="74" r="2.5" fill="#00ff88"/>
+                                    <circle cx="211" cy="37" r="9" fill="#e5c07b"/>
+                                    <path d="M198 51q13-8 26 0l7 31h-7l-3 35h-8l-2-26-2 26h-8l-3-35h-7z" fill="#e5c07b" fill-opacity=".75"/>
+                                    <line x1="244" y1="28" x2="244" y2="117" stroke="#e5c07b" stroke-width="2"/>
+                                    <path d="M239 34l5-6 5 6M239 111l5 6 5-6" fill="none" stroke="#e5c07b" stroke-width="2"/>
+                                    <line x1="390" y1="117" x2="390" y2="28" stroke="#00ff88" stroke-width="3"/>
+                                    <path d="M384 35l6-7 6 7M384 110l6 7 6-7" fill="none" stroke="#00ff88" stroke-width="2"/>
+                                    <line x1="378" y1="28" x2="402" y2="28" stroke="#00ff88" stroke-width="2"/>
+                                    <line x1="378" y1="117" x2="402" y2="117" stroke="#00ff88" stroke-width="2"/>
+                                    <text x="211" y="145" fill="#e5c07b" font-size="11" text-anchor="middle" font-family="Inter, sans-serif">Joueur observé</text>
+                                    <text x="448" y="78" fill="#00ff88" font-size="12" font-weight="700" font-family="Inter, sans-serif">100 studs</text>
+                                    <text x="390" y="145" fill="#8b949e" font-size="11" text-anchor="middle" font-family="Inter, sans-serif">Trait théorique</text>
+                                </svg>
+                                <p class="text-[10px] text-tactical-muted text-center mt-1">Si les deux hauteurs se ressemblent, la cible est à environ 100 studs.</p>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 gap-3">
+                            <div class="rounded-xl border border-tactical-border bg-tactical-card p-4">
+                                <h5 class="text-sm font-bold text-white mb-1">FOV — champ de vision</h5>
+                                <p class="text-xs text-tactical-muted leading-relaxed">Règle ici le FOV vertical de Roblox, pas la résolution de l'écran. Reprends la même valeur que dans le jeu : un FOV plus large fait paraître le joueur plus petit et fausse tous les repères.</p>
+                            </div>
+                            <div class="rounded-xl border border-tactical-border bg-tactical-card p-4">
+                                <h5 class="text-sm font-bold text-white mb-1">Zoom</h5>
+                                <p class="text-xs text-tactical-muted leading-relaxed">Sélectionne la lunette réellement montée. Un zoom plus fort agrandit la silhouette ; le raccourci <b>Ctrl+Alt+Maj+D</b> passe à la lunette suivante. Calibre et mesure avec le même zoom.</p>
+                            </div>
+                            <div class="rounded-xl border border-tactical-border bg-tactical-card p-4">
+                                <h5 class="text-sm font-bold text-white mb-1">Écart au viseur</h5>
+                                <p class="text-xs text-tactical-muted leading-relaxed">Déplace toute la jauge à gauche ou à droite du centre de l'écran pour ne pas cacher la cible. Ce réglage en pixels ne change pas le calcul de distance.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-3 items-stretch mb-5">
+                        <div class="rounded-xl border border-tactical-border bg-tactical-card p-4">
+                            <span class="text-[10px] font-mono uppercase tracking-widest text-tactical-accent">Avant de calibrer</span>
+                            <p class="text-xs text-tactical-muted mt-2 leading-relaxed">Entre le même FOV vertical que dans Roblox, puis choisis ton arme et ta lunette. Place un ami debout à une distance connue, par exemple 100 studs.</p>
+                        </div>
+                        <div class="hidden md:flex items-center justify-center text-tactical-muted" aria-hidden="true">→</div>
+                        <div class="rounded-xl border border-tactical-accent/30 bg-tactical-accent/5 p-4">
+                            <span class="text-[10px] font-mono uppercase tracking-widest text-tactical-accent">Calibration</span>
+                            <p class="text-xs text-tactical-muted mt-2 leading-relaxed">Ajuste le multiplicateur « Calibration » jusqu'à ce que la hauteur de l'ami corresponde au trait « 100 ». Garde ce réglage pour ce FOV et ce zoom ; recommence si tu les changes.</p>
+                        </div>
+                        <div class="hidden md:flex items-center justify-center text-tactical-muted" aria-hidden="true">→</div>
+                        <div class="rounded-xl border border-tactical-border bg-tactical-card p-4">
+                            <span class="text-[10px] font-mono uppercase tracking-widest text-tactical-gold">En partie</span>
+                            <p class="text-xs text-tactical-muted mt-2 leading-relaxed">Active l'affichage avec <b>Ctrl+Alt+D</b> et compare la silhouette debout au trait le plus proche. Le nombre indique des studs ; les valeurs dessous donnent les dégâts au corps et la chute estimée en hauteurs de tête.</p>
+                        </div>
+                    </div>
+
+                    <div class="rounded-xl border border-tactical-gold/30 bg-tactical-gold/5 p-4">
+                        <h5 class="text-sm font-bold text-tactical-gold mb-2">Précision et limites à connaître</h5>
+                        <ul class="list-disc pl-5 space-y-1.5 text-xs text-tactical-muted leading-relaxed">
+                            <li>Les traits supposent un personnage debout de taille standard. Accroupi, incliné, en mouvement ou partiellement masqué, il ne correspondra pas au modèle.</li>
+                            <li>Le FOV, le grossissement, la résolution / mise à l'échelle de l'affichage et la calibration changent la hauteur à l'écran. Le mauvais réglage peut décaler toutes les estimations.</li>
+                            <li>La perspective, le relief et la difficulté à comparer deux hauteurs limitent la précision. Utilise le trait le plus proche comme une fourchette, pas comme un chiffre exact.</li>
+                            <li>L'application ne détecte rien, ne voit pas à travers les obstacles et ne fournit aucune position de joueur.</li>
+                        </ul>
+                    </div>
+                </section>
+
                 <!-- 1. Système de Tiers -->
                 <section>
                     <h4 class="text-base font-extrabold text-white uppercase tracking-wider mb-3 flex items-center gap-2">

@@ -5,6 +5,8 @@ const { app, BrowserWindow, Tray, Menu, globalShortcut, ipcMain, screen, nativeI
 const path = require('path');
 const fs = require('fs');
 const core = require('./crosshair-core.js');
+const profileManager = require('./profile-manager.js');
+const configStore = require('./config-store.js');
 const updater = require('./updater.js');
 const ws = require('./weaponswitch.js');
 const ac = require('./autocolor.js');
@@ -30,7 +32,7 @@ const DEFAULT_HOTKEYS = {
     themeNext: ''
 };
 
-let cfgPath, cfg, overlay = null, settingsWin = null, tray = null, visible = true;
+let cfgPath, cfg, configLoadError = null, configSaveErrorShown = false, overlay = null, settingsWin = null, tray = null, visible = true;
 let autoHidden = { holster: false, ads: false, wl: false };
 let lastSlot = null, hkFails = [];
 const DEFAULT_AUTO = { enabled: true, onlyRoblox: true, holsterHide: true, adsHide: false, adsMode: 'hold', showToast: true, slots: {}, labels: {} };
@@ -73,21 +75,36 @@ function defaultConfig() {
 }
 function loadConfig() {
     cfgPath = path.join(app.getPath('userData'), 'config.json');
+    let c;
     try {
-        const c = JSON.parse(fs.readFileSync(cfgPath, 'utf8'));
+        c = configStore.readJson(cfgPath);
+    } catch (e) {
+        if (e.code === 'ENOENT') { cfg = defaultConfig(); return; }
+        configLoadError = e;
+        cfg = defaultConfig();
+        console.error('Impossible de lire la configuration AR2; le fichier original est conservé.', e);
+        dialog.showErrorBox('Configuration non chargée', `Le fichier de réglages n'a pas pu être lu et n'a pas été modifié :\n${cfgPath}\n\n${e.message}\n\nLes changements de cette session ne pourront pas être enregistrés.`);
+        return;
+    }
+    try {
+        if (!c || typeof c !== 'object' || Array.isArray(c)) throw new Error('Le fichier de configuration doit contenir un objet JSON.');
         const d = defaultConfig();
         cfg = Object.assign(d, c);
         cfg.hotkeys = Object.assign({ ...DEFAULT_HOTKEYS }, c.hotkeys || {});
         // v1.5 : Ctrl+Alt+W ouvre maintenant le wiki instantané, le wiki complet passe sur Ctrl+Alt+Maj+W
         if (c.hotkeys && !('spotlight' in c.hotkeys) && c.hotkeys.wiki === 'Control+Alt+W') { cfg.hotkeys.wiki = DEFAULT_HOTKEYS.wiki; cfg.hotkeys.spotlight = DEFAULT_HOTKEYS.spotlight; }
-        if (!Array.isArray(cfg.profiles) || !cfg.profiles.length) cfg.profiles = d.profiles;
-        cfg.profiles.forEach(p => { p.settings = core.withDefaults(p.settings); if (!p.id) p.id = uid(); });
+        cfg.profiles = profileManager.normalizeLoaded(cfg.profiles, uid) || d.profiles;
         cfg.autoSwitch = Object.assign(JSON.parse(JSON.stringify(DEFAULT_AUTO)), c.autoSwitch || {});
         if (typeof cfg.autoUpdate !== 'boolean') cfg.autoUpdate = true;
         if (typeof c.onboarded !== 'boolean') cfg.onboarded = true; // déjà installé avant la v1.7 : pas d'assistant imposé
         normalizeExtras(c);
         cfg.active = Math.min(Math.max(0, cfg.active | 0), cfg.profiles.length - 1);
-    } catch (e) { cfg = defaultConfig(); }
+    } catch (e) {
+        configLoadError = e;
+        cfg = defaultConfig();
+        console.error('La configuration AR2 est invalide; le fichier original est conservé.', e);
+        dialog.showErrorBox('Configuration non chargée', `Le fichier de réglages est invalide et n'a pas été modifié :\n${cfgPath}\n\n${e.message}\n\nLes changements de cette session ne pourront pas être enregistrés.`);
+    }
 }
 function normalizeExtras(c) {
     c = c || {};
@@ -118,20 +135,23 @@ function normalizeTimer(t) {
     cfg.timer = o;
 }
 let saveTimer = null;
+function persistConfig() {
+    if (!cfgPath || !cfg || configLoadError) return;
+    try {
+        configStore.writeJsonAtomically(cfgPath, cfg);
+    } catch (e) {
+        console.error('Impossible d’enregistrer la configuration AR2.', e);
+        if (!configSaveErrorShown) {
+            configSaveErrorShown = true;
+            dialog.showErrorBox('Échec de la sauvegarde', `Les réglages n'ont pas pu être enregistrés :\n${cfgPath}\n\n${e.message}${e.configTempPath ? `\n\nFichier temporaire conservé : ${e.configTempPath}` : ''}`);
+        }
+    }
+}
 function saveConfig() {
     clearTimeout(saveTimer);
-    saveTimer = setTimeout(() => { try { fs.mkdirSync(path.dirname(cfgPath), { recursive: true }); fs.writeFileSync(cfgPath, JSON.stringify(cfg, null, 2)); } catch (e) {} }, 250);
+    saveTimer = setTimeout(() => { saveTimer = null; persistConfig(); }, 250);
 }
 const current = () => cfg.profiles[cfg.active].settings;
-// Une suppression ne doit pas faire basculer sur un autre profil par erreur.
-function activeAfterProfileDelete(active, deletedIndex, remainingCount) {
-    if (deletedIndex < active) return active - 1;
-    if (deletedIndex === active) return Math.min(active, remainingCount - 1);
-    return Math.min(active, remainingCount - 1);
-}
-function cloneProfileSettings(settings) {
-    return core.withDefaults(JSON.parse(JSON.stringify(settings || {})));
-}
 // Réglages réellement affichés (couleur automatique appliquée par-dessus le profil)
 function effective() {
     const s = current(), a = cfg.autoColor;
@@ -207,7 +227,7 @@ function setVisible(v) {
     broadcast();
 }
 function setActive(i) {
-    cfg.active = Math.min(Math.max(0, i), cfg.profiles.length - 1);
+    cfg.active = profileManager.select(cfg.profiles, i);
     placeOverlay(); saveConfig(); refreshTray(); broadcast();
 }
 
@@ -332,7 +352,7 @@ ipcMain.handle('get-state', () => state());
 ipcMain.handle('update-settings', (e, partial) => { Object.assign(current(), partial || {}); placeOverlay(); saveConfig(); return state(); });
 ipcMain.handle('set-config', (e, partial) => {
     const p = partial || {};
-    if (typeof p.active === 'number') cfg.active = Math.min(Math.max(0, p.active), cfg.profiles.length - 1);
+    if (typeof p.active === 'number') cfg.active = profileManager.select(cfg.profiles, p.active);
     if (typeof p.display === 'number') cfg.display = p.display;
     if (typeof p.startHidden === 'boolean') cfg.startHidden = p.startHidden;
     if (typeof p.moveStep === 'number') cfg.moveStep = Math.max(1, Math.min(50, p.moveStep));
@@ -357,25 +377,25 @@ ipcMain.handle('set-config', (e, partial) => {
 });
 ipcMain.handle('profile', (e, { action, name, index, code }) => {
     if (action === 'add') {
-        cfg.profiles.push({ id: uid(), name: String(name || `Profil ${cfg.profiles.length + 1}`).trim().slice(0, 40), settings: cloneProfileSettings(current()) });
-        cfg.active = cfg.profiles.length - 1;
+        const requestedName = name == null ? `Profil ${cfg.profiles.length + 1}` : name;
+        const result = profileManager.create(cfg.profiles, requestedName, current(), uid);
+        cfg.profiles = result.profiles;
+        cfg.active = result.active;
     }
-    if (action === 'rename' && Number.isInteger(index) && cfg.profiles[index]) {
-        const cleanName = String(name || '').trim().slice(0, 40);
-        if (cleanName) cfg.profiles[index].name = cleanName;
+    if (action === 'rename') {
+        cfg.profiles = profileManager.rename(cfg.profiles, index, name);
     }
-    if (action === 'delete' && cfg.profiles.length > 1) {
-        const deletedIndex = Number(index);
-        if (Number.isInteger(deletedIndex) && deletedIndex >= 0 && deletedIndex < cfg.profiles.length) {
-            cfg.profiles.splice(deletedIndex, 1);
-            cfg.active = activeAfterProfileDelete(cfg.active, deletedIndex, cfg.profiles.length);
-        }
+    if (action === 'delete') {
+        const result = profileManager.remove(cfg.profiles, cfg.active, Number(index));
+        cfg.profiles = result.profiles;
+        cfg.active = result.active;
     }
     if (action === 'reset') { const d = defaultConfig(); cfg.profiles = d.profiles; cfg.active = 0; cfg.autoSwitch.slots = {}; }
     if (action === 'import') {
-        const s = core.fromCode(code);
-        cfg.profiles.push({ id: uid(), name: String(name || 'Profil importé').trim().slice(0, 40) || 'Profil importé', settings: core.withDefaults(s) });
-        cfg.active = cfg.profiles.length - 1;
+        const cleanName = profileManager.uniqueName(name == null ? 'Profil importé' : name, cfg.profiles);
+        const result = profileManager.create(cfg.profiles, cleanName, core.fromCode(code), uid);
+        cfg.profiles = result.profiles;
+        cfg.active = result.active;
     }
     placeOverlay(); saveConfig(); refreshTray();
     return state();
@@ -730,7 +750,7 @@ const BACKUP_SECTIONS = ['profiles', 'autoSwitch', 'autoColor', 'whitelist', 'ch
 function buildBackup(sections) {
     const sec = (sections && sections.length ? sections : BACKUP_SECTIONS);
     const d = {};
-    if (sec.includes('profiles')) { d.profiles = cfg.profiles.map(p => ({ id: p.id, name: p.name, settings: p.settings, code: core.toCode(p.settings) })); d.active = cfg.active; }
+    if (sec.includes('profiles')) { d.profiles = profileManager.exportProfiles(cfg.profiles); d.active = cfg.active; }
     if (sec.includes('autoSwitch')) d.autoSwitch = cfg.autoSwitch;
     if (sec.includes('autoColor')) d.autoColor = cfg.autoColor;
     if (sec.includes('whitelist')) d.whitelist = cfg.whitelist;
@@ -761,8 +781,12 @@ function parseBackup(text) {
 function applyBackup(o, mode, sections) {
     const d = o.data, sec = sections && sections.length ? sections : BACKUP_SECTIONS, replace = mode === 'replace', done = [];
     const idMap = {};
-    if (sec.includes('profiles') && Array.isArray(d.profiles) && d.profiles.length) {
-        const list = d.profiles.map(p => { const id = (replace && p.id) ? p.id : uid(); if (p.id) idMap[p.id] = id; return { id, name: String(p.name || 'Profil').slice(0, 40), settings: core.withDefaults(p.settings || (p.code ? core.fromCode(p.code) : {})) }; });
+    const profileImport = sec.includes('profiles') && Object.prototype.hasOwnProperty.call(d, 'profiles')
+        ? profileManager.importProfiles(d.profiles, replace ? [] : cfg.profiles, { preserveIds: replace, idFactory: uid })
+        : null;
+    if (profileImport) {
+        const list = profileImport.profiles;
+        Object.assign(idMap, profileImport.idMap);
         if (replace) { cfg.profiles = list; cfg.active = Math.min(Math.max(0, d.active | 0), list.length - 1); }
         else { cfg.profiles.push(...list); cfg.active = cfg.profiles.length - list.length; }
         done.push(`${list.length} profil(s)`);
@@ -889,6 +913,11 @@ else {
         screen.on('display-added', placeOverlay);
         screen.on('display-removed', () => { cfg.display = 0; placeOverlay(); });
     });
+    app.on('before-quit', () => {
+        clearTimeout(saveTimer);
+        saveTimer = null;
+        persistConfig();
+    });
     app.on('window-all-closed', e => { /* reste dans la barre des tâches (zone de notification) */ });
     app.on('will-quit', () => { globalShortcut.unregisterAll(); ws.stop(); stopThumb(); clearInterval(wlTimer); clearInterval(timerTick); });
 }
@@ -925,14 +954,21 @@ async function runSelftest() {
         out.autoColorOk = acState.samples > 0;
         cfg.autoColor.enabled = false; acSync();
         // Gestion des profils : suppression avant / du / après le profil actif.
-        out.profileManagementOk =
-            activeAfterProfileDelete(3, 1, 4) === 2 &&
-            activeAfterProfileDelete(2, 2, 4) === 2 &&
-            activeAfterProfileDelete(1, 3, 4) === 1;
+        const testProfiles = Array.from({ length: 5 }, (_, i) => ({ id: 'test-' + i, name: 'Test ' + i, settings: {} }));
+        const deleteBefore = profileManager.remove(testProfiles, 3, 1);
+        const deleteActive = profileManager.remove(testProfiles, 2, 2);
+        const deleteAfter = profileManager.remove(testProfiles, 1, 3);
+        const oneLeft = profileManager.remove(testProfiles.slice(0, 2), 0, 1).profiles;
+        out.profileManagementOk = deleteBefore.active === 2 && deleteActive.active === 2 &&
+            deleteAfter.active === 1 && oneLeft.length === 1;
+        let lastProfileProtected = false;
+        try { profileManager.remove(oneLeft, 0, 0); } catch (e) { lastProfileProtected = /dernier profil/.test(e.message); }
+        out.profileManagementOk = out.profileManagementOk && lastProfileProtected;
         if (!out.profileManagementOk) throw new Error('gestion des profils : index actif incorrect après suppression');
-        const copied = cloneProfileSettings({ ...current(), customParts: [{ style: 'cross', x: 0 }] });
-        copied.customParts[0].x = 99;
-        out.profileCloneOk = copied.customParts[0].x === 99 && current().customParts?.[0]?.x !== 99;
+        const cloneSource = { ...current(), customParts: [{ style: 'cross', x: 0 }] };
+        const clonedProfile = profileManager.create([], 'Test indépendant', cloneSource, uid);
+        clonedProfile.profiles[clonedProfile.active].settings.customParts[0].x = 99;
+        out.profileCloneOk = clonedProfile.profiles[clonedProfile.active].settings.customParts[0].x === 99 && cloneSource.customParts[0].x === 0;
         if (!out.profileCloneOk) throw new Error('gestion des profils : copie non indépendante');
         // liste blanche, objectifs, sauvegarde
         out.whitelist = { allowedRoblox: wlAllowed('Roblox'), allowedNotepad: (cfg.whitelist.enabled = true, wlAllowed('Bloc-notes')) };
