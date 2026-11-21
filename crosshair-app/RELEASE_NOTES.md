@@ -1,5 +1,10 @@
 # Notes de version
 
+## v1.8.5
+- Ajout des explosifs placés confirmés par le changelog officiel du 19 novembre 2026 : C4, détonateur, PMN-2, M14, TM-46, TM-72, M19, M18A1 Claymore et PSS-12.
+- Recherche instantanée, affichage dans le wiki instantané et synchronisation de l'index sans ajouter d'explosif au télémètre balistique.
+- Les statistiques de jeu non publiées restent inconnues : aucun dégât, rayon ou délai n'est inventé.
+
 ## v1.8.4
 - Le télémètre estime maintenant la hausse en pixels et l'avance latérale selon l'arme, la distance, le zoom et le mouvement choisi.
 - L'optique sélectionnée est prise en compte; aucun effet balistique d'accessoire non documenté n'est supposé.

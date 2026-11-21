@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "revision": "2026.11.19",
-  "snapshotDate": "2026-11-19",
+  "revision": "2026.11.21",
+  "snapshotDate": "2026-11-21",
   "sources": [
     {
       "name": "Wiki communautaire Apocalypse Rising",
@@ -12,6 +12,11 @@
       "name": "Cosmétiques, accessoires et événements",
       "url": "https://roblox-apocalypse-rising.fandom.com/wiki/Apocalypse_Rising_Wiki",
       "lastDatasetUpdate": "2026-11-17"
+    },
+    {
+      "name": "Changelog officiel — explosifs placés",
+      "url": "https://devforum.roblox.com/t/apocalypse-rising-2-beta-release-changelog/3793954/39",
+      "lastDatasetUpdate": "2026-11-21"
     }
   ],
   "notice": "Date du snapshot du dépôt, pas une confirmation officielle de chaque statistique. Les raretés et probabilités estimées sont signalées dans le site."

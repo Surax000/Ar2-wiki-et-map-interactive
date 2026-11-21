@@ -6,7 +6,7 @@ const vm = require('node:vm');
 
 const root = path.resolve(__dirname, '..');
 const read = relativePath => fs.readFileSync(path.join(root, relativePath), 'utf8');
-const datasetNames = ['WEAPONS_DATA', 'HEAL_ITEMS_DATA', 'ATTACHMENTS_DATA', 'BACKPACKS_DATA', 'FOOD_DATA'];
+const datasetNames = ['WEAPONS_DATA', 'EXPLOSIVES_DATA', 'HEAL_ITEMS_DATA', 'ATTACHMENTS_DATA', 'BACKPACKS_DATA', 'FOOD_DATA'];
 const dataContext = {};
 vm.runInNewContext(
     `${read('site-data.js')}\nglobalThis.datasets = { ${datasetNames.join(', ')} };`,
@@ -28,6 +28,31 @@ test('catalog datasets contain named entries with unique IDs', () => {
     });
 
     assert.equal(new Set(allItems.map(item => item.id)).size, allItems.length, 'item IDs must be unique');
+});
+
+test('official placed-explosive update is documented without invented gameplay statistics', () => {
+    const explosives = dataContext.datasets.EXPLOSIVES_DATA;
+    assert.ok(explosives.length >= 9);
+    const names = explosives.map(item => item.name);
+    for (const name of ['C4', 'PMN-2', 'M14', 'TM-46', 'TM-72', 'M19', 'M18A1 Claymore', 'PSS-12 Mine Detector']) {
+        assert.ok(names.includes(name), `missing documented explosive: ${name}`);
+    }
+    for (const item of explosives) {
+        assert.equal(item.status, 'confirmed');
+        assert.match(item.source, /^https:\/\//);
+        assert.match(item.verifiedAt, /^\d{4}-\d{2}-\d{2}$/);
+        assert.ok(!item.internalId, 'no unverified internal game ID');
+        assert.equal(Object.keys(item.stats).length, 0);
+    }
+});
+
+test('embedded Windows index contains the same placed explosives', () => {
+    const index = JSON.parse(read('crosshair-app/src/ar2-index.json'));
+    const embedded = index.items.filter(item => item.type === 'explosive');
+    const names = embedded.map(item => item.name);
+    assert.ok(names.includes('C4'));
+    assert.ok(names.includes('M18A1 Claymore'));
+    assert.equal(new Set(embedded.map(item => item.id)).size, embedded.length);
 });
 
 test('site scripts and PWA assets referenced by the page exist', () => {

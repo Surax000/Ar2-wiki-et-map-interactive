@@ -19,6 +19,16 @@ La révision et la date du snapshot du catalogue sont indiquées en bas du site 
 
 Le site peut être installé depuis un navigateur compatible. Après une première visite en ligne, le service worker conserve la page, les données et les ressources visitées pour les ouvrir hors ligne. Les images et ressources externes qui n'ont pas encore été chargées nécessitent toujours une connexion.
 
+## Mise à jour du catalogue
+
+Les objets du catalogue sont déclarés dans `site-data.js`. Après toute modification de cette source, synchroniser l'index embarqué utilisé par les overlays Windows avec :
+
+```sh
+node scripts/sync-ar2-index.js
+```
+
+La mise à jour des données ne nécessite pas une recompilation si l'index Windows conserve son schéma compatible. Les versions de l'application et du contenu restent distinctes. Les explosifs placés du 19 novembre 2026 sont documentés uniquement à partir du changelog officiel ; leurs dégâts, rayons, délais et taux d'apparition inconnus ne sont pas estimés.
+
 ## Vérifications
 
 Les contrôles des données et des ressources du site se lancent sans dépendances supplémentaires :

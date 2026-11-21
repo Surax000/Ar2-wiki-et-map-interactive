@@ -1,7 +1,7 @@
 {
   "name": "ar2-crosshair",
   "productName": "AR2 Crosshair",
-  "version": "1.8.4",
+  "version": "1.8.5",
   "description": "Crosshair personnalisable affiché par-dessus tes jeux (Roblox, Apocalypse Rising 2...). Overlay transparent, aucune injection.",
   "main": "src/main.js",
   "author": "Surax000",
@@ -12,7 +12,7 @@
     "test": "node --test"
   },
   "devDependencies": {
-    "electron": "^33.2.0",
+    "electron": "33.2.0",
     "electron-builder": "^25.1.8"
   },
   "build": {

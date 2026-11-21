@@ -53,7 +53,7 @@
     // ============================================================
     // RECHERCHE
     // ============================================================
-    const TYPE_LABEL = { weapon: 'Arme', attachment: 'Accessoire', heal: 'Soin', food: 'Nourriture', backpack: 'Sac à dos', mag: 'Chargeur', loc: 'Lieu', boss: 'Boss / infecté' };
+    const TYPE_LABEL = { weapon: 'Arme', attachment: 'Accessoire', heal: 'Soin', food: 'Nourriture', backpack: 'Sac à dos', mag: 'Chargeur', explosive: 'Explosif', cosmetic: 'Cosmétique', loc: 'Lieu', boss: 'Boss / infecté' };
     function prep(index) {
         if (!index || index._prep) return index;
         const all = [];
@@ -273,6 +273,7 @@
         else if (a.type === 'food') r = duelFood(a, b);
         else if (a.type === 'backpack') r = duelBag(a, b);
         else if (a.type === 'mag') r = duelMag(a, b);
+        else if (a.type === 'cosmetic') r = { kind: 'mix', winner: null, headline: 'Pas comparables', reasons: ['Les cosmétiques changent uniquement ton apparence et ne donnent aucun bonus.'], note: '' };
         else r = { kind: 'mix', winner: null, headline: 'Pas comparables', reasons: [], note: '' };
         // les inconvénients du gagnant ne s'affichent jamais comme un « + »
         const cons = (r.reasons || []).filter(x => /de plus dans le sac|plus lent|case de plus/.test(x));

@@ -7,12 +7,15 @@
     'use strict';
     const T = root.AR2Tools;
     const esc = T.esc, fr = T.fr;
-    const ICON = { weapon: 'ARM', attachment: 'ACC', heal: 'SOIN', food: 'FOOD', backpack: 'SAC', mag: 'CHG', loc: 'LIEU', boss: 'BOSS' };
+    const ICON = { weapon: 'ARM', attachment: 'ACC', heal: 'SOIN', food: 'FOOD', backpack: 'SAC', mag: 'CHG', explosive: 'EXP', cosmetic: 'STYLE', loc: 'LIEU', boss: 'BOSS' };
     // Images des objets (wiki Apocalypse Rising, Fandom) : dossier fixé par le site ou fourni par l'index
-    let IMG_BASE = root.AR2_IMG_BASE || null, IMG_FIXED = !!root.AR2_IMG_BASE;
+    let IMG_BASE = root.AR2_IMG_BASE || null, IMG_FIXED = !!root.AR2_IMG_BASE, COSMETIC_IMG_BASE = null;
     function setImgBase(b) { IMG_BASE = b || null; IMG_FIXED = !!b; }
-    const pic = (o, cls) => o && o.img && IMG_BASE && /^[a-z0-9._-]+$/i.test(o.img) ? `<img class="${cls || 'aq-pic'}" src="${esc(IMG_BASE + o.img)}.webp" alt="" loading="lazy" decoding="async" draggable="false">` : '';
-    const CAT_COLOR = { weapon: 'var(--aq-acc)', attachment: '#22d3ee', heal: '#fb7185', food: '#fb923c', backpack: '#fbbf24', mag: '#e5c07b', loc: '#a78bfa', boss: '#f87171' };
+    const pic = (o, cls) => {
+        const base = o && o.type === 'cosmetic' ? COSMETIC_IMG_BASE : IMG_BASE;
+        return o && o.img && base && /^[a-z0-9._-]+$/i.test(o.img) ? `<img class="${cls || 'aq-pic'}" src="${esc(base + o.img)}.webp" alt="" loading="lazy" decoding="async" draggable="false">` : '';
+    };
+    const CAT_COLOR = { weapon: 'var(--aq-acc)', attachment: '#22d3ee', heal: '#fb7185', food: '#fb923c', backpack: '#fbbf24', mag: '#e5c07b', explosive: '#fb923c', cosmetic: '#2dd4bf', loc: '#a78bfa', boss: '#f87171' };
 
     const CSS = `
 .aq{--aq-acc:rgb(var(--t-acc,0 255 136));--aq-bg:rgb(var(--t-bg,15 17 21));--aq-card:rgb(var(--t-card,22 25 32));--aq-bd:rgb(var(--t-border,42 47 58));--aq-mut:rgb(var(--t-muted,139 148 158));--aq-tx:rgb(var(--t-text,255 255 255));--aq-ink:rgb(var(--t-ink,11 15 20));--aq-gold:rgb(var(--t-gold,229 192 123));--aq-red:rgb(var(--t-red,255 71 87));
@@ -125,6 +128,10 @@
             h += sub(o.cat, o.rarity, o.size) + `<div class="aq-g">${stat('Énergie', (o.energy > 0 ? '+' : '') + (o.energy || 0), o.energy > 0)}${stat('Hydratation', (o.hydration > 0 ? '+' : '') + (o.hydration || 0), o.hydration > 0)}${stat('Taille', o.size || '—')}</div><p class="aq-p">${esc(o.desc || '')}</p>` + spawns(o);
         } else if (o.type === 'backpack') {
             h += sub(o.cat, o.rarity) + `<div class="aq-g">${stat('Cases', o.slots, 1)}${stat('Grille', o.grid ? o.grid.join('x') : '—')}${stat('Rareté', o.rarity || '—')}</div><p class="aq-p">${esc(o.desc || '')}</p>` + spawns(o);
+        } else if (o.type === 'explosive') {
+            h += sub(o.cat, o.subcat, o.availability || '') + `<p class="aq-p">${esc(o.desc || '')}</p><p class="aq-p">Statistiques de jeu non publiées dans cette base. Aucun taux, dégât ou rayon n'est estimé.</p>` + spawns(o);
+        } else if (o.type === 'cosmetic') {
+            h += sub(o.cat, o.rarity) + `<p class="aq-p">${esc(o.desc || 'Cosmétique sans bonus de gameplay.')}</p>` + spawns(o);
         } else if (o.type === 'mag') {
             const ws = (o.ws || []).map(id => (T.get(index, id) || {}).name).filter(Boolean);
             h += sub('Chargeur', o.w + 'x' + o.h) + `<div class="aq-g">${stat('Capacité', o.cap, 1)}${stat('Taille', o.w + 'x' + o.h)}${stat('Armes', ws.length)}</div>${ws.length ? `<p class="aq-p">Pour : ${esc(ws.join(', '))}</p>` : ''}`;
@@ -152,7 +159,10 @@
         el.innerHTML = `<div class="aq"><div class="aq-top">${I_SEARCH}<input class="aq-in" spellcheck="false" autocomplete="off" placeholder="Arme, objet, lieu…  (ex : M4A1, Ashland, Holo vs OCR)"><span class="aq-mode">Wiki</span></div>
             <div class="aq-body"></div><div class="aq-foot"></div></div>`;
         const root_ = el.firstElementChild, input = root_.querySelector('.aq-in'), body = root_.querySelector('.aq-body'), foot = root_.querySelector('.aq-foot'), mode = root_.querySelector('.aq-mode');
-        const useIx = ix => { if (ix && ix.imgBase && !IMG_FIXED) IMG_BASE = ix.imgBase; };
+        const useIx = ix => {
+            if (ix && ix.imgBase && !IMG_FIXED) IMG_BASE = ix.imgBase;
+            if (ix && ix.cosmeticBase) COSMETIC_IMG_BASE = ix.cosmeticBase;
+        };
         useIx(opt.index);
         // image manquante (hors-ligne, 404) : on la masque sans casser la mise en page (CSP : pas de onerror inline)
         root_.addEventListener('error', e => { const t = e.target; if (t && t.tagName === 'IMG') { const w = t.closest('.aq-th,.aq-hero'); if (w && w.classList.contains('aq-hero')) w.remove(); else t.style.visibility = 'hidden'; } }, true);
@@ -170,7 +180,7 @@
             if (!o) return out;
             if (o.type === 'weapon' && A.equipRange) out.push(['range', 'Télémètre : équiper', 'Entrée']);
             if (o.type === 'loc' && A.compass) { out.push(['dest', 'Cap vers ce lieu', 'Entrée']); out.push(['origin', 'Je suis ici (départ)', 'Alt+Entrée']); }
-            if (o.type !== 'loc' && o.type !== 'boss') out.push(['duel', 'Comparer avec…', 'Tab']);
+            if (!['loc', 'boss', 'cosmetic'].includes(o.type)) out.push(['duel', 'Comparer avec…', 'Tab']);
             if (A.openWiki) out.push(['wiki', 'Ouvrir dans le wiki', app ? 'Ctrl+Entrée' : 'Entrée']);
             return out.sort((x, y) => (y[2] === 'Entrée') - (x[2] === 'Entrée'));
         }
