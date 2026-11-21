@@ -47,6 +47,15 @@ test('official placed-explosive update is documented without invented gameplay s
     }
 });
 
+test('fragmentation grenades retain verified map and loot information', () => {
+    const grenades = dataContext.datasets.EXPLOSIVES_DATA.filter(item => item.subcategory === 'Grenades à fragmentation');
+    assert.equal(grenades.length, 4);
+    for (const grenade of grenades) {
+        assert.match(grenade.loot, /./);
+        assert.equal(grenade.availableMaps.join(','), 'Halsey,Kin Flats');
+    }
+});
+
 test('embedded Windows index contains the same placed explosives', () => {
     const index = JSON.parse(read('crosshair-app/src/ar2-index.json'));
     const embedded = index.items.filter(item => item.type === 'explosive');

@@ -1132,7 +1132,7 @@
     </div>
 
     <!-- JavaScript Data and Application Logic -->
-    <script src="site-data.js?v=20261121c"></script>
+    <script src="site-data.js?v=20261121d"></script>
     <script>
         // ============================================================
         const ALL_ITEMS = [].concat(WEAPONS_DATA, EXPLOSIVES_DATA, HEAL_ITEMS_DATA, ATTACHMENTS_DATA, BACKPACKS_DATA, FOOD_DATA);
@@ -1316,7 +1316,7 @@
                 item.group = 'armes'; item.sub = 'Explosifs';
                 item.category = item.category || 'Explosifs';
                 item.description = item.description || 'Explosif placé ou utilitaire.';
-                item.loot = 'Disponibilité et apparitions non documentées';
+                item.loot = item.loot || 'Disponibilité et apparitions non documentées';
                 item.rarity = item.rarity || 'Inconnue';
             }
             item.loot = LOOT_OVERRIDES[item.id] || item.loot || SUB_DEFAULT_LOOT[item.sub] || 'Partout sur la carte';
@@ -3811,7 +3811,8 @@
                 <div class="flex items-center gap-2 mb-1">${getCategoryDot(item.category)}<span class="text-[10px] font-mono uppercase text-tactical-muted">${item.category}</span><span class="ml-auto text-[10px] font-mono font-bold px-1.5 py-0.5 rounded border ${RARITY_BADGE[item.rarity] || RARITY_BADGE['Commun']}">${item.rarity || ''}</span></div>
                 <h3 class="text-lg font-extrabold text-white leading-tight">${item.name}</h3>
                 ${itemHero(item.id, item.name, 'sm mt-2')}
-                <p class="text-[11px] text-tactical-muted mt-1 mb-4"><span class="text-tactical-gold">Où le trouver :</span> ${item.loot}</p>
+                <p class="text-[11px] text-tactical-muted mt-1 mb-2"><span class="text-tactical-gold">Où le trouver :</span> ${item.loot}</p>
+                ${item.availableMaps && item.availableMaps.length ? `<p class="text-[10px] text-tactical-muted mb-4"><span class="text-tactical-gold">Cartes :</span> ${item.availableMaps.join(' • ')}</p>` : '<p class="text-[10px] text-tactical-muted mb-4">Cartes / emplacements précis non documentés.</p>'}
                 <div class="text-[10px] font-bold uppercase tracking-widest text-tactical-muted mb-2">Meilleures zones</div>
                 <div class="space-y-1.5">${top.map((z, i) => `
                     <button type="button" data-fi-zone="${z.key}" class="w-full text-left px-2.5 py-2 rounded-lg border ${fiFocus === z.key ? 'border-[#38bdf8] bg-[#38bdf8]/10' : 'border-tactical-border bg-tactical-bg'} hover:border-[#38bdf8]">
@@ -6425,7 +6426,7 @@
                 englishName: plain(e.englishName), alias: (e.aliases || []).map(plain), rarity: e.rarity || 'Inconnue',
                 availability: e.availability, status: e.status, kind: e.kind, trigger: e.trigger,
                 associated: e.associated || [], stats: e.stats || {}, source: e.source, verifiedAt: e.verifiedAt,
-                desc: cut(e.description, 220), image: e.image || null, loot: 'Aucune localisation inventée', spawn: []
+                desc: cut(e.description, 220), image: e.image || null, loot: cut(e.loot || 'Aucune localisation inventée', 220), availableMaps: e.availableMaps || [], spawn: []
             }));
             ATTACHMENTS_DATA.forEach(a => items.push({ id: a.id, name: plain(a.name), type: 'attachment', cat: "Accessoire", slot: a.slot, zoom: a.zoom, zoomN: parseFloat(a.zoom) || 1,
                 aimSpeed: a.aimSpeed || 0, recoilCtrl: a.recoilCtrl || 0, hipfire: a.hipfire || 0, aimAcc: a.aimAcc || 0, silent: !!a.silent, rarity: a.rarity, est: !!a.estimated, desc: cut(a.description, 180), spawn: spawnsOf(a) }));

@@ -30,6 +30,8 @@ for (const item of explosives) {
         associated: item.associated || [],
         stats: item.stats || {},
         image: item.image || null,
+        loot: item.loot || 'Aucune localisation inventée',
+        availableMaps: item.availableMaps || [],
         desc: item.description,
         source: item.source,
         verifiedAt: item.verifiedAt,
