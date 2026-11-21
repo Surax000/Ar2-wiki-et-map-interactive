@@ -1,7 +1,7 @@
 // AR2 Crosshair – processus principal (Electron)
 // Affiche un crosshair dans une petite fenêtre transparente, toujours au premier plan
 // et traversée par les clics. Rien n'est injecté dans le jeu : c'est une simple fenêtre Windows.
-const { app, BrowserWindow, Tray, Menu, globalShortcut, ipcMain, screen, nativeImage, shell, desktopCapturer, dialog } = require('electron');
+const { app, BrowserWindow, Tray, Menu, globalShortcut, ipcMain, screen, nativeImage, shell, desktopCapturer, dialog, session } = require('electron');
 const path = require('path');
 const fs = require('fs');
 const core = require('./crosshair-core.js');
@@ -33,7 +33,7 @@ const DEFAULT_HOTKEYS = {
     themeNext: ''
 };
 
-let cfgPath, cfg, configLoadError = null, configSaveErrorShown = false, overlay = null, settingsWin = null, tray = null, visible = true;
+let cfgPath, cfg, configLoadError = null, configSaveErrorShown = false, overlay = null, soundOverlay = null, settingsWin = null, tray = null, visible = true;
 let autoHidden = { holster: false, ads: false, wl: false };
 let lastSlot = null, hkFails = [];
 const DEFAULT_AUTO = { enabled: true, onlyRoblox: true, holsterHide: true, adsHide: false, adsMode: 'hold', showToast: true, slots: {}, labels: {} };
@@ -187,6 +187,7 @@ function placeOverlay() {
     const y = Math.round(b.y + b.height / 2 + (s.offsetY || 0) - size / 2);
     overlay.setBounds({ x, y, width: size, height: size });
     overlay.webContents.send('settings', effective());
+    placeSoundOverlay();
     acGeometry();
     placeChecklist();
 }
@@ -210,6 +211,37 @@ function createOverlay() {
     setInterval(() => { if (overlay && shown()) { overlay.setAlwaysOnTop(true, 'screen-saver'); if (!overlay.isVisible()) overlay.showInactive(); } }, 2000);
 }
 
+function placeSoundOverlay() {
+    if (!soundOverlay) return;
+    const d = targetDisplay();
+    const s = current();
+    const size = 200;
+    const b = d.bounds;
+    const x = Math.round(b.x + b.width / 2 + (s.offsetX || 0) - size / 2);
+    const y = Math.round(b.y + b.height / 2 + (s.offsetY || 0) - size / 2);
+    soundOverlay.setBounds({ x, y, width: size, height: size });
+    soundOverlay.webContents.send('settings', effective());
+}
+
+function createSoundOverlay() {
+    if (soundOverlay) return;
+    soundOverlay = new BrowserWindow({
+        width: 200, height: 200, frame: false, transparent: true, resizable: false, movable: false,
+        alwaysOnTop: true, skipTaskbar: true, focusable: false, hasShadow: false, fullscreenable: false,
+        show: false, backgroundColor: '#00000000',
+        webPreferences: { preload: path.join(__dirname, 'preload.js'), contextIsolation: true, nodeIntegration: false, backgroundThrottling: false }
+    });
+    soundOverlay.setIgnoreMouseEvents(true, { forward: false });
+    soundOverlay.setAlwaysOnTop(true, 'screen-saver');
+    soundOverlay.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
+    soundOverlay.loadFile(path.join(__dirname, 'sound-overlay.html'));
+    soundOverlay.webContents.on('did-finish-load', () => {
+        placeSoundOverlay();
+        if (shown() && cfg.sound.enabled) soundOverlay.showInactive();
+    });
+    soundOverlay.on('closed', () => { soundOverlay = null; });
+}
+
 function createSettings() {
     if (settingsWin) { settingsWin.show(); settingsWin.focus(); return; }
     settingsWin = new BrowserWindow({
@@ -226,6 +258,10 @@ const shown = () => visible && !autoHidden.holster && !autoHidden.ads && !autoHi
 function applyVisibility() {
     if (!overlay) return;
     if (shown()) { placeOverlay(); overlay.showInactive(); } else overlay.hide();
+    if (soundOverlay) {
+        if (shown() && cfg.sound.enabled) { placeSoundOverlay(); soundOverlay.showInactive(); }
+        else soundOverlay.hide();
+    }
     acSync(); placeChecklist(); placeTimer(); hud.refresh();
 }
 function setVisible(v) {
@@ -527,7 +563,12 @@ function toggleAutoColor(v) {
 
 function toggleSound(v) {
     cfg.sound.enabled = typeof v === 'boolean' ? v : !cfg.sound.enabled;
-    saveConfig(); placeOverlay(); refreshTray(); broadcast();
+    saveConfig(); placeOverlay();
+    if (soundOverlay) {
+        if (shown() && cfg.sound.enabled) soundOverlay.showInactive();
+        else soundOverlay.hide();
+    }
+    refreshTray(); broadcast();
 }
 
 // ---------- Liste blanche (le crosshair s'affiche seulement dans les applis cochées) ----------
@@ -880,7 +921,7 @@ ipcMain.handle('set-extras', (e, p) => {
         cfg.sound = Object.assign({ enabled: false, sensitivity: 1.2 }, p.sound);
         cfg.sound.enabled = !!cfg.sound.enabled;
         cfg.sound.sensitivity = Math.max(0.4, Math.min(3, +cfg.sound.sensitivity || 1.2));
-        placeOverlay();
+        applyVisibility();
     }
     if (p.autoColor) {
         const was = cfg.autoColor.enabled;
@@ -920,10 +961,14 @@ else {
     app.on('second-instance', () => createSettings());
     app.whenReady().then(() => {
         if (process.platform === 'win32') app.setAppUserModelId('com.ar2.crosshair');
+        session.defaultSession.setPermissionRequestHandler((webContents, permission, callback) => {
+            callback(permission === 'media');
+        });
         loadConfig();
         hud.normalize(cfg, cfg);
         visible = !cfg.startHidden;
         createOverlay();
+        createSoundOverlay();
         tray = new Tray(trayIcon());
         tray.on('click', () => createSettings());
         refreshTray();

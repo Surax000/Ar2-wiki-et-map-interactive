@@ -1,5 +1,10 @@
 # Notes de version
 
+## v1.9.1
+- Correction : l'aide sonore utilise maintenant sa propre fenêtre transparente.
+- Activation des alertes sonores sans interrompre les autres overlays.
+- Permissions média mieux gérées sous Electron.
+
 ## v1.9.0
 - Nouvelle aide en jeu « Alertes sonores » dans « Aides en jeu ».
 - Anneau bleu autour du viseur et repères rouges temporaires pour les pics sonores.
