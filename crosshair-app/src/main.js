@@ -20,6 +20,7 @@ const uid = () => Math.random().toString(36).slice(2, 10);
 const DEFAULT_HOTKEYS = {
     toggle: 'Control+Alt+X',
     settings: 'Control+Alt+S',
+    sound: 'Control+Alt+Q',
     nextProfile: 'Control+Alt+P',
     center: 'Control+Alt+C',
     up: 'Control+Alt+Up', down: 'Control+Alt+Down', left: 'Control+Alt+Left', right: 'Control+Alt+Right',
@@ -59,6 +60,7 @@ function defaultConfig() {
         version: 1,
         active: 0,
         profiles: core.PRESETS.map(p => ({ id: uid(), name: p.name, settings: core.withDefaults(p.s) })),
+        sound: { enabled: false, sensitivity: 1.2 },
         autoSwitch: JSON.parse(JSON.stringify(DEFAULT_AUTO)),
         autoUpdate: true,
         autoColor: JSON.parse(JSON.stringify(ac.DEFAULTS)),
@@ -108,6 +110,9 @@ function loadConfig() {
 }
 function normalizeExtras(c) {
     c = c || {};
+    cfg.sound = Object.assign({ enabled: false, sensitivity: 1.2 }, c.sound || cfg.sound || {});
+    cfg.sound.enabled = !!cfg.sound.enabled;
+    cfg.sound.sensitivity = Math.max(0.4, Math.min(3, +cfg.sound.sensitivity || 1.2));
     cfg.autoColor = Object.assign(JSON.parse(JSON.stringify(ac.DEFAULTS)), c.autoColor || {});
     const palette = ac.normalizePalette(cfg.autoColor.palette);
     cfg.autoColor.palette = palette.length ? Array.from(new Set(palette)) : ac.DEFAULT_PALETTE.slice();
@@ -157,8 +162,10 @@ const current = () => cfg.profiles[cfg.active].settings;
 // Réglages réellement affichés (couleur automatique appliquée par-dessus le profil)
 function effective() {
     const s = current(), a = cfg.autoColor;
-    if (!a || !a.enabled || !acState.color) return s;
-    const e = Object.assign({}, s, { color: acState.color, _fade: a.fade | 0 });
+    const e = Object.assign({}, s, { _sound: cfg.sound });
+    if (!a || !a.enabled || !acState.color) return e;
+    e.color = acState.color;
+    e._fade = a.fade | 0;
     if (a.outline) e.outlineColor = acState.outline;
     if (a.glow) e.glowColor = acState.color;
     return e;
@@ -271,6 +278,7 @@ function registerHotkeys() {
     const reg = (acc, fn) => { if (!acc) return; try { if (!globalShortcut.register(acc, () => { hit(acc); fn(); })) fails.push(acc); } catch (e) { fails.push(acc); } };
     reg(h.toggle, () => setVisible(!visible));
     reg(h.settings, () => createSettings());
+    reg(h.sound, () => toggleSound());
     reg(h.nextProfile, () => setActive((cfg.active + 1) % cfg.profiles.length));
     reg(h.center, () => { const s = current(); s.offsetX = 0; s.offsetY = 0; placeOverlay(); saveConfig(); broadcast(); });
     reg(h.autoColor, () => toggleAutoColor());
@@ -314,6 +322,7 @@ function refreshTray() {
     tray.setContextMenu(Menu.buildFromTemplate([
         ...(updater.status.state === 'ready' ? [{ label: `Installer la mise à jour v${updater.status.version} et redémarrer`, click: () => updater.install() }, { type: 'separator' }] : updater.status.state === 'available' ? [{ label: `Télécharger la version v${updater.status.version}…`, click: () => updater.install() }, { type: 'separator' }] : []),
         { label: visible ? 'Masquer le crosshair' : 'Afficher le crosshair', accelerator: cfg.hotkeys.toggle, click: () => setVisible(!visible) },
+        { label: 'Alertes sonores (Fortnite-style)', type: 'checkbox', checked: !!cfg.sound.enabled, accelerator: cfg.hotkeys.sound, click: m => toggleSound(m.checked) },
         { label: 'Réglages…', accelerator: cfg.hotkeys.settings, click: () => createSettings() },
         { label: 'Wiki instantané…', accelerator: cfg.hotkeys.spotlight, click: () => hud.showSpot() },
         { label: 'Wiki AR2 (site complet)…', accelerator: cfg.hotkeys.wiki, click: () => openWiki() },
@@ -406,6 +415,12 @@ ipcMain.handle('set-visible', (e, v) => { setVisible(!!v); return state(); });
 ipcMain.handle('update-check', async () => { await updater.check(); return state(); });
 ipcMain.handle('update-install', () => updater.install());
 ipcMain.handle('open-url', (e, url) => { if (/^https:\/\//.test(url)) shell.openExternal(url); });
+ipcMain.handle('sound-source', async () => {
+    const d = targetDisplay();
+    const sources = await desktopCapturer.getSources({ types: ['screen'], thumbnailSize: { width: 1, height: 1 }, fetchWindowIcons: false });
+    const source = sources.find(x => String(x.display_id) === String(d.id)) || sources[cfg.display] || sources[0];
+    return source ? source.id : null;
+});
 
 // ---------- Couleur automatique ----------
 // Une fenêtre cachée reçoit le flux de l'écran et analyse seulement la zone autour du crosshair
@@ -508,6 +523,11 @@ function toggleAutoColor(v) {
     cfg.autoColor.enabled = typeof v === 'boolean' ? v : !cfg.autoColor.enabled;
     if (!cfg.autoColor.enabled) { acState.color = null; acState.outline = null; }
     saveConfig(); acSync(); placeOverlay(); refreshTray(); broadcast();
+}
+
+function toggleSound(v) {
+    cfg.sound.enabled = typeof v === 'boolean' ? v : !cfg.sound.enabled;
+    saveConfig(); placeOverlay(); refreshTray(); broadcast();
 }
 
 // ---------- Liste blanche (le crosshair s'affiche seulement dans les applis cochées) ----------
@@ -856,6 +876,12 @@ ipcMain.handle('backup-import', (e, { text, mode, sections }) => { const r = app
 // ---------- IPC des nouvelles fonctions ----------
 ipcMain.handle('set-extras', (e, p) => {
     p = p || {};
+    if (p.sound) {
+        cfg.sound = Object.assign({ enabled: false, sensitivity: 1.2 }, p.sound);
+        cfg.sound.enabled = !!cfg.sound.enabled;
+        cfg.sound.sensitivity = Math.max(0.4, Math.min(3, +cfg.sound.sensitivity || 1.2));
+        placeOverlay();
+    }
     if (p.autoColor) {
         const was = cfg.autoColor.enabled;
         normalizeExtras({ autoColor: Object.assign({}, cfg.autoColor, p.autoColor), whitelist: cfg.whitelist, checklist: cfg.checklist });

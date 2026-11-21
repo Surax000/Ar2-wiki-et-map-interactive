@@ -1,6 +1,7 @@
 const { contextBridge, ipcRenderer } = require('electron');
 contextBridge.exposeInMainWorld('xh', {
     getState: () => ipcRenderer.invoke('get-state'),
+    soundSource: () => ipcRenderer.invoke('sound-source'),
     update: (partial) => ipcRenderer.invoke('update-settings', partial),
     setConfig: (partial) => ipcRenderer.invoke('set-config', partial),
     profile: (args) => ipcRenderer.invoke('profile', args),

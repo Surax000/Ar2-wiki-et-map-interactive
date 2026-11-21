@@ -171,7 +171,7 @@ function renderUpdate() {
     b.classList.toggle('hidden', !show);
     if (show) { $('#upd-text').textContent = u.state === 'ready' ? txt : txt + (u.mode === 'manual' ? ' (version portable : télécharge la nouvelle version)' : ''); $('#upd-btn').textContent = u.state === 'ready' ? 'Redémarrer et installer' : 'Télécharger'; }
 }
-function renderAll() { renderHUD(); renderProfiles(); renderStyles(); renderCustomEditor(); renderControls(); renderHotkeys(); renderAuto(); renderUpdate(); renderPreview(); renderAC(); renderWL(); renderCK(); renderTM(); renderBK(); }
+function renderAll() { renderHUD(); renderProfiles(); renderStyles(); renderCustomEditor(); renderControls(); renderHotkeys(); renderAuto(); renderUpdate(); renderPreview(); renderAC(); renderSound(); renderWL(); renderCK(); renderTM(); renderBK(); }
 
 async function upd(partial) {
     Object.assign(cur(), partial);
@@ -310,6 +310,17 @@ $('#upd-btn').onclick = () => xh.installUpdate();
 const esc = t => String(t == null ? '' : t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const focused = id => document.activeElement && document.activeElement.id === id;
 const setX = async p => { S = await xh.setExtras(p); };
+function renderSound() {
+    const s = S && S.cfg && S.cfg.sound ? S.cfg.sound : { enabled: false, sensitivity: 1.2 };
+    $('#sound-enabled').checked = !!s.enabled;
+    if (!focused('sound-sens')) $('#sound-sens').value = s.sensitivity;
+    $('#sound-sens-v').textContent = (+s.sensitivity).toFixed(1);
+}
+$('#sound-enabled').onchange = async e => { await setX({ sound: { enabled: e.target.checked, sensitivity: +$('#sound-sens').value } }); renderSound(); };
+$('#sound-sens').addEventListener('input', async e => {
+    $('#sound-sens-v').textContent = (+e.target.value).toFixed(1);
+    await setX({ sound: { enabled: $('#sound-enabled').checked, sensitivity: +e.target.value } });
+});
 function renderAC() {
     const a = S.cfg.autoColor; if (!a) return;
     $('#ac-enabled').checked = !!a.enabled; $('#ac-mode').value = a.mode;

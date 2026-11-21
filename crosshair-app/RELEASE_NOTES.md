@@ -1,5 +1,11 @@
 # Notes de version
 
+## v1.9.0
+- Nouvelle aide en jeu « Alertes sonores » dans « Aides en jeu ».
+- Anneau bleu autour du viseur et repères rouges temporaires pour les pics sonores.
+- Activation rapide avec Ctrl+Alt+Q et sensibilité réglable.
+- Analyse approximative gauche/droite ; aucun bruit ni emplacement précis n'est reconnu.
+
 ## v1.8.6
 - Correction de l'affichage du téléchargement : aucune progression reçue n'est plus affichée comme une boucle répétée de 0 %.
 - Affichage indéterminé tant que Electron-updater n'a pas fourni de pourcentage fiable.
@@ -99,3 +105,10 @@
 - `AR2-Crosshair-Windows.zip` : dossier à décompresser
 
 Windows SmartScreen peut afficher un avertissement (exe non signé) : « Informations complémentaires » puis « Exécuter quand même ». Aucune injection dans Roblox : l'appli est une fenêtre transparente au-dessus du jeu.
+# v1.9.0 - Alertes sonores
+
+- Nouvelle aide en jeu « Alertes sonores » dans la catégorie « Aides en jeu ».
+- Anneau bleu autour du viseur et indicateurs temporaires selon les pics sonores.
+- Activation rapide avec Ctrl+Alt+Q.
+- Sensibilité réglable depuis les Réglages.
+- Analyse approximative de gauche/droite : aucun son ni emplacement précis n'est identifié.

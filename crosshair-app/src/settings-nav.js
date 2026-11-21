@@ -26,6 +26,7 @@
             ['sp-box', 'Wiki instantané', 'Une barre de recherche par-dessus le jeu : tape le nom d’une arme ou d’un lieu.'],
             ['rg-box', 'Télémètre', 'Une règle à côté du viseur pour savoir à quelle distance est un ennemi.'],
             ['cp-box', 'Boussole', 'Une flèche en haut de l’écran qui montre la direction de ta destination.'],
+            ['sound-box', 'Alertes sonores', 'Un anneau bleu autour du personnage et des repères rouges pour les bruits proches.'],
             ['tm2-box', 'Carte tactique', 'Ta carte par-dessus le jeu, avec ton chemin de loot et les bâtiments utiles.'],
             ['tm-box', 'Minuteur', 'Un compte à rebours pour savoir quand revenir chercher du loot.'],
             ['ck-box', 'Objectifs', 'Ta liste de choses à faire, dans un coin de l’écran.']] },
