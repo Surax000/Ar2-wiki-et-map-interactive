@@ -1,5 +1,10 @@
 # Notes de version
 
+## v1.8.6
+- Correction de l'affichage du téléchargement : aucune progression reçue n'est plus affichée comme une boucle répétée de 0 %.
+- Affichage indéterminé tant que Electron-updater n'a pas fourni de pourcentage fiable.
+- Synchronisation de l'index wiki avec les explosifs placés et les quatre grenades à fragmentation.
+
 ## v1.8.5
 - Ajout des explosifs placés confirmés par le changelog officiel du 19 novembre 2026 : C4, détonateur, PMN-2, M14, TM-46, TM-72, M19, M18A1 Claymore et PSS-12.
 - Recherche instantanée, affichage dans le wiki instantané et synchronisation de l'index sans ajouter d'explosif au télémètre balistique.

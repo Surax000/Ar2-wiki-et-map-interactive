@@ -161,7 +161,10 @@ function renderAuto() {
 }
 function renderUpdate() {
     const u = S.update || {}; const b = $('#upd-banner');
-    const txt = { checking: 'Recherche de mise à jour…', downloading: `Téléchargement de la v${u.version} (${u.percent || 0} %)…`, ready: `Téléchargement terminé : la mise à jour v${u.version} est prête. Redémarre pour l’installer.`, available: `Nouvelle version v${u.version} disponible.`, none: `Tu as la dernière version (v${S.version}).`, error: `Erreur : ${u.error || ''}`, idle: '' }[u.state || 'idle'];
+    const downloadText = u.percent == null
+        ? `Téléchargement de la v${u.version}…`
+        : `Téléchargement de la v${u.version} (${u.percent} %)…`;
+    const txt = { checking: 'Recherche de mise à jour…', downloading: downloadText, ready: `Téléchargement terminé : la mise à jour v${u.version} est prête. Redémarre pour l’installer.`, available: `Nouvelle version v${u.version} disponible.`, none: `Tu as la dernière version (v${S.version}).`, error: `Erreur : ${u.error || ''}`, idle: '' }[u.state || 'idle'];
     $('#upd-status').textContent = txt; $('#upd-status').className = 'small ' + (u.state === 'error' ? 'err' : u.state === 'ready' || u.state === 'none' ? 'ok' : 'muted');
     $('#autoUpdate').checked = S.cfg.autoUpdate !== false;
     const show = u.state === 'ready' || u.state === 'available';

@@ -53,6 +53,10 @@ test('embedded Windows index contains the same placed explosives', () => {
     const names = embedded.map(item => item.name);
     assert.ok(names.includes('C4'));
     assert.ok(names.includes('M18A1 Claymore'));
+    for (const name of ['M67 Frag Grenade', 'RGD-5 Frag Grenade', 'Mk 2 Frag Grenade', 'F1 Frag Grenade']) {
+        assert.ok(names.includes(name), `missing embedded grenade: ${name}`);
+    }
+    assert.equal(embedded.length, 13);
     assert.equal(new Set(embedded.map(item => item.id)).size, embedded.length);
 });
 

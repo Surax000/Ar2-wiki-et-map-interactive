@@ -9,9 +9,23 @@ const OWNER = 'Surax000', REPO = 'Ar2-wiki-et-map-interactive';
 const RELEASES = `https://github.com/${OWNER}/${REPO}/releases/latest`;
 
 let autoUpdater = null;
-let status = { state: 'idle', mode: 'auto', version: null, percent: 0, error: null, url: RELEASES, checkedAt: null };
+let status = { state: 'idle', mode: 'auto', version: null, percent: null, error: null, url: RELEASES, checkedAt: null };
 let onChange = () => {};
 let timer = null;
+let progressTimer = null;
+
+function normalizeProgress(p) {
+    if (p && Number.isFinite(Number(p.percent))) {
+        return Math.max(0, Math.min(100, Math.round(Number(p.percent))));
+    }
+    if (p && Number(p.total) > 0 && Number.isFinite(Number(p.transferred))) {
+        return Math.max(0, Math.min(100, Math.round(Number(p.transferred) / Number(p.total) * 100)));
+    }
+    return null;
+}
+function clearProgressTimer() {
+    if (progressTimer) { clearTimeout(progressTimer); progressTimer = null; }
+}
 
 function isInstalled() {
     if (process.platform !== 'win32') return app.isPackaged; // Linux AppImage / dev
@@ -21,6 +35,12 @@ function isInstalled() {
 }
 function set(p) {
     if (status.state === 'ready' && p.state !== 'error') return;
+    if (p.state === 'downloading') {
+        if (p.percent == null) p.percent = status.percent;
+        clearProgressTimer();
+    } else {
+        clearProgressTimer();
+    }
     status = Object.assign({}, status, p);
     onChange(status);
 }
@@ -52,9 +72,9 @@ function init(opts) {
         autoUpdater.allowPrerelease = false;
         if (opts.logger) autoUpdater.logger = opts.logger;
         autoUpdater.on('checking-for-update', () => set({ state: 'checking', error: null }));
-        autoUpdater.on('update-available', i => set({ state: 'downloading', version: i.version, percent: 0 }));
+        autoUpdater.on('update-available', i => set({ state: 'downloading', version: i.version, percent: null }));
         autoUpdater.on('update-not-available', i => set({ state: 'none', version: i && i.version, checkedAt: Date.now() }));
-        autoUpdater.on('download-progress', p => set({ state: 'downloading', percent: Math.round(p.percent || 0) }));
+        autoUpdater.on('download-progress', p => set({ state: 'downloading', percent: normalizeProgress(p) }));
         autoUpdater.on('update-downloaded', i => set({ state: 'ready', version: i.version, percent: 100, checkedAt: Date.now() }));
         autoUpdater.on('error', e => set({ state: 'error', error: String((e && e.message) || e).split('\n')[0], checkedAt: Date.now() }));
     }

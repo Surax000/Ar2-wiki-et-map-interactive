@@ -1132,7 +1132,7 @@
     </div>
 
     <!-- JavaScript Data and Application Logic -->
-    <script src="site-data.js?v=20261121"></script>
+    <script src="site-data.js?v=20261121c"></script>
     <script>
         // ============================================================
         const ALL_ITEMS = [].concat(WEAPONS_DATA, EXPLOSIVES_DATA, HEAL_ITEMS_DATA, ATTACHMENTS_DATA, BACKPACKS_DATA, FOOD_DATA);
@@ -1714,12 +1714,12 @@
         // Filtres / Tri
         // ============================================================
         function getFilteredItems() {
-            const q = searchQuery.toLowerCase();
+            const q = String(searchQuery || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
             return ALL_ITEMS.filter(item => {
                 if (item.group !== currentGroup) return false;
                 if (tierFilter && item.tier !== tierFilter) return false;
                 const matchesCategory = currentCategory === 'Tous' || item.sub === currentCategory;
-                const hay = [item.name, item.caliber, item.slot, item.kind, item.sub, item.effect, item.loot, item.rarity, item.tier ? 'tier ' + item.tier : ''].filter(Boolean).join(' ').toLowerCase();
+                const hay = [item.name, item.englishName, item.caliber, item.slot, item.kind, item.sub, item.effect, item.loot, item.rarity, ...(item.aliases || []), item.tier ? 'tier ' + item.tier : ''].filter(Boolean).join(' ').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
                 return matchesCategory && hay.includes(q);
             }).sort((a, b) => {
                 const [field, direction] = sortBy.split('-');
