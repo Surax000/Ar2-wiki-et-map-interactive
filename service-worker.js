@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ar2-wiki-v6-explosive-loot';
+const CACHE_NAME = 'ar2-wiki-v7-local-grenade-images';
 const CACHE_PREFIX = 'ar2-wiki-';
 const MAX_CACHED_REQUESTS = 300;
 const PRECACHE_URLS = [

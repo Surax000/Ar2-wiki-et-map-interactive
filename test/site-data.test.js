@@ -56,6 +56,20 @@ test('fragmentation grenades retain verified map and loot information', () => {
     }
 });
 
+test('fragmentation grenade images use the bundled local assets', () => {
+    const grenades = dataContext.datasets.EXPLOSIVES_DATA.filter(item => item.subcategory === 'Grenades à fragmentation');
+    for (const grenade of grenades) {
+        const imagePath = `img/items/${grenade.id}.webp`;
+        assert.equal(grenade.image, `https://surax000.github.io/Ar2-wiki-et-map-interactive/${imagePath}`);
+        assert.ok(fs.existsSync(path.join(root, imagePath)), `missing bundled image: ${imagePath}`);
+    }
+
+    const html = read('index.html');
+    for (const id of grenades.map(grenade => grenade.id)) {
+        assert.match(html, new RegExp(`'${id}': \\['${id}', \\d+, \\d+\\]`));
+    }
+});
+
 test('embedded Windows index contains the same placed explosives', () => {
     const index = JSON.parse(read('crosshair-app/src/ar2-index.json'));
     const embedded = index.items.filter(item => item.type === 'explosive');
