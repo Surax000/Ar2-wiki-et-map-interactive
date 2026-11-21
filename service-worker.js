@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ar2-wiki-v2-explosives';
+const CACHE_NAME = 'ar2-wiki-v3-explosives';
 const CACHE_PREFIX = 'ar2-wiki-';
 const MAX_CACHED_REQUESTS = 300;
 const PRECACHE_URLS = [

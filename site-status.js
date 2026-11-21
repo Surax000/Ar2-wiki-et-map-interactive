@@ -9,7 +9,7 @@
 
     const freshness = document.getElementById('data-freshness');
     if (freshness) {
-        fetch('./data-version.json')
+        fetch('./data-version.json?v=20261121', { cache: 'no-store' })
             .then(response => {
                 if (!response.ok) throw new Error(`Impossible de charger la version des données (${response.status}).`);
                 return response.json();

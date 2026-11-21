@@ -60,7 +60,8 @@ test('site scripts and PWA assets referenced by the page exist', () => {
     const scriptUrls = [...html.matchAll(/<script\s+src="([^"]+)"/g)].map(match => match[1]);
     for (const url of scriptUrls) {
         if (/^https?:\/\//i.test(url)) continue;
-        assert.ok(fs.existsSync(path.join(root, url)), `Missing local script: ${url}`);
+        const cleanUrl = url.split('?')[0];
+        assert.ok(fs.existsSync(path.join(root, cleanUrl)), `Missing local script: ${url}`);
     }
 
     assert.ok(html.indexOf('<script src="site-data.js"></script>') < html.indexOf('const ALL_ITEMS'));
