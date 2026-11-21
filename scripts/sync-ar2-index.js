@@ -35,7 +35,6 @@ for (const item of explosives) {
         desc: item.description,
         source: item.source,
         verifiedAt: item.verifiedAt,
-        loot: 'Aucune localisation inventée',
         spawn: []
     });
 }
