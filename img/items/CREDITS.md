@@ -6,6 +6,7 @@ Elles ont été recadrées et converties en WebP (256×160 max).
 
 | Fichier | Source |
 |---|---|
+| c4 et explosifs placés | [C4 (AR2)](https://roblox-apocalypse-rising.fandom.com/wiki/C4_(AR2)), [Anti-Personnel Mine](https://roblox-apocalypse-rising.fandom.com/wiki/Anti-Personnel_Mine), [Anti-Vehicle Mine](https://roblox-apocalypse-rising.fandom.com/wiki/Anti-Vehicle_Mine), [PSS-12 Mine Detector](https://roblox-apocalypse-rising.fandom.com/wiki/PSS-12_Mine_Detector), [Grenade](https://roblox-apocalypse-rising.fandom.com/wiki/Grenade) |
 | 5-56mm-stanag-20rd-magazine.webp | [556mm_STANAG_20rd.png](https://static.wikia.nocookie.net/roblox-apocalypse-rising/images/b/b0/556mm_STANAG_20rd.png/revision/latest) |
 | 5-56mm-stanag-30rd-magazine.webp | [556mm_STANAG_30rd.png](https://static.wikia.nocookie.net/roblox-apocalypse-rising/images/1/11/556mm_STANAG_30rd.png/revision/latest) |
 | 59-series-15rd-magazine.webp | [59_Series_15rd.png](https://static.wikia.nocookie.net/roblox-apocalypse-rising/images/3/3c/59_Series_15rd.png/revision/latest) |

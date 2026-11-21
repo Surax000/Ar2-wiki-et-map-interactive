@@ -12,6 +12,9 @@
     let IMG_BASE = root.AR2_IMG_BASE || null, IMG_FIXED = !!root.AR2_IMG_BASE, COSMETIC_IMG_BASE = null;
     function setImgBase(b) { IMG_BASE = b || null; IMG_FIXED = !!b; }
     const pic = (o, cls) => {
+        if (o && o.image && /^https?:\/\//.test(o.image)) {
+            return `<img class="${cls || 'aq-pic'}" src="${esc(o.image)}" alt="" loading="lazy" decoding="async" draggable="false">`;
+        }
         const base = o && o.type === 'cosmetic' ? COSMETIC_IMG_BASE : IMG_BASE;
         return o && o.img && base && /^[a-z0-9._-]+$/i.test(o.img) ? `<img class="${cls || 'aq-pic'}" src="${esc(base + o.img)}.webp" alt="" loading="lazy" decoding="async" draggable="false">` : '';
     };

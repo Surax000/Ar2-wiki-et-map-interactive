@@ -29,6 +29,7 @@ for (const item of explosives) {
         status: item.status,
         associated: item.associated || [],
         stats: item.stats || {},
+        image: item.image || null,
         desc: item.description,
         source: item.source,
         verifiedAt: item.verifiedAt,

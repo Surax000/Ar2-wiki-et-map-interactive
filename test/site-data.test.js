@@ -32,9 +32,9 @@ test('catalog datasets contain named entries with unique IDs', () => {
 
 test('official placed-explosive update is documented without invented gameplay statistics', () => {
     const explosives = dataContext.datasets.EXPLOSIVES_DATA;
-    assert.ok(explosives.length >= 9);
+    assert.ok(explosives.length >= 13);
     const names = explosives.map(item => item.name);
-    for (const name of ['C4', 'PMN-2', 'M14', 'TM-46', 'TM-72', 'M19', 'M18A1 Claymore', 'PSS-12 Mine Detector']) {
+    for (const name of ['C4', 'PMN-2', 'M14', 'TM-46', 'TM-72', 'M19', 'M18A1 Claymore', 'PSS-12 Mine Detector', 'M67 Frag Grenade', 'RGD-5 Frag Grenade', 'Mk 2 Frag Grenade', 'F1 Frag Grenade']) {
         assert.ok(names.includes(name), `missing documented explosive: ${name}`);
     }
     for (const item of explosives) {
@@ -42,7 +42,8 @@ test('official placed-explosive update is documented without invented gameplay s
         assert.match(item.source, /^https:\/\//);
         assert.match(item.verifiedAt, /^\d{4}-\d{2}-\d{2}$/);
         assert.ok(!item.internalId, 'no unverified internal game ID');
-        assert.equal(Object.keys(item.stats).length, 0);
+        assert.ok(typeof item.stats === 'object');
+        assert.match(item.image, /^https:\/\//);
     }
 });
 
