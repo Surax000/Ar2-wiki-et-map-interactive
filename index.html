@@ -368,7 +368,7 @@
                 <div>
                     <h2 class="text-2xl font-extrabold text-white tracking-tight">Crosshair</h2>
                     <p class="text-xs text-tactical-muted mt-1 max-w-3xl">Installe <b class="text-white">AR2 Crosshair</b>, une petite appli Windows qui affiche un viseur personnalisé par-dessus Roblox. Crée ton crosshair ci-dessous, copie son code et colle-le dans l'appli (bouton « Importer »).</p>
-                    <p class="text-[11px] text-tactical-muted mt-2 max-w-3xl"><b class="text-tactical-accent">Nouveau en 1.9.2 :</b> les <b>Alertes sonores</b> de « Aides en jeu » sont corrigées et optimisées. L'anneau bleu et les repères sonores ne bloquent plus les autres overlays. Ctrl+Alt+Q active ou masque cette aide ; la direction reste approximative.</p>
+                    <p class="text-[11px] text-tactical-muted mt-2 max-w-3xl"><b class="text-tactical-accent">Nouveau en 1.9.3 :</b> quatre palettes HUD en plus (Océan, Violet, Rouge, Arctique) et un thème personnalisé : choisis ta couleur avec le sélecteur dans Réglages → Apparence → Thème. La couleur s'applique aussi aux overlays et au wiki ouvert dans l'appli.</p>
                     <p class="text-[11px] text-tactical-muted mt-2 max-w-3xl"><b class="text-tactical-accent">Nouveau en 1.1 :</b> mises à jour automatiques (la version installée se met à jour toute seule) et changement d'arme automatique : associe chaque emplacement 1 à 8 de ta barre à un profil de crosshair, l'appli change de viseur quand tu changes d'arme (touches 1 à 8), le cache quand tu ranges ton arme (V) et peut le cacher pendant la visée (clic droit). Elle lit uniquement tes touches, jamais le jeu. Si tu as la 1.0.0, réinstalle une fois avec l'installeur.</p>
                 </div>
                 <div class="flex flex-wrap gap-2">
@@ -6484,9 +6484,12 @@
         // THÈMES VISUELS (HUD skins) — site + overlays de l'appli
         // ============================================================
         const THEME_KEY = 'ar2_theme';
+        const THEME_COLOR_KEY = 'ar2_theme_color';
+        const validThemeColor = color => /^#[0-9a-f]{6}$/i.test(String(color || ''));
         const DESC = { classic: "Le design d'origine, vert néon.", nvg: 'Noir profond et vert phosphore, façon jumelles de vision nocturne.', olive: 'Kaki sombre et ambre, ambiance militaire.', esport: 'Gris anthracite et cyan électrique, épuré.' };
         const ORIG = { armes: '#00ff88', crosshair: '#00ff88', ville: '#00ff88', normal: '#00ff88', spawnVille: '#00ff88', radar0: '#00ff88' };
         let theme = T.THEMES[localStorage.getItem(THEME_KEY)] ? localStorage.getItem(THEME_KEY) : 'classic';
+        let themeColor = validThemeColor(localStorage.getItem(THEME_COLOR_KEY)) ? localStorage.getItem(THEME_COLOR_KEY) : T.THEMES.custom.acc;
         function retint(acc) {
             try { GROUPS.forEach(g => { if (g.id === 'armes' || g.id === 'crosshair') g.color = acc; }); } catch (e) {}
             try { MAP_CATS.ville.color = acc; MAP_MODES.normal.color = acc; } catch (e) {}
@@ -6499,18 +6502,21 @@
             try { if (currentGroup === 'carte') { renderMapLegend(); renderMapModes(); drawMap(); renderMapInfo(); } } catch (e) {}
             try { if (currentGroup === 'lootrun') lrRender(); } catch (e) {}
         }
-        function setTheme(id, opts) {
+        function setTheme(selection, opts) {
             opts = opts || {};
+            let id = selection, color = null;
+            if (selection && typeof selection === 'object') { id = selection.id; color = selection.color; }
             if (!T.THEMES[id]) id = 'classic';
+            if (validThemeColor(color)) themeColor = color;
             theme = id;
-            T.applyTheme(id, document);
-            try { localStorage.setItem(THEME_KEY, id); } catch (e) {}
-            retint(T.THEMES[id].acc);
+            T.applyTheme({ id, color: themeColor }, document);
+            try { localStorage.setItem(THEME_KEY, id); localStorage.setItem(THEME_COLOR_KEY, themeColor); } catch (e) {}
+            retint(id === 'custom' ? themeColor : T.THEMES[id].acc);
             if (!opts.init) rerender();
             renderThemePop();
-            if (inApp && app.setTheme && !opts.fromApp && !opts.init) app.setTheme(id).catch(() => {});
+            if (inApp && app.setTheme && !opts.fromApp && !opts.init) app.setTheme({ id, color: themeColor }).catch(() => {});
         }
-        window.ar2SetTheme = (id) => setTheme(id, { fromApp: true });
+        window.ar2SetTheme = (selection) => setTheme(selection, { fromApp: true });
         function swatch(t) {
             return `<span class="theme-sw" style="background:${t.bg}"><i style="left:0;top:0;bottom:0;width:30%;background:${t.card};border-right:1px solid ${t.border}"></i><i style="left:38%;top:9px;width:44%;height:4px;border-radius:2px;background:${t.acc};box-shadow:0 0 6px ${t.acc}"></i><i style="left:38%;top:18px;width:26%;height:4px;border-radius:2px;background:${t.gold}"></i></span>`;
         }
@@ -6518,6 +6524,7 @@
             const pop = document.getElementById('theme-pop'); if (!pop) return;
             pop.innerHTML = `<div class="px-2 pt-1 pb-2 text-[10px] font-mono font-bold uppercase tracking-widest text-tactical-muted">Thème HUD ${inApp ? '(site + overlays)' : ''}</div>` +
                 T.THEME_ORDER.map(id => { const t = T.THEMES[id]; return `<button type="button" class="theme-opt ${id === theme ? 'on' : ''}" data-theme-id="${id}">${swatch(t)}<span class="min-w-0"><span class="block text-sm font-extrabold text-white">${t.name}</span><span class="block text-[11px] leading-snug text-tactical-muted">${t.desc || ''}</span></span></button>`; }).join('') +
+                `<button type="button" class="theme-opt ${theme === 'custom' ? 'on' : ''}" data-theme-id="custom">${swatch(Object.assign({}, T.THEMES.custom, { acc: themeColor }))}<span class="min-w-0"><span class="block text-sm font-extrabold text-white">Personnalisé</span><span class="block text-[11px] leading-snug text-tactical-muted">Choisis ta propre couleur d’accent.</span></span></button><label class="theme-opt"><span class="min-w-0">Ma couleur personnalisée</span><input id="site-theme-color" type="color" value="${themeColor}" aria-label="Choisir la couleur du thème"></label>` +
                 `<p class="px-2 pt-2 pb-1 text-[10px] text-tactical-muted leading-snug">${inApp ? "Appliqué aussi au Wiki instantané, au télémètre, à la boussole et au chrono de l'appli." : "Avec l'appli AR2 Crosshair, le thème s'applique aussi aux overlays en jeu."}</p>`;
         }
 
@@ -6738,6 +6745,7 @@
         const tb = document.getElementById('theme-btn'), tp = document.getElementById('theme-pop');
         if (tb) tb.onclick = e => { e.stopPropagation(); renderThemePop(); tp.classList.toggle('hidden'); tb.setAttribute('aria-expanded', String(!tp.classList.contains('hidden'))); };
         if (tp) tp.addEventListener('click', e => { const b = e.target.closest('[data-theme-id]'); e.stopPropagation(); if (b) { setTheme(b.dataset.themeId); tp.classList.add('hidden'); tb.setAttribute('aria-expanded', 'false'); } });
+        if (tp) tp.addEventListener('change', e => { if (e.target.id === 'site-theme-color') { setTheme({ id: 'custom', color: e.target.value }); tp.classList.add('hidden'); tb.setAttribute('aria-expanded', 'false'); } });
         document.addEventListener('click', () => { if (tp && !tp.classList.contains('hidden')) { tp.classList.add('hidden'); tb.setAttribute('aria-expanded', 'false'); } });
         const db = document.getElementById('duel-btn'); if (db) db.onclick = () => openDuel();
         const qb = document.getElementById('qk-open'); if (qb) qb.onclick = () => openQuick();
@@ -6749,7 +6757,11 @@
             window.addEventListener('hashchange', deepLink);
             // Dans l'appli : synchronise le thème et transmet l'index du wiki (Wiki instantané, télémètre, boussole)
             if (inApp) {
-                if (app.getTheme) app.getTheme().then(t => { if (t && T.THEMES[t] && t !== theme) setTheme(t, { fromApp: true }); }).catch(() => {});
+                if (app.getTheme) app.getTheme().then(selection => {
+                    const id = selection && typeof selection === 'object' ? selection.id : selection;
+                    const color = selection && typeof selection === 'object' ? selection.color : null;
+                    if (id && T.THEMES[id] && (id !== theme || (validThemeColor(color) && color !== themeColor))) setTheme({ id, color }, { fromApp: true });
+                }).catch(() => {});
                 if (app.pushIndex) setTimeout(() => { try { app.pushIndex(window.ar2ExportIndex()).catch(() => {}); } catch (e) {} }, 1200);
             }
         };

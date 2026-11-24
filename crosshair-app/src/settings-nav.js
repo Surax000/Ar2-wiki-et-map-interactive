@@ -34,7 +34,7 @@
             ['wiki-box', 'Wiki AR2', 'Le site complet : armes, carte, loot run, boss…'],
             ['aim-box', 'Entraînement', 'Un mini-jeu pour voir si ta croix te va bien.']] },
         { id: 'look', name: 'Apparence', desc: 'Les couleurs de l’appli et des fenêtres en jeu.', subs: [
-            ['th-box', 'Thème', 'Choisis une ambiance : vision nocturne, militaire, e-sport…']] },
+            ['th-box', 'Thème', 'Choisis une palette ou crée ton thème avec ta propre couleur.']] },
         { id: 'app', name: 'Réglages de l’appli', desc: 'Les touches, les sauvegardes et le démarrage de l’appli.', subs: [
             ['hk-box', 'Raccourcis clavier', 'Les touches à presser pour tout faire sans quitter le jeu.'],
             ['wl-box', 'Applis autorisées', 'Choisis dans quels programmes la croix a le droit de s’afficher.'],

@@ -67,6 +67,8 @@ function defaultConfig() {
         whitelist: DEFAULT_WL(),
         checklist: DEFAULT_CHECK(),
         timer: DEFAULT_TIMER(),
+        theme: 'classic',
+        themeColor: '#a78bfa',
         display: 0,
         hotkeys: { ...DEFAULT_HOTKEYS },
         startHidden: false,
@@ -374,7 +376,7 @@ function refreshTray() {
             { label: 'Changer de carte (archipel / Kin Flats)', accelerator: cfg.hotkeys.mapWorld, click: () => hud.mapNextWorld() }
         ] },
         { label: 'Assistant de configuration…', click: () => { createSettings(); const go = () => settingsWin && settingsWin.webContents.send('open-onboarding'); if (settingsWin.webContents.isLoading()) settingsWin.webContents.once('did-finish-load', () => setTimeout(go, 300)); else go(); } },
-        { label: 'Thème', submenu: hud.T.THEME_ORDER.map(id => ({ label: hud.T.THEMES[id].name, type: 'radio', checked: cfg.theme === id, click: () => hud.setTheme(id) })) },
+        { label: 'Thème', submenu: hud.T.THEME_ORDER.map(id => ({ label: hud.T.THEMES[id].name, type: 'radio', checked: cfg.theme === id, click: () => hud.setTheme(id) })).concat([{ label: hud.T.THEMES.custom.name, type: 'radio', checked: cfg.theme === 'custom', click: () => hud.setTheme('custom') }]) },
         { type: 'separator' },
         { label: 'Profil', submenu: cfg.profiles.map((p, i) => ({ label: p.name, type: 'radio', checked: i === cfg.active, click: () => setActive(i) })) },
         { label: 'Changement d\'arme automatique', type: 'checkbox', checked: !!cfg.autoSwitch.enabled, click: m => { cfg.autoSwitch.enabled = m.checked; autoHidden = { holster: false, ads: false, wl: autoHidden.wl }; applyVisibility(); saveConfig(); broadcast(); } },
@@ -781,8 +783,8 @@ ipcMain.handle('hud-extras', (e, p = {}) => {
     if (p.tmap) c.tmap = Object.assign({}, cfg.tmap, p.tmap);
     if ('showMap' in p) hud.showMap(!!p.showMap);
     if ('clearRoute' in p) c.compass = Object.assign({}, c.compass || cfg.compass, { route: null, leg: 0 });
-    hud.normalize(cfg, Object.assign({ theme: cfg.theme }, c));
-    if (p.theme) hud.setTheme(p.theme);
+    hud.normalize(cfg, Object.assign({ theme: cfg.theme, themeColor: cfg.themeColor }, c));
+    if (p.theme || p.themeColor) hud.setTheme(p.theme || cfg.theme, undefined, p.themeColor);
     if (p.openSpot) hud.showSpot(p.openSpot === true ? '' : String(p.openSpot));
     if (p.refreshIndex) hud.refreshIndex(true);
     saveConfig(); hud.refresh(); refreshTray();
@@ -790,7 +792,7 @@ ipcMain.handle('hud-extras', (e, p = {}) => {
 });
 ipcMain.handle('wiki-open', (e, tab) => { openWiki(tab); return true; });
 ipcMain.handle('wiki-retry', () => { wikiReload(true); return true; });
-ipcMain.handle('wiki-info', e => ({ inApp: true, version: app.getVersion(), profiles: cfg.profiles.map(p => p.name), active: cfg.active, theme: cfg.theme, hotkeys: { wiki: cfg.hotkeys.wiki, settings: cfg.hotkeys.settings, spotlight: cfg.hotkeys.spotlight, range: cfg.hotkeys.range, compass: cfg.hotkeys.compass } }));
+ipcMain.handle('wiki-info', e => ({ inApp: true, version: app.getVersion(), profiles: cfg.profiles.map(p => p.name), active: cfg.active, theme: cfg.theme, themeColor: cfg.themeColor, hotkeys: { wiki: cfg.hotkeys.wiki, settings: cfg.hotkeys.settings, spotlight: cfg.hotkeys.spotlight, range: cfg.hotkeys.range, compass: cfg.hotkeys.compass } }));
 // le site envoie un crosshair (code AR2X-) ou une sauvegarde AR2SAVE- : import direct, sans copier-coller
 ipcMain.handle('wiki-import', (e, { text, name, sections } = {}) => {
     if (!fromWiki(e)) throw new Error('refusé');
@@ -825,7 +827,7 @@ function buildBackup(sections) {
     if (sec.includes('whitelist')) d.whitelist = cfg.whitelist;
     if (sec.includes('checklist')) d.checklist = cfg.checklist;
     if (sec.includes('timer')) d.timer = Object.assign({}, cfg.timer, { running: [] });
-    if (sec.includes('hud')) d.hud = { theme: cfg.theme, range: cfg.range, compass: Object.assign({}, cfg.compass, { show: false }), spotlight: cfg.spotlight, tmap: cfg.tmap };
+    if (sec.includes('hud')) d.hud = { theme: cfg.theme, themeColor: cfg.themeColor, range: cfg.range, compass: Object.assign({}, cfg.compass, { show: false }), spotlight: cfg.spotlight, tmap: cfg.tmap };
     if (sec.includes('hotkeys')) d.hotkeys = cfg.hotkeys;
     if (sec.includes('general')) d.general = { display: cfg.display, startHidden: cfg.startHidden, launchAtStartup: cfg.launchAtStartup, moveStep: cfg.moveStep, autoUpdate: cfg.autoUpdate };
     return { app: 'ar2-crosshair', format: 1, version: app.getVersion(), exported: new Date().toISOString(), sections: Object.keys(d).filter(k => k !== 'active'), data: JSON.parse(JSON.stringify(d)) };
@@ -883,7 +885,7 @@ function applyBackup(o, mode, sections) {
     if (Object.keys(extras).length) normalizeExtras(Object.assign({ autoColor: cfg.autoColor, whitelist: cfg.whitelist, checklist: cfg.checklist }, extras));
     if (sec.includes('hud') && d.hud) {
         const h = d.hud;
-        hud.normalize(cfg, { theme: h.theme || cfg.theme, range: Object.assign({}, replace ? {} : cfg.range, h.range || {}), compass: Object.assign({}, replace ? {} : cfg.compass, h.compass || {}), spotlight: Object.assign({}, cfg.spotlight, h.spotlight || {}), tmap: Object.assign({}, cfg.tmap, h.tmap || {}) });
+        hud.normalize(cfg, { theme: h.theme || cfg.theme, themeColor: h.themeColor || cfg.themeColor, range: Object.assign({}, replace ? {} : cfg.range, h.range || {}), compass: Object.assign({}, replace ? {} : cfg.compass, h.compass || {}), spotlight: Object.assign({}, cfg.spotlight, h.spotlight || {}), tmap: Object.assign({}, cfg.tmap, h.tmap || {}) });
         hud.setTheme(cfg.theme); hud.refresh();
         done.push('thème, télémètre, boussole et carte tactique');
     }

@@ -21,24 +21,50 @@
         olive: { id: 'olive', name: 'Militaire / Olive', desc: 'Kaki sombre et ambre, comme un écran de char.',
             bg: '#14170e', card: '#1d2115', border: '#3b4228', acc: '#ffb020', gold: '#d9c77d', red: '#ff5c3a', muted: '#a09f7c', text: '#efeadb', ink: '#1a1405', hud: 'rgba(20,23,12,.82)', scan: 0 },
         esport: { id: 'esport', name: 'Minimaliste / E-Sport', desc: 'Gris anthracite et cyan électrique, épuré.',
-            bg: '#15171b', card: '#1e2127', border: '#323743', acc: '#00e5ff', gold: '#c4b5fd', red: '#ff4d6d', muted: '#8a93a6', text: '#f4f7fb', ink: '#041216', hud: 'rgba(16,18,22,.80)', scan: 0 }
+            bg: '#15171b', card: '#1e2127', border: '#323743', acc: '#00e5ff', gold: '#c4b5fd', red: '#ff4d6d', muted: '#8a93a6', text: '#f4f7fb', ink: '#041216', hud: 'rgba(16,18,22,.80)', scan: 0 },
+        ocean: { id: 'ocean', name: 'Océan', desc: 'Bleu profond et turquoise lumineux.',
+            bg: '#08131d', card: '#102331', border: '#23485b', acc: '#38d6ff', gold: '#a7e8ff', red: '#ff6178', muted: '#8ba9b7', text: '#e9f8ff', ink: '#06131a', hud: 'rgba(4,14,22,.82)', scan: 0 },
+        violet: { id: 'violet', name: 'Violet', desc: 'Indigo sombre et violet électrique.',
+            bg: '#120e1c', card: '#1d172b', border: '#40305a', acc: '#b48aff', gold: '#f4c2ff', red: '#ff6685', muted: '#a99bbd', text: '#f7f0ff', ink: '#110a1b', hud: 'rgba(13,8,21,.82)', scan: 0 },
+        crimson: { id: 'crimson', name: 'Rouge', desc: 'Noir graphite et rouge vif.',
+            bg: '#171012', card: '#241719', border: '#503037', acc: '#ff5364', gold: '#ffc0a8', red: '#ff5364', muted: '#ae9296', text: '#fff0f1', ink: '#18090d', hud: 'rgba(20,8,11,.82)', scan: 0 },
+        arctic: { id: 'arctic', name: 'Arctique', desc: 'Gris clair et bleu glacier.',
+            bg: '#10171c', card: '#192329', border: '#354d59', acc: '#91e5ff', gold: '#ffe6ad', red: '#ff6b79', muted: '#9aabb3', text: '#f1fbff', ink: '#07151b', hud: 'rgba(8,16,21,.82)', scan: 0 },
+        custom: { id: 'custom', name: 'Personnalisé', desc: 'Choisis ta propre couleur d’accent.',
+            bg: '#12151a', card: '#1a1f26', border: '#343b46', acc: '#a78bfa', gold: '#e5c07b', red: '#ff5364', muted: '#929ba8', text: '#f4f7fb', ink: '#0b0f14', hud: 'rgba(10,13,18,.82)', scan: 0 }
     };
-    const THEME_ORDER = ['classic', 'nvg', 'olive', 'esport'];
+    const THEME_ORDER = ['classic', 'nvg', 'olive', 'esport', 'ocean', 'violet', 'crimson', 'arctic'];
+    const validColor = h => /^#[0-9a-f]{6}$/i.test(String(h || ''));
+    function mixHex(a, b, amount) {
+        const x = parseInt(a.slice(1), 16), y = parseInt(b.slice(1), 16);
+        const mix = shift => Math.round(((x >> shift) & 255) * (1 - amount) + ((y >> shift) & 255) * amount);
+        return '#' + [16, 8, 0].map(shift => mix(shift).toString(16).padStart(2, '0')).join('');
+    }
+    function resolveTheme(selection, color) {
+        if (selection && typeof selection === 'object') {
+            color = selection.color;
+            selection = selection.id;
+        }
+        const id = THEMES[selection] ? selection : 'classic';
+        const theme = THEMES[id];
+        if (id !== 'custom' || !validColor(color)) return { id, theme };
+        return { id, theme: Object.assign({}, theme, { acc: color, border: mixHex(theme.border, color, 0.45) }) };
+    }
     const hexRgb = h => { const m = /^#?([0-9a-f]{6})$/i.exec(String(h || '')); if (!m) return '0 0 0'; const n = parseInt(m[1], 16); return `${n >> 16 & 255} ${n >> 8 & 255} ${n & 255}`; };
-    function themeVars(id) {
-        const t = THEMES[id] || THEMES.classic;
+    function themeVars(selection, color) {
+        const t = resolveTheme(selection, color).theme;
         const v = {};
         ['bg', 'card', 'border', 'acc', 'gold', 'red', 'muted', 'text', 'ink'].forEach(k => { v['--t-' + k] = hexRgb(t[k]); v['--c-' + k] = t[k]; });
         v['--c-hud'] = t.hud;
         return v;
     }
-    function applyTheme(id, doc) {
+    function applyTheme(selection, doc, color) {
         doc = doc || (typeof document !== 'undefined' ? document : null);
         if (!doc) return;
-        const t = THEMES[id] ? id : 'classic', el = doc.documentElement;
-        const v = themeVars(t);
+        const resolved = resolveTheme(selection, color), el = doc.documentElement;
+        const v = themeVars(resolved.id, resolved.theme.acc);
         Object.keys(v).forEach(k => el.style.setProperty(k, v[k]));
-        el.setAttribute('data-theme', t);
+        el.setAttribute('data-theme', resolved.id);
     }
 
     // ============================================================
