@@ -33,7 +33,7 @@ const DEFAULT_HOTKEYS = {
     themeNext: ''
 };
 
-let cfgPath, cfg, configLoadError = null, configSaveErrorShown = false, overlay = null, soundOverlay = null, settingsWin = null, tray = null, visible = true;
+let cfgPath, cfg, configLoadError = null, configSaveErrorShown = false, overlay = null, soundOverlay = null, settingsWin = null, tray = null, visible = true, soundStatus = 'Désactivé.';
 let autoHidden = { holster: false, ads: false, wl: false };
 let lastSlot = null, hkFails = [];
 const DEFAULT_AUTO = { enabled: true, onlyRoblox: true, holsterHide: true, adsHide: false, adsMode: 'hold', showToast: true, slots: {}, labels: {} };
@@ -345,7 +345,7 @@ function broadcast() {
 let bcTimer = null;
 function broadcastSoon() { clearTimeout(bcTimer); bcTimer = setTimeout(broadcast, 60); }
 function state() {
-    return { cfg, visible, shown: shown(), hkFails, firstRun: !cfg.onboarded, autoHidden, lastSlot, hook: { started: ws.state.started, error: ws.state.error }, update: updater.status, installed: updater.isInstalled(), displays: screen.getAllDisplays().map((d, i) => ({ i, label: `Écran ${i + 1} – ${d.size.width}×${d.size.height}${d.id === screen.getPrimaryDisplay().id ? ' (principal)' : ''}` })), hud: hud.stateInfo(), weapons: hudWeapons(), version: app.getVersion(), autoColor: acState, fgTitle: wlTitle, now: Date.now(), presets: Object.fromEntries(Object.entries(CHECK_PRESETS).map(([k, v]) => [k, v.name])) };
+    return { cfg, visible, shown: shown(), hkFails, firstRun: !cfg.onboarded, autoHidden, lastSlot, hook: { started: ws.state.started, error: ws.state.error }, update: updater.status, installed: updater.isInstalled(), displays: screen.getAllDisplays().map((d, i) => ({ i, label: `Écran ${i + 1} – ${d.size.width}×${d.size.height}${d.id === screen.getPrimaryDisplay().id ? ' (principal)' : ''}` })), hud: hud.stateInfo(), weapons: hudWeapons(), version: app.getVersion(), autoColor: acState, soundStatus, fgTitle: wlTitle, now: Date.now(), presets: Object.fromEntries(Object.entries(CHECK_PRESETS).map(([k, v]) => [k, v.name])) };
 }
 
 function trayIcon() {
@@ -451,11 +451,17 @@ ipcMain.handle('set-visible', (e, v) => { setVisible(!!v); return state(); });
 ipcMain.handle('update-check', async () => { await updater.check(); return state(); });
 ipcMain.handle('update-install', () => updater.install());
 ipcMain.handle('open-url', (e, url) => { if (/^https:\/\//.test(url)) shell.openExternal(url); });
-ipcMain.handle('sound-source', async () => {
+ipcMain.handle('sound-source', async e => {
+    if (!soundOverlay || e.sender !== soundOverlay.webContents) throw new Error('refusé');
     const d = targetDisplay();
     const sources = await desktopCapturer.getSources({ types: ['screen'], thumbnailSize: { width: 1, height: 1 }, fetchWindowIcons: false });
     const source = sources.find(x => String(x.display_id) === String(d.id)) || sources[cfg.display] || sources[0];
     return source ? source.id : null;
+});
+ipcMain.on('sound-status', (e, message) => {
+    if (!soundOverlay || e.sender !== soundOverlay.webContents) return;
+    soundStatus = String(message || '').slice(0, 240);
+    if (settingsWin && !settingsWin.isDestroyed()) settingsWin.webContents.send('sound-status', soundStatus);
 });
 
 // ---------- Couleur automatique ----------
@@ -962,7 +968,7 @@ else {
     app.whenReady().then(() => {
         if (process.platform === 'win32') app.setAppUserModelId('com.ar2.crosshair');
         session.defaultSession.setPermissionRequestHandler((webContents, permission, callback) => {
-            callback(permission === 'media');
+            callback(permission === 'media' && !!soundOverlay && webContents === soundOverlay.webContents);
         });
         loadConfig();
         hud.normalize(cfg, cfg);
@@ -1003,6 +1009,11 @@ async function runSelftest() {
     try {
         await wait(1500);
         out.overlay = { created: !!overlay, visible: overlay ? overlay.isVisible() : false, bounds: overlay ? overlay.getBounds() : null, alwaysOnTop: overlay ? overlay.isAlwaysOnTop() : false };
+        toggleSound(true); await wait(300);
+        out.soundOverlay = { created: !!soundOverlay, separate: !!soundOverlay && soundOverlay !== overlay, visible: soundOverlay ? soundOverlay.isVisible() : false, mainOverlayVisible: overlay ? overlay.isVisible() : false };
+        out.soundOverlayOk = out.soundOverlay.created && out.soundOverlay.separate && out.soundOverlay.visible && out.soundOverlay.mainOverlayVisible;
+        toggleSound(false);
+        if (!out.soundOverlayOk) throw new Error('overlay sonore : fenêtre séparée ou visibilité incorrecte');
         out.hook = { started: ws.state.started, error: ws.state.error };
         out.foreground = { title: ws.foregroundTitle() };
         // test du changement d'arme : emplacement 2 -> profil 4, V -> masqué, 1 -> profil 0

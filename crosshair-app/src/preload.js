@@ -2,6 +2,7 @@ const { contextBridge, ipcRenderer } = require('electron');
 contextBridge.exposeInMainWorld('xh', {
     getState: () => ipcRenderer.invoke('get-state'),
     soundSource: () => ipcRenderer.invoke('sound-source'),
+    soundStatus: (message) => ipcRenderer.send('sound-status', message),
     update: (partial) => ipcRenderer.invoke('update-settings', partial),
     setConfig: (partial) => ipcRenderer.invoke('set-config', partial),
     profile: (args) => ipcRenderer.invoke('profile', args),
@@ -11,6 +12,7 @@ contextBridge.exposeInMainWorld('xh', {
     openUrl: (u) => ipcRenderer.invoke('open-url', u),
     onState: (cb) => ipcRenderer.on('state', (e, s) => cb(s)),
     onSettings: (cb) => ipcRenderer.on('settings', (e, s) => cb(s)),
+    onSoundStatus: (cb) => ipcRenderer.on('sound-status', (e, s) => cb(s)),
     setExtras: (p) => ipcRenderer.invoke('set-extras', p),
     checklistPreset: (k) => ipcRenderer.invoke('checklist-preset', k),
     checklistToggle: (id) => ipcRenderer.invoke('checklist-toggle', id),

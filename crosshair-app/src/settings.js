@@ -16,7 +16,7 @@ if (!window.xh) {
             return st;
         },
         setVisible: async v => { st.visible = v; return st; },
-        setExtras: async p => { ['autoColor', 'whitelist', 'checklist', 'timer'].forEach(k => { if (p[k]) st.cfg[k] = Object.assign({}, st.cfg[k], p[k]); }); return st; },
+        setExtras: async p => { ['autoColor', 'whitelist', 'checklist', 'timer', 'sound'].forEach(k => { if (p[k]) st.cfg[k] = Object.assign({}, st.cfg[k], p[k]); }); return st; },
         checklistPreset: async k => { st.cfg.checklist.items = ['Objectif A', 'Objectif B', 'Objectif C'].map((t, i) => ({ id: k + i, text: t, done: false })); st.cfg.checklist.title = st.presets[k]; return st; },
         wlCapture: async () => ({ ok: true, title: 'Roblox' }),
         timerStart: async w => { const t = st.cfg.timer, p = typeof w === 'number' ? t.presets[w] : { id: null, name: w.name, min: w.sec ? w.sec / 60 : w.min }; const ex = p.id && t.running.find(r => r.preset === p.id); const dur = p.min * 60; if (ex) { ex.end = Date.now() + dur * 1000; ex.doneAt = null; } else t.running.push({ id: Math.random().toString(36).slice(2), preset: p.id, name: p.name, dur, end: Date.now() + dur * 1000, doneAt: null }); st.now = Date.now(); return st; },
@@ -315,11 +315,17 @@ function renderSound() {
     $('#sound-enabled').checked = !!s.enabled;
     if (!focused('sound-sens')) $('#sound-sens').value = s.sensitivity;
     $('#sound-sens-v').textContent = (+s.sensitivity).toFixed(1);
+    if (S.soundStatus) $('#sound-status').textContent = S.soundStatus;
 }
 $('#sound-enabled').onchange = async e => { await setX({ sound: { enabled: e.target.checked, sensitivity: +$('#sound-sens').value } }); renderSound(); };
 $('#sound-sens').addEventListener('input', async e => {
     $('#sound-sens-v').textContent = (+e.target.value).toFixed(1);
     await setX({ sound: { enabled: $('#sound-enabled').checked, sensitivity: +e.target.value } });
+});
+if (xh.onSoundStatus) xh.onSoundStatus(message => {
+    const box = $('#sound-status');
+    box.textContent = message;
+    box.className = 'small ' + (/indisponible|erreur/i.test(message) ? 'err' : /capté/i.test(message) ? 'ok' : 'muted');
 });
 function renderAC() {
     const a = S.cfg.autoColor; if (!a) return;
