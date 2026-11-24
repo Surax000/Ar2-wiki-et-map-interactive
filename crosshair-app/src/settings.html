@@ -238,7 +238,7 @@
             <p class="muted small">Affiche autour de ton personnage un anneau bleu et des repères rouges lors des pics sonores du jeu, comme une visualisation Fortnite. <span class="kbd">Ctrl+Alt+Q</span> affiche ou masque l'aide. L'analyse estime surtout une zone gauche/droite et ne reconnaît pas le type exact du bruit.</p>
             <div class="field"><label class="tog"><input type="checkbox" id="sound-enabled"> Activer les alertes sonores autour du personnage</label></div>
             <div class="field"><label>Sensibilité <b id="sound-sens-v"></b></label><input type="range" id="sound-sens" min="0.4" max="3" step="0.1"></div>
-            <div class="field"><label>Position</label><select id="sound-position" class="w100" disabled><option value="center">Centrer autour du viseur</option></select></div>
+            <div id="sound-status" class="small muted" role="status" aria-live="polite">Désactivé.</div>
         </details>
         <details open id="tm2-box"><summary>Carte tactique (overlay)</summary>
             <p class="muted small"><span class="kbd" id="tmap-key">Ctrl+Alt+M</span> affiche ta carte (archipel ou Kin Flats) par-dessus le jeu, en transparence : bâtiments utiles (cliniques, police, pompiers, garages), lieux cachés du wiki, tes lieux perso et ton Loot Run en cours. Appui court : la carte reste affichée, rappuie pour la masquer. Touche maintenue : elle disparaît dès que tu relâches. <span class="kbd" id="tmap-wkey">Ctrl+Alt+Maj+M</span> change de carte.</p>

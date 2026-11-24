@@ -1,5 +1,11 @@
 # Notes de version
 
+## v1.9.2
+- La capture sonore utilise une piste audio et une capture écran basse résolution requises par Electron.
+- La visualisation reste visible même si la capture audio échoue ; l'état et l'erreur sont affichés dans les réglages.
+- Le traitement sonore est limité à 30 images/s et réutilise ses buffers pour préserver les autres overlays.
+- Test de non-régression : l'overlay sonore doit rester indépendant et ne pas masquer le crosshair.
+
 ## v1.9.1
 - Correction : l'aide sonore utilise maintenant sa propre fenêtre transparente.
 - Activation des alertes sonores sans interrompre les autres overlays.
