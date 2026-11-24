@@ -164,8 +164,16 @@
             <div class="field"><label>Opacité <b id="tm-op-v"></b></label><input type="range" id="tm-op" min="0.2" max="1" step="0.05"></div>
         </details>
         <details open id="th-box"><summary>Thème visuel (HUD Skins)</summary>
-            <p class="muted small">Change l'ambiance de l'appli, de toutes les fenêtres en jeu (wiki instantané, télémètre, boussole, objectifs, minuteur) et du site ouvert dans l'appli.</p>
+            <p class="muted small">Choisis une palette ou crée ton thème avec la couleur de ton choix. Le thème s'applique à l'appli, aux fenêtres en jeu et au site ouvert dans l'appli.</p>
             <div id="th-list" class="themes"></div>
+            <div class="field theme-color-field">
+                <label for="th-color">Couleur de mon thème personnalisé</label>
+                <div class="row gap">
+                    <input type="color" id="th-color" value="#a78bfa" aria-label="Choisir la couleur du thème personnalisé">
+                    <span class="muted small" id="th-color-value">#A78BFA</span>
+                </div>
+                <p class="muted small">Clique sur la couleur pour ouvrir le sélecteur : ton thème personnalisé s'applique dès que tu confirmes ton choix.</p>
+            </div>
         </details>
         <details open id="sp-box"><summary>Wiki instantané (par-dessus le jeu)</summary>
             <p class="muted small">Appuie sur <span class="kbd" id="sp-key">Ctrl+Alt+W</span> en jeu : une barre de recherche semi-transparente s'ouvre par-dessus Roblox. Tape 3 lettres (M4A1, Ashland…) pour voir les stats clés ou les spawns sans Alt-Tab. « A vs B » donne un verdict Duel Express, « Ashland &gt; Regional Airport » un cap. Échap pour refermer.</p>

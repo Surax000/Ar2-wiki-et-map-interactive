@@ -13,6 +13,8 @@ const DEFAULT_COMPASS = () => ({ show: false, route: null, leg: 0, origin: '', o
 const DEFAULT_SPOT = () => ({ opacity: 0.9, hideOnBlur: true });
 const DEFAULT_TMAP = () => ({ world: 'auto', last: 'halsey', opacity: 0.85, size: 0.72, bld: true, hidden: true, custom: true, route: true, events: false, labels: true });
 const clamp = (v, a, b, d) => { v = +v; return isFinite(v) ? Math.max(a, Math.min(b, v)) : d; };
+const DEFAULT_THEME_COLOR = '#a78bfa';
+const validThemeColor = color => /^#[0-9a-f]{6}$/i.test(String(color || ''));
 
 let C = null;                    // contexte fourni par main.js
 let raw = null, index = null;    // index du wiki (brut pour les fenêtres, préparé pour main)
@@ -23,6 +25,8 @@ let adsDown = false, lastMsg = null;
 function normalize(cfg, c) {
     c = c || {};
     cfg.theme = T.THEMES[c.theme] ? c.theme : (T.THEMES[cfg.theme] ? cfg.theme : 'classic');
+    const color = c.themeColor || cfg.themeColor;
+    cfg.themeColor = validThemeColor(color) ? color : DEFAULT_THEME_COLOR;
     const r = Object.assign(DEFAULT_RANGE(), c.range || cfg.range || {});
     r.fov = clamp(r.fov, 40, 120, 70); r.calib = clamp(r.calib, 0.4, 2.5, 1); r.gap = clamp(r.gap, 20, 400, 70);
     r.opacity = clamp(r.opacity, 0.2, 1, 0.9); r.scale = clamp(r.scale, 0.6, 2, 1);
@@ -99,6 +103,7 @@ function overlayWin(file, focusable, extra) {
     return win;
 }
 const themeOf = () => C.cfg().theme || 'classic';
+const themeInfo = () => ({ id: themeOf(), color: C.cfg().themeColor || DEFAULT_THEME_COLOR });
 const kl = acc => C.keyLabel(acc || '');
 
 // ---------- Wiki instantané (Spotlight) ----------
@@ -121,7 +126,7 @@ function showSpot(text) {
     if (!w.__ready) { w.__pending = true; w.__text = text; return; }
     w.setBounds(spotBounds());
     w.show(); w.setAlwaysOnTop(true, 'screen-saver'); w.focus(); w.webContents.focus();
-    w.webContents.send('hud-spot-show', { text: text || '', theme: themeOf(), opacity: C.cfg().spotlight.opacity, origin: C.cfg().compass.origin, msg: lastMsg });
+    w.webContents.send('hud-spot-show', { text: text || '', theme: themeInfo(), opacity: C.cfg().spotlight.opacity, origin: C.cfg().compass.origin, msg: lastMsg });
     lastMsg = null;
 }
 function hideSpot() { if (spotWin && spotWin.isVisible()) spotWin.hide(); }
@@ -166,7 +171,7 @@ function rangeData() {
     const maxPx = Math.min(360, H * 0.4);
     const targetSpeed = r.targetSpeed === 'stationary' ? 0 : T.SPEEDS[r.targetSpeed] || 0;
     const lad = T.ladder(w, sc.z, H, { fov: r.fov, calib: r.calib, maxPx, minPx: 7, gap: 12, targetSpeed, targetDirection: r.targetDirection });
-    return { theme: themeOf(), opacity: r.opacity, scale: r.scale, side: r.side, maxPx, screenH: H,
+    return { theme: themeInfo(), opacity: r.opacity, scale: r.scale, side: r.side, maxPx, screenH: H,
         weapon: w ? { id: w.id, name: w.name, cat: w.cat, hd: w.hd, bod: w.bod, fdr: w.fdr, mdr: w.mdr, vel: w.vel, estimated: !!w.est } : null, src,
         scope: { name: sc.name, z: sc.z }, targetSpeed: r.targetSpeed, targetSpeedValue: targetSpeed, targetDirection: r.targetDirection,
         ladder: lad, keys: { toggle: kl(cfg.hotkeys.range), zoom: kl(cfg.hotkeys.rangeZoom) } };
@@ -207,7 +212,7 @@ function setRangeWeapon(id, zoom) {
 // ---------- Boussole ----------
 function compassData() {
     const cfg = C.cfg(), k = cfg.compass, rt = k.route;
-    const base = { theme: themeOf(), opacity: k.opacity, scale: k.scale, speed: k.speed, keys: { toggle: kl(cfg.hotkeys.compass), next: kl(cfg.hotkeys.compassNext), spot: kl(cfg.hotkeys.spotlight) } };
+    const base = { theme: themeInfo(), opacity: k.opacity, scale: k.scale, speed: k.speed, keys: { toggle: kl(cfg.hotkeys.compass), next: kl(cfg.hotkeys.compassNext), spot: kl(cfg.hotkeys.spotlight) } };
     if (!rt) return Object.assign(base, { empty: true });
     const i = Math.min(k.leg, rt.points.length - 2), r = T.route(index, rt.points);
     const L = r.legs[i], rest = r.legs.slice(i);
@@ -270,7 +275,7 @@ function tmapData() {
     const route = m.route && rt && rt.points.every(p => p.world === w) ? { pts: rt.points.map(p => ({ n: p.name, x: p.x, y: p.y })), leg: Math.min(k.leg, rt.points.length - 2), title: rt.title } : null;
     let cap = null;
     if (route) { const L = T.leg(index, rt.points[route.leg], rt.points[route.leg + 1]); cap = { deg: L.deg, card: L.card16, dist: T.fmtDist(L.studs), to: L.to.name, t: T.sec(L[k.speed] || L.sprint) }; }
-    return { theme: themeOf(), opacity: m.opacity, world: w, map, pts, route, cap, bld: m.bld, labels: m.labels,
+    return { theme: themeInfo(), opacity: m.opacity, world: w, map, pts, route, cap, bld: m.bld, labels: m.labels,
         keys: { toggle: kl(cfg.hotkeys.map), world: kl(cfg.hotkeys.mapWorld) }, routeOther: !!(rt && !route && m.route) };
 }
 function tmapBounds() {
@@ -332,13 +337,23 @@ function mapNextWorld() {
 }
 
 // ---------- Thèmes ----------
-function setTheme(id, from) {
+function setTheme(selection, from, customColor) {
+    let id = selection;
+    if (selection && typeof selection === 'object') {
+        id = selection.id;
+        customColor = selection.color;
+    }
     if (!T.THEMES[id]) return themeOf();
+    if (customColor !== undefined) {
+        if (!validThemeColor(customColor)) return themeOf();
+        C.cfg().themeColor = customColor;
+    }
     C.cfg().theme = id; C.save();
-    [spotWin, rangeWin, compWin, tmapWin].forEach(w => send(w, 'hud-theme', id));
-    C.themeTargets().forEach(w => { if (w && !w.isDestroyed()) w.webContents.send('hud-theme', id); });
+    const selectionInfo = themeInfo();
+    [spotWin, rangeWin, compWin, tmapWin].forEach(w => send(w, 'hud-theme', selectionInfo));
+    C.themeTargets().forEach(w => { if (w && !w.isDestroyed()) w.webContents.send('hud-theme', selectionInfo); });
     const wiki = C.wikiWin();
-    if (wiki && from !== 'wiki') wiki.webContents.executeJavaScript(`window.ar2SetTheme && window.ar2SetTheme(${JSON.stringify(id)}, true)`).catch(() => {});
+    if (wiki && from !== 'wiki') wiki.webContents.executeJavaScript(`window.ar2SetTheme && window.ar2SetTheme(${JSON.stringify(selectionInfo)}, true)`).catch(() => {});
     placeRange(); placeCompass(); C.broadcast(); C.refreshTray();
     return id;
 }
@@ -347,10 +362,10 @@ function cycleTheme() { const o = T.THEME_ORDER; setTheme(o[(o.indexOf(themeOf()
 // ---------- IPC ----------
 function fromSite(e) { return C.fromWiki(e) || (refreshWin && e.sender === refreshWin.webContents); }
 function registerIpc() {
-    ipcMain.handle('hud-get', () => ({ theme: themeOf(), index: raw, origin: C.cfg().compass.origin, opacity: C.cfg().spotlight.opacity,
+    ipcMain.handle('hud-get', () => ({ theme: themeInfo(), index: raw, origin: C.cfg().compass.origin, opacity: C.cfg().spotlight.opacity,
         hotkeys: Object.fromEntries(['spotlight', 'wiki', 'range', 'rangeZoom', 'compass', 'compassNext', 'map'].map(k => [k, kl(C.cfg().hotkeys[k])])) }));
-    ipcMain.handle('hud-theme-get', () => themeOf());
-    ipcMain.handle('hud-theme-set', (e, id) => setTheme(id));
+    ipcMain.handle('hud-theme-get', () => themeInfo());
+    ipcMain.handle('hud-theme-set', (e, selection) => setTheme(selection));
     ipcMain.handle('hud-act', (e, { act, data } = {}) => {
         data = data || {};
         if (act === 'hide') { hideSpot(); return true; }
@@ -367,8 +382,8 @@ function registerIpc() {
     // pont avec le site (wiki dans l'appli)
     ipcMain.handle('wiki-route', (e, r) => { if (!C.fromWiki(e)) throw new Error('refusé'); return setRoute(r); });
     ipcMain.handle('wiki-range', (e, o = {}) => { if (!C.fromWiki(e)) throw new Error('refusé'); const w = setRangeWeapon(o.weapon, o.zoom); return w ? { ok: true, weapon: w.name } : { ok: false }; });
-    ipcMain.handle('wiki-theme-get', () => themeOf());
-    ipcMain.handle('wiki-theme-set', (e, id) => { if (!C.fromWiki(e)) throw new Error('refusé'); return setTheme(id, 'wiki'); });
+    ipcMain.handle('wiki-theme-get', () => themeInfo());
+    ipcMain.handle('wiki-theme-set', (e, selection) => { if (!C.fromWiki(e)) throw new Error('refusé'); return setTheme(selection, 'wiki'); });
     ipcMain.handle('wiki-index', (e, o) => {
         if (!fromSite(e)) throw new Error('refusé');
         const ok = validIndex(o);

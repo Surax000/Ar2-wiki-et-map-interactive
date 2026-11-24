@@ -1,5 +1,11 @@
 # Notes de version
 
+## v1.9.3
+- Ajout de quatre palettes HUD : Océan, Violet, Rouge et Arctique.
+- Ajout d'un thème personnalisé avec un sélecteur de couleur et application de la couleur choisie aux fenêtres de l'appli et au wiki intégré.
+- La couleur personnalisée est conservée dans les réglages et les sauvegardes.
+- Le site AR2 reprend les nouvelles palettes et synchronise la couleur personnalisée quand il est ouvert dans l'appli.
+
 ## v1.9.2
 - La capture sonore utilise une piste audio et une capture écran basse résolution requises par Electron.
 - La visualisation reste visible même si la capture audio échoue ; l'état et l'erreur sont affichés dans les réglages.
