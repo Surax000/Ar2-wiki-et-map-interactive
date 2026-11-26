@@ -191,6 +191,14 @@
                 </div>
             </div>
 
+            <div class="flex items-center gap-2 px-2 py-1.5 rounded-lg border border-tactical-border bg-tactical-bg/70">
+                <span class="text-[10px] font-bold uppercase tracking-wider text-tactical-muted">Language</span>
+                <select id="language-selector" aria-label="Language" class="bg-transparent text-xs font-bold text-white outline-none cursor-pointer">
+                    <option value="fr">🇫🇷 Français</option>
+                    <option value="en">🇬🇧 English</option>
+                </select>
+            </div>
+
             <!-- Stats rapides + Aide -->
             <div class="flex flex-wrap items-center gap-2 lg:gap-3">
                 <div class="flex items-center gap-2 text-xs font-mono">
@@ -6984,5 +6992,148 @@
     })();
     </script>
     <script src="site-status.js"></script>
+
+<script>
+/* Language switcher — French / English */
+(() => {
+  const translations = {
+    "Aller au contenu principal":"Skip to main content",
+    "Apocalypse Rising 2 - Base de Données Tactique & Comparateur":"Apocalypse Rising 2 - Tactical Database & Comparison Tool",
+    "Base de données communautaire Apocalypse Rising 2 : armes, objets, cosmétiques, carte interactive et comparateur.":"Community Apocalypse Rising 2 database: weapons, items, cosmetics, interactive map and comparison tool.",
+    "Total Objets:":"Total Items:",
+    "Afficher tout le catalogue (réinitialise les filtres)":"Show full catalogue (resets filters)",
+    "Aide":"Help",
+    "Fonctionnalités principales":"Main features",
+    "Mode hors ligne : les pages et ressources déjà chargées restent disponibles. Reconnecte-toi pour les contenus qui n’ont pas encore été visités.":"Offline mode: previously loaded pages and resources remain available. Reconnect to access content you have not visited yet.",
+    "Rechercher dans le catalogue":"Search the catalogue",
+    "Rechercher un objet, un effet ou un lieu de loot (ex: Kobra, Silencieux, Magnolia, Hôpitaux)...":"Search for an item, effect or loot location (e.g. Kobra, Suppressor, Magnolia, Hospitals)...",
+    "Instantané":"Quick search",
+    "Armes":"Weapons",
+    "Accessoires d'Armes":"Weapon Attachments",
+    "Guide des accessoires":"Attachment Guide",
+    "Cosmétiques":"Cosmetics",
+    "Clés":"Keys",
+    "Véhicules":"Vehicles",
+    "Sacs à Dos (Backpacks)":"Backpacks",
+    "Nourriture & Survie":"Food & Survival",
+    "Build / Sac à dos":"Loadout / Backpack",
+    "Carte":"Map",
+    "Loot Run":"Loot Run",
+    "Balistique":"Ballistics",
+    "Boss & Infectés":"Bosses & Infected",
+    "Événements aléatoires":"Random Events",
+    "Survie & Soins":"Survival & Healing",
+    "Défi Random":"Random Challenge",
+    "Fusils d'Assaut":"Assault Rifles",
+    "Carabines d'Assaut":"Assault Carbines",
+    "Fusils de Combat":"Battle Rifles",
+    "Carabines":"Carbines",
+    "Fusils":"Rifles",
+    "Fusils de Précision":"Marksman Rifles",
+    "Snipers":"Sniper Rifles",
+    "Fusils à Pompe":"Shotguns",
+    "PM / SMG":"SMGs",
+    "Mitrailleuses":"Machine Guns",
+    "Fusils Courts":"Short Rifles",
+    "Revolvers":"Revolvers",
+    "Pistolets":"Pistols",
+    "Pistolets Mitrailleurs":"Machine Pistols",
+    "Explosifs":"Explosives",
+    "Optiques / Lunettes":"Optics / Sights",
+    "Canon / Silencieux":"Muzzles / Suppressors",
+    "Sous-Canon / Poignées & Lasers":"Underbarrel / Grips & Lasers",
+    "Petits sacs (9-12 cases)":"Small Backpacks (9-12 slots)",
+    "Sacs moyens (15-16 cases)":"Medium Backpacks (15-16 slots)",
+    "Grands sacs (18-20 cases)":"Large Backpacks (18-20 slots)",
+    "Nourriture":"Food",
+    "Boissons":"Drinks",
+    "Items de Soin":"Healing Items",
+    "Survie":"Survival",
+    "Aucun véhicule trouvé.":"No vehicles found.",
+    "Places":"Seats",
+    "Stockage":"Storage",
+    "Vitesse avant":"Forward Speed",
+    "Tout-terrain":"Off-road",
+    "Marche arrière":"Reverse Speed",
+    "Statut":"Status",
+    "Historique":"Legacy",
+    "Référencé":"Listed",
+    "Rechercher un véhicule...":"Search vehicles...",
+    "Catalogue":"Catalogue",
+    "objets affichés":"items displayed",
+    "Chargement...":"Loading...",
+    "Aucun résultat":"No results",
+    "Fermer":"Close",
+    "Annuler":"Cancel",
+    "Valider":"Confirm",
+    "Retour":"Back",
+    "Paramètres":"Settings",
+    "Rechercher":"Search",
+    "Lieu":"Location",
+    "Rareté":"Rarity",
+    "Type":"Type",
+    "Nom":"Name",
+    "Description":"Description",
+    "Informations":"Information",
+    "Comparer":"Compare",
+    "Ajouter":"Add",
+    "Supprimer":"Remove",
+    "Réinitialiser":"Reset",
+    "Afficher":"Show",
+    "Masquer":"Hide"
+  };
+  const originalText = new WeakMap();
+  const originalAttrs = new WeakMap();
+  let language = 'fr';
+  function translateNode(node) {
+    if (node.nodeType === Node.TEXT_NODE) {
+      if (!originalText.has(node)) originalText.set(node, node.nodeValue);
+      const source = originalText.get(node);
+      const trimmed = source.trim();
+      if (!trimmed) return;
+      const translated = language === 'en' ? (translations[trimmed] || trimmed) : trimmed;
+      node.nodeValue = source.replace(trimmed, translated);
+    } else if (node.nodeType === Node.ELEMENT_NODE) {
+      const attrs = ['placeholder','title','aria-label'];
+      if (!originalAttrs.has(node)) originalAttrs.set(node, {});
+      const saved = originalAttrs.get(node);
+      attrs.forEach(attr => {
+        if (node.hasAttribute(attr)) {
+          if (!(attr in saved)) saved[attr] = node.getAttribute(attr);
+          const source = saved[attr];
+          node.setAttribute(attr, language === 'en' ? (translations[source] || source) : source);
+        }
+      });
+      node.childNodes.forEach(translateNode);
+    }
+  }
+  function applyLanguage(next) {
+    language = next === 'en' ? 'en' : 'fr';
+    document.documentElement.lang = language;
+    translateNode(document.body);
+    const picker = document.getElementById('language-selector');
+    if (picker && picker.value !== language) picker.value = language;
+    try { localStorage.setItem('ar2_language', language); } catch(e) {}
+  }
+  const start = () => {
+    const picker = document.getElementById('language-selector');
+    let saved = 'fr';
+    try { saved = localStorage.getItem('ar2_language') || 'fr'; } catch(e) {}
+    if (picker) picker.addEventListener('change', () => applyLanguage(picker.value));
+    applyLanguage(saved);
+    const observer = new MutationObserver(records => {
+      if (language !== 'en') return;
+      records.forEach(record => {
+        record.addedNodes && record.addedNodes.forEach(translateNode);
+        if (record.type === 'characterData') translateNode(record.target);
+      });
+    });
+    observer.observe(document.body, {childList:true,subtree:true,characterData:true});
+  };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
+  else start();
+})();
+</script>
+
 </body>
 </html>
