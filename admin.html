@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="fr" class="dark">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0f1115"><title>Admin Panel — AR2 Wiki</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+:root{color-scheme:dark}body{background:#0f1115;color:#e6edf3;font-family:Inter,system-ui,sans-serif}
+.panel{background:#161920;border:1px solid #2a303b;border-radius:14px}
+.field{width:100%;background:#0f1115;border:1px solid #343c49;border-radius:9px;padding:10px;color:#fff;outline:none}
+.field:focus{border-color:#00ff88}.btn{border:1px solid #3b4655;border-radius:9px;padding:9px 13px;font-weight:700;font-size:13px}.primary{background:#00ff88;color:#08110c;border-color:#00ff88}.danger{color:#ff6878;border-color:#773b45}.muted{color:#9aa4b2}
+</style></head>
+<body class="min-h-screen">
+<header class="border-b border-slate-800 bg-[#161920]"><div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between gap-3"><div><p class="text-xs tracking-[.25em] text-emerald-400 font-bold">AR2 ARMORY</p><h1 class="text-2xl font-black">ADMIN PANEL</h1><p class="text-xs muted">Gestion du catalogue communautaire officiel</p></div><a class="btn" href="./">← Retour au wiki</a></div></header>
+<main class="max-w-6xl mx-auto p-4 md:p-6 space-y-5">
+<section id="login" class="panel max-w-md mx-auto p-5 mt-10"><h2 class="text-lg font-bold mb-1">Accès administrateur</h2><p class="muted text-sm mb-4">Connecte-toi pour gérer les données publiées sur le wiki.</p><form id="login-form" class="space-y-3"><input id="code" class="field" type="password" inputmode="numeric" autocomplete="current-password" placeholder="Code administrateur" required><button class="btn primary w-full" type="submit">Se connecter</button><p id="login-error" class="text-sm text-rose-400" role="alert"></p></form></section>
+<section id="app" class="hidden space-y-5">
+<div class="flex flex-wrap items-center justify-between gap-3"><div><h2 class="text-xl font-bold">Gestion du catalogue</h2><p class="muted text-sm">Les publications créent un commit GitHub visible par tous après déploiement du site.</p></div><div class="flex gap-2"><button id="reload" class="btn">Recharger</button><button id="logout" class="btn">Déconnexion</button></div></div>
+<div class="grid md:grid-cols-[1fr_1.3fr] gap-4">
+<section class="panel p-4 space-y-3"><h3 class="font-bold">Ajouter une catégorie</h3><input id="new-category" class="field" maxlength="80" placeholder="Ex. Fusils expérimentaux"><button id="add-category" class="btn w-full">Ajouter la catégorie</button><div id="category-list" class="flex flex-wrap gap-2"></div></section>
+<section class="panel p-4 space-y-3"><h3 class="font-bold">Ajouter un objet</h3>
+<form id="item-form" class="grid sm:grid-cols-2 gap-3">
+<label class="text-xs muted">Type de données<select id="dataset" class="field mt-1"><option value="weapons">Arme</option><option value="explosives">Explosif</option><option value="heals">Soin</option><option value="attachments">Accessoire</option><option value="backpacks">Sac à dos</option><option value="food">Nourriture / survie</option></select></label>
+<label class="text-xs muted">Nom<input id="name" class="field mt-1" maxlength="100" required></label>
+<label class="text-xs muted">Identifiant unique<input id="id" class="field mt-1" placeholder="ex: nouveau-fusil" required></label>
+<label class="text-xs muted">Catégorie<input id="category" class="field mt-1" list="category-options" required><datalist id="category-options"></datalist></label>
+<label class="text-xs muted sm:col-span-2">Description<textarea id="description" class="field mt-1" rows="2" maxlength="1000"></textarea></label>
+<div id="weapon-fields" class="sm:col-span-2 grid grid-cols-2 sm:grid-cols-4 gap-2">
+<label class="text-xs muted">Calibre<input id="caliber" class="field mt-1"></label><label class="text-xs muted">Chargeurs<input id="mags" class="field mt-1"></label><label class="text-xs muted">Capacité<input id="capacity" type="number" class="field mt-1"></label><label class="text-xs muted">Mode de tir<input id="fireMode" class="field mt-1"></label>
+<label class="text-xs muted">Dégâts corps<input id="bodyDamage" type="number" step="any" class="field mt-1"></label><label class="text-xs muted">Dégâts tête<input id="headDamage" type="number" step="any" class="field mt-1"></label><label class="text-xs muted">Cadence (RPM)<input id="rof" type="number" step="any" class="field mt-1"></label><label class="text-xs muted">Portée max<input id="range" type="number" step="any" class="field mt-1"></label>
+</div>
+<button class="btn primary sm:col-span-2" type="submit">Ajouter au catalogue</button><p id="form-status" class="sm:col-span-2 text-sm muted"></p></form></section></div>
+<section class="panel p-4"><div class="flex flex-wrap justify-between items-center gap-2 mb-3"><h3 class="font-bold">Objets ajoutés (<span id="count">0</span>)</h3><input id="filter" class="field max-w-xs" placeholder="Rechercher..."></div><div id="items" class="space-y-2"></div></section>
+<div class="flex flex-wrap items-center justify-between gap-3 panel p-4"><div><b>Publication officielle</b><p class="muted text-xs">Envoie les données au dépôt GitHub. Cette action est irréversible dans l'historique, mais les commits restent restaurables.</p><p id="publish-status" class="text-sm mt-2"></p></div><button id="publish" class="btn primary">Publier sur le wiki</button></div>
+</section></main>
+<script>
+const API_BASE = "https://REPLACE-WITH-YOUR-WORKER.workers.dev";
+const $ = id => document.getElementById(id);
+let token = sessionStorage.getItem("ar2_admin_token") || "";
+let data = {version:1,items:[],categories:[]};
+const esc = value => String(value ?? "").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function showApp(){ $("login").classList.add("hidden"); $("app").classList.remove("hidden"); }
+function showLogin(){ $("app").classList.add("hidden"); $("login").classList.remove("hidden"); }
+async function api(path, options={}) {
+ const headers = {"content-type":"application/json",...(options.headers||{})};
+ if(token) headers.authorization = "Bearer " + token;
+ const res = await fetch(API_BASE + path,{...options,headers});
+ const body = await res.json().catch(()=>({error:"Réponse serveur illisible."}));
+ if(!res.ok) throw new Error(body.error || "Erreur API.");
+ return body;
+}
+async function load(){
+ data = await api("/api/data");
+ data.items ||= []; data.categories ||= [];
+ showApp(); render();
+}
+function render(){
+ $("count").textContent = data.items.length;
+ $("category-list").innerHTML = data.categories.map(c=>'<span class="text-xs rounded-full border border-slate-600 px-2 py-1">'+esc(c)+'</span>').join("") || '<span class="muted text-xs">Aucune catégorie personnalisée.</span>';
+ $("category-options").innerHTML = data.categories.map(c=>'<option value="'+esc(c)+'">').join("");
+ const q=$("filter").value.trim().toLowerCase();
+ $("items").innerHTML = data.items.filter(x=>(x.name+" "+x.category+" "+x.id).toLowerCase().includes(q)).map(x=>'<div class="flex items-center justify-between gap-3 rounded-lg border border-slate-800 p-3"><div class="min-w-0"><b class="block truncate">'+esc(x.name)+'</b><span class="muted text-xs">'+esc(x.dataset)+' · '+esc(x.category)+' · '+esc(x.id)+'</span></div><button class="btn danger" data-delete="'+esc(x.dataset+":"+x.id)+'">Supprimer</button></div>').join("") || '<p class="muted text-sm">Aucun objet ajouté.</p>';
+}
+$("login-form").addEventListener("submit",async e=>{e.preventDefault();$("login-error").textContent="";try{const r=await api("/api/login",{method:"POST",body:JSON.stringify({code:$("code").value})});token=r.token;sessionStorage.setItem("ar2_admin_token",token);$("code").value="";await load();}catch(err){$("login-error").textContent=err.message;}});
+$("logout").onclick=()=>{token="";sessionStorage.removeItem("ar2_admin_token");showLogin();};
+$("reload").onclick=()=>load().catch(e=>alert(e.message));
+$("filter").oninput=render;
+$("dataset").onchange=()=> $("weapon-fields").classList.toggle("hidden",$("dataset").value!=="weapons");
+$("add-category").onclick=()=>{const c=$("new-category").value.trim();if(!c)return;if(!data.categories.includes(c))data.categories.push(c);$("new-category").value="";render();};
+$("item-form").addEventListener("submit",e=>{e.preventDefault();const id=$("id").value.trim().toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");const item={dataset:$("dataset").value,id,name:$("name").value.trim(),category:$("category").value.trim(),description:$("description").value.trim(),type:$("dataset").value==="weapons"?"weapon":$("dataset").value};if(item.dataset==="weapons"){for(const k of ["capacity","bodyDamage","headDamage","rof","range"]){const v=$(k).value;if(v!=="")item[k]=Number(v);}for(const k of ["caliber","mags","fireMode"]){const v=$(k).value.trim();if(v)item[k]=v;}}
+ if(data.items.some(x=>x.dataset===item.dataset&&x.id===item.id)){$("form-status").textContent="Cet identifiant existe déjà.";return;}data.items.push(item);if(!data.categories.includes(item.category))data.categories.push(item.category);$("item-form").reset();$("form-status").textContent="Objet ajouté en mémoire. Clique sur « Publier sur le wiki » pour l'envoyer à GitHub.";render();});
+$("items").addEventListener("click",e=>{const b=e.target.closest("[data-delete]");if(!b)return;const [dataset,id]=b.dataset.delete.split(":");data.items=data.items.filter(x=>!(x.dataset===dataset&&x.id===id));render();});
+$("publish").onclick=async()=>{if(!confirm("Publier ces données dans le dépôt GitHub et les rendre publiques ?"))return;$("publish-status").textContent="Publication en cours…";$("publish").disabled=true;try{const r=await api("/api/publish",{method:"POST",body:JSON.stringify(data)});$("publish-status").textContent="Publié sur GitHub. Commit : "+(r.commit||"créé")+". Le site se mettra à jour après le déploiement GitHub Pages.";}catch(e){$("publish-status").textContent="Échec : "+e.message;}finally{$("publish").disabled=false;}};
+$("weapon-fields").classList.toggle("hidden",$("dataset").value!=="weapons");
+if(token)load().catch(()=>{token="";sessionStorage.removeItem("ar2_admin_token");showLogin();});else showLogin();
+</script></body></html>
