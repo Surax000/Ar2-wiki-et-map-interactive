@@ -1134,7 +1134,7 @@
     </div>
 
     <!-- JavaScript Data and Application Logic -->
-    <script src="site-data.js?v=20261121d"></script>
+    <script src="site-data.js"></script>
     <script src="admin-data.js?v=1"></script>
     <script>
         // Données ajoutées et publiées via l’Admin Panel (les tableaux restent la source commune du wiki).
@@ -6771,9 +6771,3 @@
                 if (app.pushIndex) setTimeout(() => { try { app.pushIndex(window.ar2ExportIndex()).catch(() => {}); } catch (e) {} }, 1200);
             }
         };
-        if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => setTimeout(boot, 30)); else setTimeout(boot, 30);
-    })();
-    </script>
-    <script src="site-status.js"></script>
-</body>
-</html>
