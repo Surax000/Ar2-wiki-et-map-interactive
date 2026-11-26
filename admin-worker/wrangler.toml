@@ -7,3 +7,9 @@ GITHUB_OWNER = "Surax000"
 GITHUB_REPO = "Ar2-wiki-et-map-interactive"
 GITHUB_BRANCH = "main"
 SITE_ORIGIN = "https://surax000.github.io"
+
+[[unsafe.bindings]]
+name = "LOGIN_LIMITER"
+type = "ratelimit"
+namespace_id = "5280316"
+simple = { limit = 5, period = 60 }
