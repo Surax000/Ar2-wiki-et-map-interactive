@@ -3076,22 +3076,24 @@
             const root = document.getElementById('vehicles-root');
             const search = document.getElementById('vehicle-search');
             const count = document.getElementById('vehicle-count');
-            if (!root) return;
+            if (!root || !count) return;
+            // Échappement local : T appartient à un autre script encapsulé et n'est pas accessible ici.
+            const escVehicle = value => String(value == null ? '' : value).replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
             const q = (search?.value || '').trim().toLowerCase();
             const list = VEHICLES_DATA.filter(v => !q || v.name.toLowerCase().includes(q) || v.type.toLowerCase().includes(q));
             count.textContent = list.length + ' / ' + VEHICLES_DATA.length + ' véhicules';
             root.innerHTML = list.map(v => `
                 <article class="bg-tactical-card border border-tactical-border rounded-2xl p-4">
                     <div class="flex items-start justify-between gap-2 mb-3">
-                        <h3 class="font-extrabold text-white">${T.esc(v.name)}</h3>
-                        <span class="text-[9px] font-mono uppercase tracking-wider px-2 py-1 rounded-full border border-tactical-border text-tactical-muted">${T.esc(v.type)}</span>
+                        <h3 class="font-extrabold text-white">${escVehicle(v.name)}</h3>
+                        <span class="text-[9px] font-mono uppercase tracking-wider px-2 py-1 rounded-full border border-tactical-border text-tactical-muted">${escVehicle(v.type)}</span>
                     </div>
                     <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                        <div class="ev-stat"><i>Places</i><b>${T.esc(v.seats)}</b></div>
-                        <div class="ev-stat"><i>Stockage</i><b>${T.esc(v.storage)}</b></div>
-                        <div class="ev-stat"><i>Vitesse avant</i><b>${T.esc(v.speed)}${v.speed === '—' ? '' : ' MPH'}</b></div>
-                        <div class="ev-stat"><i>Tout-terrain</i><b>${T.esc(v.offroad)}${v.offroad === '—' ? '' : ' MPH'}</b></div>
-                        <div class="ev-stat"><i>Marche arrière</i><b>${T.esc(v.reverse)}${v.reverse === '—' ? '' : ' MPH'}</b></div>
+                        <div class="ev-stat"><i>Places</i><b>${escVehicle(v.seats)}</b></div>
+                        <div class="ev-stat"><i>Stockage</i><b>${escVehicle(v.storage)}</b></div>
+                        <div class="ev-stat"><i>Vitesse avant</i><b>${escVehicle(v.speed)}${v.speed === '—' ? '' : ' MPH'}</b></div>
+                        <div class="ev-stat"><i>Tout-terrain</i><b>${escVehicle(v.offroad)}${v.offroad === '—' ? '' : ' MPH'}</b></div>
+                        <div class="ev-stat"><i>Marche arrière</i><b>${escVehicle(v.reverse)}${v.reverse === '—' ? '' : ' MPH'}</b></div>
                         <div class="ev-stat"><i>Statut</i><b>${v.historic ? 'Historique' : 'Référencé'}</b></div>
                     </div>
                 </article>`).join('') || '<p class="text-sm text-tactical-muted col-span-full p-6 text-center">Aucun véhicule trouvé.</p>';
@@ -3110,7 +3112,18 @@
             document.getElementById('defi-section').classList.toggle('hidden', !isDf);
             document.getElementById('cles-section').classList.toggle('hidden', !isKeys);
             document.getElementById('vehicules-section').classList.toggle('hidden', !isVehicles);
-            if (isVehicles && typeof renderVehicles === 'function') renderVehicles();
+            if (isVehicles) {
+                const catalogueHeader = document.querySelector('.catalog-only.flex.justify-between');
+                if (catalogueHeader) catalogueHeader.style.display = 'none';
+                const emptyState = document.getElementById('empty-state');
+                if (emptyState) { emptyState.classList.add('hidden'); emptyState.style.display = 'none'; }
+                if (typeof renderVehicles === 'function') renderVehicles();
+            } else {
+                const catalogueHeader = document.querySelector('.catalog-only.flex.justify-between');
+                if (catalogueHeader) catalogueHeader.style.display = '';
+                const emptyState = document.getElementById('empty-state');
+                if (emptyState) emptyState.style.display = '';
+            }
             if (isSv && typeof svRender === 'function') svRender();
             if (isDf && typeof dfRender === 'function') dfRender();
             document.getElementById('balistique-section').classList.toggle('hidden', !isBal);
