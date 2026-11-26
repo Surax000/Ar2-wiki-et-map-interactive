@@ -1,0 +1,9 @@
+name = "ar2-wiki-admin-api"
+main = "src/index.js"
+compatibility_date = "2026-11-26"
+
+[vars]
+GITHUB_OWNER = "Surax000"
+GITHUB_REPO = "Ar2-wiki-et-map-interactive"
+GITHUB_BRANCH = "main"
+SITE_ORIGIN = "https://surax000.github.io"
