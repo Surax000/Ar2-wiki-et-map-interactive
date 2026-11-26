@@ -869,6 +869,22 @@
             </div>
         </section>
 
+        <!-- ===== VÉHICULES ===== -->
+        <section id="vehicules-section" class="hidden pb-10">
+            <div class="mb-5">
+                <h2 class="text-2xl font-extrabold text-white tracking-tight">Véhicules d'Apocalypse Rising 2</h2>
+                <p class="text-xs text-tactical-muted mt-1 max-w-3xl">Répertoire des véhicules terrestres, bateaux et modèles historiques référencés par le wiki communautaire. Les chiffres sont indicatifs et peuvent changer avec les mises à jour.</p>
+            </div>
+            <div class="bg-tactical-card border border-tactical-border rounded-2xl p-4 mb-4 flex flex-wrap items-center gap-3">
+                <label for="vehicle-search" class="text-xs font-bold uppercase tracking-wider text-tactical-muted">Rechercher</label>
+                <input id="vehicle-search" type="search" placeholder="Nom d'un véhicule..." class="xh-in flex-1 min-w-[180px]" autocomplete="off">
+                <span id="vehicle-count" class="text-xs font-mono text-tactical-muted"></span>
+            </div>
+            <div id="vehicles-root" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3"></div>
+            <p class="text-[10px] text-tactical-muted mt-4">Vitesse avant, vitesse tout-terrain et marche arrière en MPH ; stockage en unités de capacité du jeu. « — » signifie que la valeur n'est pas renseignée dans la source consultée. Les véhicules historiques ou événementiels ne sont pas garantis comme disponibles actuellement.</p>
+            <p class="text-[10px] text-tactical-muted mt-2">Source communautaire : <a class="text-tactical-accent underline" href="https://roblox-apocalypse-rising.fandom.com/wiki/Vehicles_%28Apocalypse_Rising_2%29" target="_blank" rel="noopener noreferrer">Wiki Apocalypse Rising 2 — Vehicles</a>. Données non officielles, à confirmer en jeu.</p>
+        </section>
+
         <!-- ===== DÉFI RANDOM ===== -->
         <section id="defi-section" class="hidden pb-10">
             <div class="mb-4">
@@ -1211,6 +1227,44 @@
         // ============================================================
         // 4 GRANDES CATÉGORIES + sous-catégories
         // ============================================================
+        // Données véhicules : synthèse communautaire, à revalider après les mises à jour du jeu.
+        const VEHICLES_DATA = [
+            { name:'Sedan', type:'Terre', seats:'4', storage:'64', speed:'50', offroad:'35', reverse:'24' },
+            { name:'Station Wagon', type:'Terre', seats:'4', storage:'72', speed:'50', offroad:'43', reverse:'24' },
+            { name:'Luxury Sedan', type:'Terre', seats:'5', storage:'72', speed:'52', offroad:'43', reverse:'19' },
+            { name:'Muscle Car', type:'Terre', seats:'4', storage:'64', speed:'65', offroad:'—', reverse:'24' },
+            { name:'Cargo Van', type:'Terre', seats:'4', storage:'120', speed:'40', offroad:'—', reverse:'20' },
+            { name:'ATV', type:'Terre', seats:'2', storage:'42', speed:'42', offroad:'—', reverse:'14' },
+            { name:'Jeep', type:'Terre', seats:'5', storage:'72', speed:'50', offroad:'50', reverse:'19' },
+            { name:'Pickup Truck', type:'Terre', seats:'5', storage:'96', speed:'40', offroad:'—', reverse:'20' },
+            { name:'Utility Truck', type:'Terre', seats:'6', storage:'120', speed:'46', offroad:'42', reverse:'24' },
+            { name:'Tractor', type:'Terre', seats:'3', storage:'48', speed:'45', offroad:'40', reverse:'14' },
+            { name:'Semi Truck', type:'Terre', seats:'2', storage:'72', speed:'40', offroad:'36', reverse:'15' },
+            { name:'Armored Truck', type:'Terre', seats:'6', storage:'120', speed:'42', offroad:'32', reverse:'24' },
+            { name:'Police Car', type:'Terre', seats:'5', storage:'72', speed:'60', offroad:'48', reverse:'24' },
+            { name:'Ambulance', type:'Terre', seats:'4', storage:'80', speed:'52', offroad:'42', reverse:'—' },
+            { name:'Firetruck', type:'Terre', seats:'5', storage:'120', speed:'55', offroad:'50', reverse:'24' },
+            { name:'Humvee', type:'Terre', seats:'5', storage:'80', speed:'52', offroad:'52', reverse:'19' },
+            { name:'Army Truck', type:'Terre', seats:'8', storage:'152', speed:'40', offroad:'40', reverse:'14' },
+            { name:'CUV', type:'Terre', seats:'5', storage:'80', speed:'45', offroad:'42', reverse:'19' },
+            { name:'Police CUV', type:'Terre', seats:'5', storage:'80', speed:'55', offroad:'—', reverse:'20' },
+            { name:'Army Pickup', type:'Terre', seats:'5', storage:'96', speed:'50', offroad:'48', reverse:'17' },
+            { name:'SUV', type:'Terre', seats:'5', storage:'96', speed:'46', offroad:'—', reverse:'15' },
+            { name:'Sports Car', type:'Terre', seats:'2', storage:'50', speed:'70', offroad:'50', reverse:'19' },
+            { name:'Box Truck', type:'Terre', seats:'2', storage:'120', speed:'43', offroad:'32', reverse:'14' },
+            { name:'Delivery Van', type:'Terre', seats:'—', storage:'128', speed:'46', offroad:'37', reverse:'24' },
+            { name:'Aluminum Boat', type:'Eau', seats:'3', storage:'0', speed:'47', offroad:'—', reverse:'14' },
+            { name:'Fishing Boat', type:'Eau', seats:'5', storage:'120', speed:'65', offroad:'—', reverse:'24' },
+            { name:'Lifeboat', type:'Eau', seats:'7', storage:'168', speed:'35', offroad:'—', reverse:'9' },
+            { name:'Patrol Boat', type:'Eau', seats:'5', storage:'144', speed:'70', offroad:'—', reverse:'29' },
+            { name:'Rubber Dinghy', type:'Eau', seats:'3', storage:'72', speed:'55', offroad:'—', reverse:'19' },
+            { name:'Speed Boat', type:'Eau', seats:'4', storage:'96', speed:'80', offroad:'—', reverse:'24' },
+            { name:'Motor Boat', type:'Eau', seats:'4', storage:'96', speed:'55', offroad:'—', reverse:'15' },
+            { name:'Hatchback', type:'Historique / événement', seats:'4', storage:'72', speed:'42', offroad:'—', reverse:'19', historic:true },
+            { name:'Snowmobile', type:'Historique / événement', seats:'3', storage:'40', speed:'50', offroad:'—', reverse:'20', historic:true },
+            { name:'Powered Sleigh', type:'Historique / événement', seats:'—', storage:'—', speed:'—', offroad:'—', reverse:'—', historic:true }
+        ];
+
         const GROUPS = [
             { id: 'armes',       label: 'Armes',                  icon: 'gun',  color: '#00ff88',
               subs: ["Fusils d'Assaut", "Carabines d'Assaut", 'Fusils de Combat', 'Carabines', 'Fusils', 'Fusils de Précision', 'Snipers', 'Fusils à Pompe', 'PM / SMG', 'Mitrailleuses', 'Fusils Courts', 'Revolvers', 'Pistolets', 'Pistolets Mitrailleurs', 'Explosifs'] },
@@ -1219,6 +1273,7 @@
             { id: 'accguide',    label: 'Guide des accessoires',  icon: 'sight', color: '#22d3ee', subs: [] },
             { id: 'cosmetiques', label: 'Cosmétiques',  icon: 'shirt', color: '#e879f9', subs: [] },
             { id: 'cles',        label: 'Clés',        icon: 'key', color: '#e5c07b', subs: [] },
+            { id: 'vehicules',   label: 'Véhicules',   icon: 'car', color: '#60a5fa', subs: [] },
             { id: 'sacs',        label: 'Sacs à Dos (Backpacks)', icon: 'box',  color: '#fbbf24',
               subs: ['Petits sacs (9-12 cases)', 'Sacs moyens (15-16 cases)', 'Grands sacs (18-20 cases)'] },
             { id: 'nourriture',  label: 'Nourriture & Survie',    icon: 'warn', color: '#fb923c',
@@ -1671,6 +1726,7 @@
                 case 'skull': return `<svg ${st}><path d="M12 3a8 8 0 0 0-5 14.2V20h10v-2.8A8 8 0 0 0 12 3z"/><circle cx="9" cy="11" r="1.6"/><circle cx="15" cy="11" r="1.6"/><path d="M10 20v-2M14 20v-2"/></svg>`;
                 case 'box':  return `<svg ${st}><path d="M21 8l-9-5-9 5v8l9 5 9-5V8z"/><path d="M3 8l9 5 9-5M12 13v8"/></svg>`;
                 case 'key':  return `<svg ${st}><circle cx="8" cy="15" r="5"/><path d="M12 11l8-8M17 6l3 3M14 9l3 3"/></svg>`;
+                case 'car':  return `<svg ${st}><path d="M5 17h14l1-6-2-5H6l-2 5 1 6z"/><path d="M4 11h16M7 17v2M17 17v2"/><circle cx="7" cy="17" r="1.5"/><circle cx="17" cy="17" r="1.5"/></svg>`;
                 default:     return `<svg ${st}><path d="M10.3 3.9L1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg>`;
             }
         }
@@ -1679,7 +1735,7 @@
         function renderMainTabs() {
             document.getElementById('main-tabs').innerHTML = GROUPS.map(g => {
                 const active = g.id === currentGroup;
-                const count = g.id === 'cosmetiques' ? (window.AR2Cos ? AR2Cos.count() : 0) : g.id === 'accguide' ? (window.AR2Acc ? AR2Acc.count() : 0) : g.id === 'evenements' ? (window.AR2Events ? AR2Events.count() : 0) : g.id === 'balistique' ? (typeof balWeapons === 'function' ? balWeapons().length : 0) : g.id === 'boss' ? (typeof BOSS_DATA !== 'undefined' ? BOSS_DATA.length : 0) : g.id === 'survie' ? 8 : g.id === 'defi' ? (typeof DF_RULES !== 'undefined' ? DF_RULES.length : 0) : g.id === 'build' ? BACKPACKS_DATA.length : g.id === 'lootrun' ? (typeof LOOT_ROUTES !== 'undefined' ? LOOT_ROUTES.length : 0) : g.id === 'carte' ? (typeof MAP_COUNT !== 'undefined' ? MAP_COUNT : 0) + MAP_DATA.locations.filter(l => l.custom).length : g.id === 'lieux' ? MAP_DATA.locations.filter(l => l.custom).length : g.id === 'createur' ? ALL_ITEMS.filter(i => i.custom).length : g.id === 'finditem' ? ALL_ITEMS.length : g.id === 'crosshair' ? (window.AR2Crosshair ? Object.keys(window.AR2Crosshair.STYLES).length : 11) : ALL_ITEMS.filter(i => i.group === g.id).length;
+                const count = g.id === 'vehicules' ? VEHICLES_DATA.length : g.id === 'cosmetiques' ? (window.AR2Cos ? AR2Cos.count() : 0) : g.id === 'accguide' ? (window.AR2Acc ? AR2Acc.count() : 0) : g.id === 'evenements' ? (window.AR2Events ? AR2Events.count() : 0) : g.id === 'balistique' ? (typeof balWeapons === 'function' ? balWeapons().length : 0) : g.id === 'boss' ? (typeof BOSS_DATA !== 'undefined' ? BOSS_DATA.length : 0) : g.id === 'survie' ? 8 : g.id === 'defi' ? (typeof DF_RULES !== 'undefined' ? DF_RULES.length : 0) : g.id === 'build' ? BACKPACKS_DATA.length : g.id === 'lootrun' ? (typeof LOOT_ROUTES !== 'undefined' ? LOOT_ROUTES.length : 0) : g.id === 'carte' ? (typeof MAP_COUNT !== 'undefined' ? MAP_COUNT : 0) + MAP_DATA.locations.filter(l => l.custom).length : g.id === 'lieux' ? MAP_DATA.locations.filter(l => l.custom).length : g.id === 'createur' ? ALL_ITEMS.filter(i => i.custom).length : g.id === 'finditem' ? ALL_ITEMS.length : g.id === 'crosshair' ? (window.AR2Crosshair ? Object.keys(window.AR2Crosshair.STYLES).length : 11) : ALL_ITEMS.filter(i => i.group === g.id).length;
                 return `
                     <button type="button" data-group="${g.id}" aria-pressed="${active}" class="flex items-center gap-2.5 px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider border transition-all ${
                         active ? 'bg-tactical-accent text-tactical-bg border-tactical-accent shadow-lg shadow-tactical-accent/10'
@@ -3016,16 +3072,45 @@
             refreshMap();
         }
 
+        function renderVehicles() {
+            const root = document.getElementById('vehicles-root');
+            const search = document.getElementById('vehicle-search');
+            const count = document.getElementById('vehicle-count');
+            if (!root) return;
+            const q = (search?.value || '').trim().toLowerCase();
+            const list = VEHICLES_DATA.filter(v => !q || v.name.toLowerCase().includes(q) || v.type.toLowerCase().includes(q));
+            count.textContent = list.length + ' / ' + VEHICLES_DATA.length + ' véhicules';
+            root.innerHTML = list.map(v => `
+                <article class="bg-tactical-card border border-tactical-border rounded-2xl p-4">
+                    <div class="flex items-start justify-between gap-2 mb-3">
+                        <h3 class="font-extrabold text-white">${T.esc(v.name)}</h3>
+                        <span class="text-[9px] font-mono uppercase tracking-wider px-2 py-1 rounded-full border border-tactical-border text-tactical-muted">${T.esc(v.type)}</span>
+                    </div>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                        <div class="ev-stat"><i>Places</i><b>${T.esc(v.seats)}</b></div>
+                        <div class="ev-stat"><i>Stockage</i><b>${T.esc(v.storage)}</b></div>
+                        <div class="ev-stat"><i>Vitesse avant</i><b>${T.esc(v.speed)}${v.speed === '—' ? '' : ' MPH'}</b></div>
+                        <div class="ev-stat"><i>Tout-terrain</i><b>${T.esc(v.offroad)}${v.offroad === '—' ? '' : ' MPH'}</b></div>
+                        <div class="ev-stat"><i>Marche arrière</i><b>${T.esc(v.reverse)}${v.reverse === '—' ? '' : ' MPH'}</b></div>
+                        <div class="ev-stat"><i>Statut</i><b>${v.historic ? 'Historique' : 'Référencé'}</b></div>
+                    </div>
+                </article>`).join('') || '<p class="text-sm text-tactical-muted col-span-full p-6 text-center">Aucun véhicule trouvé.</p>';
+        }
+        document.addEventListener('input', e => { if (e.target && e.target.id === 'vehicle-search') renderVehicles(); });
+
         // Bascule catalogue <-> carte
         function onGroupChange() {
             const isMap = currentGroup === 'carte', isCreator = currentGroup === 'createur', isFind = currentGroup === 'finditem', isXh = currentGroup === 'crosshair', isLieux = currentGroup === 'lieux';
             const isBuild = currentGroup === 'build', isRun = currentGroup === 'lootrun';
             const isBal = currentGroup === 'balistique', isBoss = currentGroup === 'boss', isEv = currentGroup === 'evenements', isAcc = currentGroup === 'accguide', isCos = currentGroup === 'cosmetiques';
             const isSv = currentGroup === 'survie', isDf = currentGroup === 'defi', isKeys = currentGroup === 'cles';
-            const special = isMap || isCreator || isFind || isXh || isLieux || isBuild || isRun || isBal || isBoss || isEv || isAcc || isCos || isSv || isDf || isKeys;
+            const isVehicles = currentGroup === 'vehicules';
+            const special = isMap || isCreator || isFind || isXh || isLieux || isBuild || isRun || isBal || isBoss || isEv || isAcc || isCos || isSv || isDf || isKeys || isVehicles;
             document.getElementById('survie-section').classList.toggle('hidden', !isSv);
             document.getElementById('defi-section').classList.toggle('hidden', !isDf);
             document.getElementById('cles-section').classList.toggle('hidden', !isKeys);
+            document.getElementById('vehicules-section').classList.toggle('hidden', !isVehicles);
+            if (isVehicles && typeof renderVehicles === 'function') renderVehicles();
             if (isSv && typeof svRender === 'function') svRender();
             if (isDf && typeof dfRender === 'function') dfRender();
             document.getElementById('balistique-section').classList.toggle('hidden', !isBal);
