@@ -834,6 +834,41 @@
             <div id="sv-root" class="grid grid-cols-1 xl:grid-cols-2 gap-4"></div>
         </section>
 
+        <!-- ===== CLÉS ===== -->
+        <section id="cles-section" class="hidden pb-10">
+            <div class="mb-5">
+                <h2 class="text-2xl font-extrabold text-white tracking-tight">Clés &amp; accès verrouillés</h2>
+                <p class="text-xs text-tactical-muted mt-1 max-w-3xl">Section de référence consacrée au système de clés d'Apocalypse Rising 2. Elle distingue les informations générales confirmées des données qui restent à documenter.</p>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <article class="bg-tactical-card border border-tactical-border rounded-2xl p-5">
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="w-10 h-10 rounded-xl bg-tactical-gold/10 border border-tactical-gold/30 flex items-center justify-center text-tactical-gold">⌑</div>
+                        <div><h3 class="font-extrabold text-white">À quoi servent les clés ?</h3><p class="text-[10px] font-mono uppercase tracking-widest text-tactical-muted">Fonctionnement général</p></div>
+                    </div>
+                    <p class="text-sm text-gray-300 leading-relaxed">Les clés et cartes d'accès sont des objets spéciaux associés à certains contenants ou espaces verrouillés. Une clé correspond à un accès précis ; toutes les clés ne fonctionnent donc pas de la même manière.</p>
+                    <p class="text-xs text-tactical-muted mt-3">Le jeu peut afficher le nom de la clé nécessaire lorsqu'un contenant verrouillé est inspecté.</p>
+                </article>
+                <article class="bg-tactical-card border border-tactical-border rounded-2xl p-5">
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="w-10 h-10 rounded-xl bg-tactical-accent/10 border border-tactical-accent/30 flex items-center justify-center text-tactical-accent">✓</div>
+                        <div><h3 class="font-extrabold text-white">Fiabilité des données</h3><p class="text-[10px] font-mono uppercase tracking-widest text-tactical-muted">État de la documentation</p></div>
+                    </div>
+                    <p class="text-sm text-gray-300 leading-relaxed">Les informations doivent être vérifiées dans les sources du jeu avant d'être ajoutées au catalogue. Les noms, conditions d'utilisation et autres détails non confirmés ne sont pas inventés.</p>
+                    <p class="text-xs text-tactical-muted mt-3">Les emplacements détaillés et les associations avec les salles verrouillées ne sont pas affichés dans cette version.</p>
+                </article>
+                <article class="lg:col-span-2 bg-tactical-bg border border-tactical-border rounded-2xl p-5">
+                    <h3 class="font-extrabold text-white mb-2">Fiches individuelles</h3>
+                    <p class="text-sm text-tactical-muted leading-relaxed">Cette première version met en place la catégorie et son affichage. Les fiches nominatives seront ajoutées uniquement lorsque leurs informations pourront être documentées sans fournir de détails facilitant l'accès à des caches d'armes.</p>
+                    <div class="flex flex-wrap gap-2 mt-4">
+                        <span class="text-[10px] font-mono px-2.5 py-1 rounded-lg border border-tactical-border text-tactical-muted">Nom : à vérifier</span>
+                        <span class="text-[10px] font-mono px-2.5 py-1 rounded-lg border border-tactical-border text-tactical-muted">Type : clé / carte</span>
+                        <span class="text-[10px] font-mono px-2.5 py-1 rounded-lg border border-tactical-border text-tactical-muted">Données : en attente de validation</span>
+                    </div>
+                </article>
+            </div>
+        </section>
+
         <!-- ===== DÉFI RANDOM ===== -->
         <section id="defi-section" class="hidden pb-10">
             <div class="mb-4">
@@ -1183,6 +1218,7 @@
               subs: ['Optiques / Lunettes', 'Canon / Silencieux', 'Sous-Canon / Poignées & Lasers'] },
             { id: 'accguide',    label: 'Guide des accessoires',  icon: 'sight', color: '#22d3ee', subs: [] },
             { id: 'cosmetiques', label: 'Cosmétiques',  icon: 'shirt', color: '#e879f9', subs: [] },
+            { id: 'cles',        label: 'Clés',        icon: 'key', color: '#e5c07b', subs: [] },
             { id: 'sacs',        label: 'Sacs à Dos (Backpacks)', icon: 'box',  color: '#fbbf24',
               subs: ['Petits sacs (9-12 cases)', 'Sacs moyens (15-16 cases)', 'Grands sacs (18-20 cases)'] },
             { id: 'nourriture',  label: 'Nourriture & Survie',    icon: 'warn', color: '#fb923c',
@@ -1634,6 +1670,7 @@
                 case 'dice': return `<svg ${st}><rect x="4" y="4" width="16" height="16" rx="3"/><circle cx="9" cy="9" r="1.2"/><circle cx="15" cy="15" r="1.2"/><circle cx="15" cy="9" r="1.2"/><circle cx="9" cy="15" r="1.2"/></svg>`;
                 case 'skull': return `<svg ${st}><path d="M12 3a8 8 0 0 0-5 14.2V20h10v-2.8A8 8 0 0 0 12 3z"/><circle cx="9" cy="11" r="1.6"/><circle cx="15" cy="11" r="1.6"/><path d="M10 20v-2M14 20v-2"/></svg>`;
                 case 'box':  return `<svg ${st}><path d="M21 8l-9-5-9 5v8l9 5 9-5V8z"/><path d="M3 8l9 5 9-5M12 13v8"/></svg>`;
+                case 'key':  return `<svg ${st}><circle cx="8" cy="15" r="5"/><path d="M12 11l8-8M17 6l3 3M14 9l3 3"/></svg>`;
                 default:     return `<svg ${st}><path d="M10.3 3.9L1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg>`;
             }
         }
@@ -2984,10 +3021,11 @@
             const isMap = currentGroup === 'carte', isCreator = currentGroup === 'createur', isFind = currentGroup === 'finditem', isXh = currentGroup === 'crosshair', isLieux = currentGroup === 'lieux';
             const isBuild = currentGroup === 'build', isRun = currentGroup === 'lootrun';
             const isBal = currentGroup === 'balistique', isBoss = currentGroup === 'boss', isEv = currentGroup === 'evenements', isAcc = currentGroup === 'accguide', isCos = currentGroup === 'cosmetiques';
-            const isSv = currentGroup === 'survie', isDf = currentGroup === 'defi';
-            const special = isMap || isCreator || isFind || isXh || isLieux || isBuild || isRun || isBal || isBoss || isEv || isAcc || isCos || isSv || isDf;
+            const isSv = currentGroup === 'survie', isDf = currentGroup === 'defi', isKeys = currentGroup === 'cles';
+            const special = isMap || isCreator || isFind || isXh || isLieux || isBuild || isRun || isBal || isBoss || isEv || isAcc || isCos || isSv || isDf || isKeys;
             document.getElementById('survie-section').classList.toggle('hidden', !isSv);
             document.getElementById('defi-section').classList.toggle('hidden', !isDf);
+            document.getElementById('cles-section').classList.toggle('hidden', !isKeys);
             if (isSv && typeof svRender === 'function') svRender();
             if (isDf && typeof dfRender === 'function') dfRender();
             document.getElementById('balistique-section').classList.toggle('hidden', !isBal);
