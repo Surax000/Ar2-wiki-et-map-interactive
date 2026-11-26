@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ar2-wiki-v8-admin-panel';
+const CACHE_NAME = 'ar2-wiki-v7-local-grenade-images';
 const CACHE_PREFIX = 'ar2-wiki-';
 const MAX_CACHED_REQUESTS = 300;
 const PRECACHE_URLS = [
@@ -8,8 +8,6 @@ const PRECACHE_URLS = [
     './pwa-icon.svg',
     './data-version.json',
     './site-data.js',
-    './admin-data.js',
-    './admin.html',
     './site-status.js',
     './events.js',
     './accessories.js',

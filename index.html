@@ -231,7 +231,6 @@
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M8 12l4 4 4-4M12 4v12"/></svg>
                     <span class="hidden sm:inline">Sauvegarde</span>
                 </button>
-                <a href="admin.html" class="flex items-center gap-2 px-3.5 py-2 text-xs font-bold uppercase tracking-wider text-tactical-gold border border-tactical-gold/40 rounded-xl hover:border-tactical-gold transition-all" title="Ouvrir le panneau d’administration">Admin Panel</a>
                 <!-- Bouton Aide à la compréhension -->
                 <button id="help-btn" class="flex items-center gap-2 px-3.5 py-2 text-xs font-bold uppercase tracking-wider text-tactical-muted border border-tactical-border rounded-xl hover:text-tactical-accent hover:border-tactical-accent/60 transition-all">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1134,12 +1133,8 @@
     </div>
 
     <!-- JavaScript Data and Application Logic -->
-    <script src="site-data.js"></script>
-    <script src="admin-data.js?v=1"></script>
+    <script src="site-data.js?v=20261121d"></script>
     <script>
-        // Données ajoutées et publiées via l’Admin Panel (les tableaux restent la source commune du wiki).
-        const adminDatasetTargets = { weapons: WEAPONS_DATA, explosives: EXPLOSIVES_DATA, heals: HEAL_ITEMS_DATA, attachments: ATTACHMENTS_DATA, backpacks: BACKPACKS_DATA, food: FOOD_DATA };
-        (window.AR2_ADMIN_DATA?.items || []).forEach(item => { const target = adminDatasetTargets[item.dataset]; if (target && !target.some(existing => existing.id === item.id)) target.push(item); });
         // ============================================================
         const ALL_ITEMS = [].concat(WEAPONS_DATA, EXPLOSIVES_DATA, HEAL_ITEMS_DATA, ATTACHMENTS_DATA, BACKPACKS_DATA, FOOD_DATA);
 
@@ -1147,7 +1142,6 @@
         // CONFIG - Catégories
         // ============================================================
         const CATEGORIES = ['Tous', "Fusils d'Assaut", "Carabines d'Assaut", 'Fusils de Combat', 'Carabines', 'Fusils', 'Fusils de Précision', 'Snipers', 'Fusils à Pompe', 'PM / SMG', 'Mitrailleuses', 'Pistolets', 'Explosifs', 'Items de Soin', "Accessoires d'Armes", 'Sacs à Dos', 'Nourriture & Survie'];
-        (window.AR2_ADMIN_DATA?.categories || []).forEach(category => { if (!CATEGORIES.includes(category)) CATEGORIES.push(category); });
 
         const CATEGORY_META = {
             "Fusils d'Assaut":     { color: '#00ff88' },
@@ -6771,3 +6765,9 @@
                 if (app.pushIndex) setTimeout(() => { try { app.pushIndex(window.ar2ExportIndex()).catch(() => {}); } catch (e) {} }, 1200);
             }
         };
+        if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => setTimeout(boot, 30)); else setTimeout(boot, 30);
+    })();
+    </script>
+    <script src="site-status.js"></script>
+</body>
+</html>
