@@ -105,6 +105,7 @@ export default {
     const url = new URL(request.url);
     try {
       if (url.pathname === "/api/login" && request.method === "POST") {
+        if (env.LOGIN_LIMITER) { const ip = request.headers.get("CF-Connecting-IP") || "unknown"; const limit = await env.LOGIN_LIMITER.limit({ key: ip }); if (!limit.success) return response({ error: "Trop de tentatives. Réessaie dans une minute." }, 429, headers); }
         const body = await request.json();
         if (!safeEqual(body.code, env.ADMIN_PASSWORD)) return response({ error: "Code incorrect." }, 401, headers);
         return response({ token: await issueToken(env), expiresIn: 3600 }, 200, headers);
