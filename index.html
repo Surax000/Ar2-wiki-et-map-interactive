@@ -1265,12 +1265,11 @@
             'Powered Sleigh':'Powered sleigh.png'
         };
         function vehicleImage(v, cls = '') {
-            const file = VEHICLE_WIKI_IMAGES[v && v.name];
-            if (!file) return '';
-            // Utilise l'URL directe de redirection MediaWiki dans src, comme une image HTML classique.
-            const src = 'https://roblox-apocalypse-rising.fandom.com/wiki/Special:Redirect/file/' + encodeURIComponent(file);
-            const alt = String(v.name || 'Véhicule').replace(/&/g,'&amp;').replace(/"/g,'&quot;');
-            return `<img src="${src}" alt="${alt}" loading="lazy" decoding="async" referrerpolicy="no-referrer" class="${cls}" onerror="const f=document.createElement('span');f.className='text-xs text-tactical-muted px-2 text-center';f.textContent=this.alt+' · image indisponible';this.replaceWith(f)">`;
+            const name = String(v && v.name || 'Véhicule');
+            const slug = name.normalize('NFD').replace(/[\\u0300-\\u036f]/g, '').toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+            const src = '/' + slug + '.jpg';
+            const alt = name.replace(/&/g,'&amp;').replace(/"/g,'&quot;');
+            return `<img src="${src}" alt="${alt}" loading="lazy" decoding="async" class="${cls}" onerror="const f=document.createElement('span');f.className='text-xs text-tactical-muted px-2 text-center';f.textContent=this.alt+' · image indisponible';this.replaceWith(f)">`;
         }
 
         // Données véhicules : synthèse communautaire, à revalider après les mises à jour du jeu.
