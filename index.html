@@ -1267,7 +1267,7 @@
         function vehicleImage(v, cls = '') {
             const name = String(v && v.name || 'Véhicule');
             const slug = name.normalize('NFD').replace(/[\\u0300-\\u036f]/g, '').toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-            const src = '/' + slug + '.jpg';
+            const src = './' + slug + '.jpg';
             const alt = name.replace(/&/g,'&amp;').replace(/"/g,'&quot;');
             return `<img src="${src}" alt="${alt}" loading="lazy" decoding="async" class="${cls}" onerror="const f=document.createElement('span');f.className='text-xs text-tactical-muted px-2 text-center';f.textContent=this.alt+' · image indisponible';this.replaceWith(f)">`;
         }
